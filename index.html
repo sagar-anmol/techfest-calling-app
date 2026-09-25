@@ -13,6 +13,15 @@
   <meta name="apple-mobile-web-app-title" content="TF26 Calling">
   <link rel="apple-touch-icon" href="icon-192.png">
 
+  <!-- Clerk Authentication SDK (Live Production Key) -->
+  <script
+    async
+    crossorigin="anonymous"
+    data-clerk-publishable-key="pk_live_Y2xlcmsuc2FnYXItYW5tb2wuZ2l0aHViLmlvJA"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    type="text/javascript">
+  </script>
+
   <!-- Material 3 Fonts & Google Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3539,14 +3548,15 @@
     // ========================================================
     // ⚡ CLERK AUTHENTICATION (Google, Email OTP, Passwordless)
     // ========================================================
-    let CLERK_PUBLISHABLE_KEY = localStorage.getItem('TF26_CLERK_KEY') || '';
+    const DEFAULT_CLERK_KEY = 'pk_live_Y2xlcmsuc2FnYXItYW5tb2wuZ2l0aHViLmlvJA';
+    let CLERK_PUBLISHABLE_KEY = localStorage.getItem('TF26_CLERK_KEY') || DEFAULT_CLERK_KEY;
 
     async function loadAndInitClerk(autoOpen = false) {
       if (!CLERK_PUBLISHABLE_KEY) return;
 
       const statusLbl = document.getElementById('clerkStatusLabel');
       const keyBtnLbl = document.getElementById('clerkKeyBtnLabel');
-      if (statusLbl) statusLbl.textContent = 'Clerk Active (' + CLERK_PUBLISHABLE_KEY.substring(0, 11) + '...)';
+      if (statusLbl) statusLbl.textContent = 'Clerk Live Connected';
       if (keyBtnLbl) keyBtnLbl.textContent = 'Change Key';
 
       try {
@@ -3563,27 +3573,41 @@
           });
         }
 
-        await window.Clerk.load({
-          appearance: {
-            variables: {
-              colorPrimary: '#a8c7fa',
-              colorBackground: '#1a212d',
-              colorText: '#ffffff',
-              colorInputBackground: '#0f141c',
-              colorInputText: '#ffffff'
-            }
-          }
-        });
+        if (typeof window.Clerk === 'function') {
+          window.Clerk = new window.Clerk(CLERK_PUBLISHABLE_KEY);
+        }
 
-        if (window.Clerk.user) {
-          handleClerkUser(window.Clerk.user);
-        } else if (autoOpen) {
-          window.Clerk.openSignIn();
+        if (window.Clerk && typeof window.Clerk.load === 'function') {
+          await window.Clerk.load({
+            appearance: {
+              variables: {
+                colorPrimary: '#a8c7fa',
+                colorBackground: '#1a212d',
+                colorText: '#ffffff',
+                colorInputBackground: '#0f141c',
+                colorInputText: '#ffffff'
+              }
+            }
+          });
+
+          if (window.Clerk.addListener) {
+            window.Clerk.addListener((payload) => {
+              if (payload && payload.user) {
+                handleClerkUser(payload.user);
+              }
+            });
+          }
+
+          if (window.Clerk.user) {
+            handleClerkUser(window.Clerk.user);
+          } else if (autoOpen) {
+            window.Clerk.openSignIn();
+          }
         }
       } catch (err) {
         console.error('Clerk init error:', err);
         if (autoOpen) {
-          alert('Could not initialize Clerk with this key. Please check that your Publishable Key is valid (from dashboard.clerk.com).');
+          alert('Could not initialize Clerk: ' + (err.message || err));
         }
       }
     }
