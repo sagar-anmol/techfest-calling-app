@@ -13,15 +13,6 @@
   <meta name="apple-mobile-web-app-title" content="TF26 Calling">
   <link rel="apple-touch-icon" href="icon-192.png">
 
-  <!-- Clerk Authentication SDK (Live Production Key) -->
-  <script
-    async
-    crossorigin="anonymous"
-    data-clerk-publishable-key="pk_live_Y2xlcmsuc2FnYXItYW5tb2wuZ2l0aHViLmlvJA"
-    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
-    type="text/javascript">
-  </script>
-
   <!-- Material 3 Fonts & Google Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -94,7 +85,7 @@
 <body class="bg-m3-surface text-slate-100 min-h-screen flex flex-col font-sans selection:bg-m3-primary/30 selection:text-white">
 
   <!-- ======================================================== -->
-  <!-- 🔒 ZERO-TRUST IDENTITY VERIFICATION GATEKEEPER -->
+  <!-- 🔒 IDENTITY VERIFICATION & PORTAL LOGIN (Email + Password) -->
   <!-- ======================================================== -->
   <div id="authScreen" class="fixed inset-0 z-50 bg-m3-surface flex flex-col items-center justify-center p-4 overflow-y-auto">
     <!-- Ambient Glow -->
@@ -105,93 +96,179 @@
       <!-- Brand & Security Header -->
       <div class="text-center space-y-2">
         <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white mx-auto flex items-center justify-center shadow-lg shadow-blue-500/25">
-          <span class="material-symbols-outlined text-3xl">verified_user</span>
+          <span class="material-symbols-outlined text-3xl">lock</span>
         </div>
         <div>
           <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-wider mb-1">
-            <span class="material-symbols-outlined text-[12px]">lock</span>
-            Authorized Access Only
+            <span class="material-symbols-outlined text-[12px]">verified_user</span>
+            Portal Access
           </span>
           <h1 class="text-xl font-extrabold text-white tracking-tight">TechFEST'26 SLIET</h1>
           <p class="text-xs text-m3-secondary">Outreach Calling &amp; CR Management Portal</p>
         </div>
       </div>
 
-      <!-- Access Denied Banner (Dynamic) -->
-      <div id="accessDeniedCard" class="hidden p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/25 space-y-1.5 text-center">
+      <!-- Error Banner (Dynamic) -->
+      <div id="authErrorCard" class="hidden p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/25 space-y-1 text-center">
         <div class="flex items-center justify-center gap-1.5 text-rose-400 font-bold text-xs">
-          <span class="material-symbols-outlined text-sm">gpp_bad</span>
-          <span>Access Denied: Unauthorized Account</span>
+          <span class="material-symbols-outlined text-sm">error</span>
+          <span id="authErrorTitle">Authentication Failed</span>
         </div>
-        <p class="text-[11px] text-slate-300" id="accessDeniedMsg">Your account is not registered on the outreach team roster.</p>
-        <button type="button" onclick="dismissAccessDenied()" class="text-[10px] text-rose-300 font-semibold underline hover:text-white">
-          Dismiss
-        </button>
+        <p class="text-[11px] text-slate-300" id="authErrorMsg">Invalid credentials.</p>
       </div>
 
-      <!-- Verification Method 1: Clerk Google Sign-In -->
-      <div class="space-y-2">
-        <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider text-center">Primary Verification Method</label>
-        
-        <button type="button" id="clerkSignInBtn" onclick="handleClerkSignInClick()" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 state-layer transition">
-          <svg class="w-4 h-4" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-          </svg>
-          <span>Sign In with Google (Clerk)</span>
-        </button>
-
-        <div id="clerkSignInContainer" class="w-full flex justify-center empty:hidden"></div>
-
-        <div class="flex items-center justify-between px-1 text-[10px] text-m3-outline">
-          <span id="clerkStatusLabel">Clerk Protected</span>
-          <button type="button" onclick="promptClerkKey()" class="text-m3-primary hover:underline flex items-center gap-0.5">
-            <span class="material-symbols-outlined text-[12px]">key</span>
-            <span>Update Key</span>
-          </button>
+      <!-- Success Notification (Dynamic) -->
+      <div id="authSuccessCard" class="hidden p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 space-y-1 text-center">
+        <div class="flex items-center justify-center gap-1.5 text-emerald-400 font-bold text-xs">
+          <span class="material-symbols-outlined text-sm">check_circle</span>
+          <span id="authSuccessTitle">Success</span>
         </div>
+        <p class="text-[11px] text-slate-300" id="authSuccessMsg">Action completed successfully.</p>
       </div>
 
-      <!-- Divider -->
-      <div class="flex items-center gap-3">
-        <div class="h-px bg-white/10 flex-1"></div>
-        <span class="text-[10px] uppercase font-bold text-m3-outline tracking-wider">or verify by email</span>
-        <div class="h-px bg-white/10 flex-1"></div>
-      </div>
-
-      <!-- Verification Method 2: Verified Email Input (Strict Roster Matching) -->
-      <form onsubmit="handleDirectEmailVerify(event)" class="space-y-3">
+      <!-- Email + Password Login Form -->
+      <form onsubmit="handleEmailPasswordLogin(event)" class="space-y-4">
         <div>
-          <label for="verifyEmailInput" class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1.5">
-            Registered Account Email
+          <label for="loginEmail" class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1.5">
+            Account Email
           </label>
           <div class="relative">
-            <span class="material-symbols-outlined absolute left-3 top-3 text-m3-outline text-base">alternate_email</span>
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-m3-outline text-base">alternate_email</span>
             <input 
               type="email" 
-              id="verifyEmailInput" 
-              placeholder="e.g. your-email@gmail.com" 
+              id="loginEmail" 
+              placeholder="e.g. name@sliet.ac.in or gmail" 
               required 
               autocomplete="email"
               class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-white placeholder:text-m3-outline outline-none focus:border-m3-primary focus:ring-1 focus:ring-m3-primary transition">
           </div>
         </div>
 
-        <button type="submit" class="w-full py-3 px-4 rounded-2xl bg-m3-surfaceContainerHighest hover:bg-white/10 text-white font-bold text-xs border border-white/10 shadow-md flex items-center justify-center gap-2 state-layer transition">
-          <span class="material-symbols-outlined text-sm text-emerald-400">shield</span>
-          <span>Verify &amp; Enter Portal</span>
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="loginPassword" class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider">
+              Password
+            </label>
+            <button type="button" onclick="openForgotPasswordModal()" class="text-[11px] text-m3-primary hover:underline font-semibold">
+              Forgot Password?
+            </button>
+          </div>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-m3-outline text-base">key</span>
+            <input 
+              type="password" 
+              id="loginPassword" 
+              placeholder="Enter your password" 
+              required 
+              autocomplete="current-password"
+              class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-2xl pl-10 pr-10 py-2.5 text-xs text-white placeholder:text-m3-outline outline-none focus:border-m3-primary focus:ring-1 focus:ring-m3-primary transition">
+            <button type="button" onclick="togglePasswordVisibility('loginPassword', 'eyeIconLogin')" class="absolute right-3 top-2.5 text-m3-outline hover:text-white transition">
+              <span class="material-symbols-outlined text-base" id="eyeIconLogin">visibility</span>
+            </button>
+          </div>
+          <p class="text-[10px] text-m3-outline mt-1.5 flex items-center gap-1">
+            <span class="material-symbols-outlined text-[12px] text-blue-400">info</span>
+            <span>Default password for all accounts: <code class="text-blue-300 font-mono">pass@123</code></span>
+          </p>
+        </div>
+
+        <button type="submit" id="loginSubmitBtn" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 state-layer transition">
+          <span class="material-symbols-outlined text-sm">login</span>
+          <span>Sign In to Portal</span>
         </button>
       </form>
 
       <!-- Security Notice -->
       <div class="pt-2 border-t border-white/5 text-center">
         <p class="text-[10px] text-m3-outline">
-          Both Administrators and Callers must authenticate. Unauthorized email addresses will be rejected automatically.
+          Authorized team accounts only. You can reset or change your password anytime inside the dashboard.
         </p>
       </div>
 
+    </div>
+  </div>
+
+
+  <!-- ======================================================== -->
+  <!-- 🔑 FORGOT PASSWORD MODAL -->
+  <!-- ======================================================== -->
+  <div id="forgotPasswordModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="relative w-full max-w-sm bg-m3-surfaceContainer rounded-[2rem] p-6 border border-white/10 shadow-2xl space-y-4">
+      <div class="text-center space-y-1">
+        <div class="w-12 h-12 rounded-2xl bg-m3-primaryContainer text-m3-onPrimaryContainer mx-auto flex items-center justify-center shadow-md shadow-blue-500/20">
+          <span class="material-symbols-outlined text-2xl">lock_reset</span>
+        </div>
+        <h3 class="text-base font-bold text-white">Reset Account Password</h3>
+        <p class="text-xs text-m3-secondary">Enter your registered outreach email</p>
+      </div>
+
+      <div id="forgotErrorCard" class="hidden p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs text-center"></div>
+
+      <form onsubmit="handleForgotPasswordSubmit(event)" class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">Registered Account Email</label>
+          <input type="email" id="forgotEmailInput" required placeholder="e.g. ayanshsahay1096@gmail.com" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">New Password</label>
+          <input type="password" id="forgotNewPassword" required minlength="6" placeholder="Minimum 6 characters" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">Confirm New Password</label>
+          <input type="password" id="forgotConfirmPassword" required minlength="6" placeholder="Repeat new password" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeForgotPasswordModal()" class="flex-1 py-2 rounded-xl bg-m3-surfaceContainerHigh hover:bg-white/10 text-white text-xs font-semibold state-layer transition">
+            Cancel
+          </button>
+          <button type="submit" class="flex-1 py-2 rounded-xl bg-m3-primary text-m3-onPrimary text-xs font-bold state-layer transition">
+            Reset Password
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ======================================================== -->
+  <!-- 🔐 IN-DASHBOARD CHANGE PASSWORD MODAL -->
+  <!-- ======================================================== -->
+  <div id="changePasswordModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="relative w-full max-w-sm bg-m3-surfaceContainer rounded-[2rem] p-6 border border-white/10 shadow-2xl space-y-4">
+      <div class="text-center space-y-1">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 mx-auto flex items-center justify-center shadow-md shadow-indigo-500/20">
+          <span class="material-symbols-outlined text-2xl">password</span>
+        </div>
+        <h3 class="text-base font-bold text-white">Change Account Password</h3>
+        <p class="text-xs text-m3-secondary">Update your portal password</p>
+      </div>
+
+      <div id="changeErrorCard" class="hidden p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs text-center"></div>
+
+      <form onsubmit="handleChangePasswordSubmit(event)" class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">Current Password</label>
+          <input type="password" id="changeCurrentPassword" required placeholder="Enter current password" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">New Password</label>
+          <input type="password" id="changeNewPassword" required minlength="6" placeholder="Min 6 characters" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">Confirm New Password</label>
+          <input type="password" id="changeConfirmPassword" required minlength="6" placeholder="Repeat new password" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeChangePasswordModal()" class="flex-1 py-2 rounded-xl bg-m3-surfaceContainerHigh hover:bg-white/10 text-white text-xs font-semibold state-layer transition">
+            Cancel
+          </button>
+          <button type="submit" class="flex-1 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold state-layer transition">
+            Save Password
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -223,11 +300,14 @@
           <span>Install App</span>
         </button>
 
-        <!-- Clerk Mounted User Button Container -->
-        <div id="clerkUserBtnContainer" class="flex items-center"></div>
+        <!-- In-Dashboard Reset Password Button -->
+        <button onclick="openChangePasswordModal()" title="Change Password" class="px-2.5 py-1.5 rounded-xl bg-m3-surfaceContainerHigh hover:bg-m3-surfaceContainerHighest text-xs font-semibold text-m3-secondary hover:text-white flex items-center gap-1 border border-white/5 transition state-layer">
+          <span class="material-symbols-outlined text-sm text-blue-400">lock_reset</span>
+          <span class="text-[11px] hidden sm:inline">Password</span>
+        </button>
 
-        <button onclick="logout()" title="Switch Account / Sign Out" class="w-8 h-8 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white flex items-center justify-center transition border border-white/5 state-layer">
-          <span class="material-symbols-outlined text-base">switch_account</span>
+        <button onclick="logout()" title="Sign Out" class="w-8 h-8 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary hover:text-rose-400 flex items-center justify-center transition border border-white/5 state-layer">
+          <span class="material-symbols-outlined text-base">logout</span>
         </button>
       </div>
     </header>
@@ -3567,231 +3647,293 @@
     }
 
     // ========================================================
-    // ⚡ CLERK AUTHENTICATION (Google, Email OTP, Passwordless)
+    // 🛡️ REGISTERED ROSTER & EMAIL/PASSWORD CREDENTIALS
     // ========================================================
-    const DEFAULT_CLERK_KEY = 'pk_live_Y2xlcmsuc2FnYXItYW5tb2wuZ2l0aHViLmlvJA';
-    let CLERK_PUBLISHABLE_KEY = localStorage.getItem('TF26_CLERK_KEY') || DEFAULT_CLERK_KEY;
+    const SALT = "_tf26_salt_sliet";
+    const DEFAULT_PASS_HASH = "7daf34db03658417fb5ea2c6f32aa8193812c0ea39d483a9bfabfdf35d322a95"; // pass@123
 
-    async function loadAndInitClerk(autoOpen = false) {
-      if (!CLERK_PUBLISHABLE_KEY) return;
+    const REGISTERED_ACCOUNTS = {
+      // 👑 Administrators
+      "sagarkumarweebly@gmail.com": {
+        name: "Sagar Kumar Anmol (Admin)",
+        role: "admin"
+      },
+      "techfest@sliet.ac.in": {
+        name: "TechFEST Admin",
+        role: "admin"
+      },
+      // 📞 Outreach Callers
+      "ayanshsahay1096@gmail.com": {
+        name: "Ayansh Sahay",
+        role: "caller"
+      },
+      "kbalwant735@gmail.com": {
+        name: "Balwant",
+        role: "caller"
+      },
+      "priyanshideshwal96@gmail.com": {
+        name: "Priyanshi Deshwal",
+        role: "caller"
+      },
+      "ritikkumar3093@gmail.com": {
+        name: "Ritik Kumar",
+        role: "caller"
+      },
+      "shreya9mahanti@gmail.com": {
+        name: "Shreya Mahanti",
+        role: "caller"
+      },
+      "aahna.2373@gmail.com": {
+        name: "Aahna",
+        role: "caller"
+      },
+      "supriyakumari132006@gmail.com": {
+        name: "Supriyaaa",
+        role: "caller"
+      },
+      "palaksinha.ind@gmail.com": {
+        name: "palak",
+        role: "caller"
+      }
+    };
 
-      const statusLbl = document.getElementById('clerkStatusLabel');
-      const keyBtnLbl = document.getElementById('clerkKeyBtnLabel');
-      if (statusLbl) statusLbl.textContent = 'Clerk Live Connected';
-      if (keyBtnLbl) keyBtnLbl.textContent = 'Change Key';
+    async function hashPassword(plainText) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(plainText + SALT);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
 
+    function getAccountPasswordHash(email) {
       try {
-        if (!window.Clerk) {
-          await new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.setAttribute('data-clerk-publishable-key', CLERK_PUBLISHABLE_KEY);
-            script.src = 'https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js';
-            script.async = true;
-            script.crossOrigin = 'anonymous';
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-          });
-        }
-
-        if (typeof window.Clerk === 'function') {
-          window.Clerk = new window.Clerk(CLERK_PUBLISHABLE_KEY);
-        }
-
-        if (window.Clerk && typeof window.Clerk.load === 'function') {
-          await window.Clerk.load({
-            appearance: {
-              variables: {
-                colorPrimary: '#a8c7fa',
-                colorBackground: '#1a212d',
-                colorText: '#ffffff',
-                colorInputBackground: '#0f141c',
-                colorInputText: '#ffffff'
-              }
-            }
-          });
-
-          if (window.Clerk.addListener) {
-            window.Clerk.addListener((payload) => {
-              if (payload && payload.user) {
-                handleClerkUser(payload.user);
-              }
-            });
-          }
-
-          if (window.Clerk.user) {
-            handleClerkUser(window.Clerk.user);
-          } else if (autoOpen) {
-            window.Clerk.openSignIn();
-          }
-        }
-      } catch (err) {
-        console.error('Clerk init error:', err);
-        if (autoOpen) {
-          alert('Could not initialize Clerk: ' + (err.message || err));
-        }
-      }
+        const stored = JSON.parse(localStorage.getItem('TF26_ACCOUNT_PASSWORDS') || '{}');
+        if (stored[email.toLowerCase()]) return stored[email.toLowerCase()];
+      } catch (e) {}
+      return DEFAULT_PASS_HASH;
     }
 
-    function handleClerkSignInClick() {
-      if (!CLERK_PUBLISHABLE_KEY) {
-        promptClerkKey(true);
-      } else if (window.Clerk) {
-        if (window.Clerk.user) {
-          handleClerkUser(window.Clerk.user);
-        } else {
-          window.Clerk.openSignIn();
-        }
-      } else {
-        loadAndInitClerk(true);
-      }
+    function setAccountPasswordHash(email, newHash) {
+      try {
+        const stored = JSON.parse(localStorage.getItem('TF26_ACCOUNT_PASSWORDS') || '{}');
+        stored[email.toLowerCase()] = newHash;
+        localStorage.setItem('TF26_ACCOUNT_PASSWORDS', JSON.stringify(stored));
+      } catch (e) {}
     }
 
-    function promptClerkKey(openAfter = false) {
-      const key = prompt(
-        "Enter your Clerk Publishable Key (starts with pk_test_ or pk_live_ from https://dashboard.clerk.com):\n\n(Tip: Clerk provides instant 1-click Google Sign-In & Email OTP with zero backend setup)",
-        CLERK_PUBLISHABLE_KEY
-      );
-      if (key !== null && key.trim() !== '') {
-        CLERK_PUBLISHABLE_KEY = key.trim();
-        localStorage.setItem('TF26_CLERK_KEY', CLERK_PUBLISHABLE_KEY);
-        loadAndInitClerk(openAfter);
-      }
-    }
-
-    // ========================================================
-    // 🛡️ STRICT ROSTER & IDENTITY VERIFICATION
-    // ========================================================
-    const AUTHORIZED_ADMINS = [
-      'sagarkumarweebly@gmail.com',
-      'techfest@sliet.ac.in',
-      'sagaranmol@gmail.com'
-    ];
-
-    function verifyUserByEmail(emailInput) {
-      if (!emailInput) return null;
-      const email = emailInput.trim().toLowerCase();
-
-      // Check if Admin
-      const isAdmin = AUTHORIZED_ADMINS.includes(email) || 
-                      email.includes('sagaranmol') || 
-                      email.includes('sagarkumarweebly') || 
-                      email.includes('techfest@sliet') ||
-                      email.includes('admin');
-      if (isAdmin) {
-        return {
-          role: 'admin',
-          name: email === 'techfest@sliet.ac.in' ? 'TechFEST Admin' : 'Sagar Anmol (Admin)',
-          email: email,
-          verified: true
-        };
-      }
-
-      // Check if Authorized Caller in TEAM_ROSTER
-      const caller = TEAM_ROSTER.find(m => m.email.toLowerCase() === email);
-      if (caller) {
-        return {
-          role: 'caller',
-          name: caller.name,
-          email: email,
-          verified: true
-        };
-      }
-
-      return null;
-    }
-
-    function handleDirectEmailVerify(e) {
+    async function handleEmailPasswordLogin(e) {
       if (e) e.preventDefault();
-      const input = document.getElementById('verifyEmailInput');
-      const email = input ? input.value.trim() : '';
-      if (!email) return;
+      dismissAuthAlerts();
 
-      const verified = verifyUserByEmail(email);
-      if (verified) {
-        dismissAccessDenied();
-        currentUser = verified;
-        sessionStorage.setItem('TF26_VERIFIED_SESSION', JSON.stringify(currentUser));
-        startAuthenticatedSession();
+      const emailInput = document.getElementById('loginEmail');
+      const passInput = document.getElementById('loginPassword');
+      const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+      const password = passInput ? passInput.value : '';
+
+      if (!email || !password) {
+        showAuthError("Missing Info", "Please enter both your email and password.");
+        return;
+      }
+
+      // Check account registration
+      const account = REGISTERED_ACCOUNTS[email];
+      if (!account) {
+        showAuthError("Access Denied: Unregistered Account", `The email "${email}" is not registered on the TechFEST'26 outreach roster. Please contact the administrator.`);
+        return;
+      }
+
+      // Verify Password
+      const inputHash = await hashPassword(password);
+      const expectedHash = getAccountPasswordHash(email);
+
+      if (inputHash !== expectedHash) {
+        showAuthError("Incorrect Password", "The password you entered is incorrect. Default password is 'pass@123' or click 'Forgot Password?' to reset.");
+        return;
+      }
+
+      // Successful Authentication!
+      currentUser = {
+        name: account.name,
+        email: email,
+        role: account.role,
+        verified: true
+      };
+
+      sessionStorage.setItem('TF26_VERIFIED_SESSION', JSON.stringify(currentUser));
+      startAuthenticatedSession();
+    }
+
+    function togglePasswordVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (!input || !icon) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
       } else {
-        showAccessDenied(`Email "${email}" is not on the authorized outreach roster. Only registered callers and administrators can access.`);
+        input.type = 'password';
+        icon.textContent = 'visibility';
       }
     }
 
-    function handleClerkUser(clerkUser) {
-      const email = (clerkUser.primaryEmailAddress ? clerkUser.primaryEmailAddress.emailAddress : '').toLowerCase();
-      const fullName = (clerkUser.fullName || `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`).trim();
-
-      let verified = verifyUserByEmail(email);
-      if (!verified && fullName) {
-        const callerByName = TEAM_ROSTER.find(m => fullName.toLowerCase().includes(m.name.toLowerCase()) || m.name.toLowerCase().includes(fullName.toLowerCase()));
-        if (callerByName) {
-          verified = {
-            role: 'caller',
-            name: callerByName.name,
-            email: email,
-            verified: true
-          };
-        }
+    // ========================================================
+    // 🔑 FORGOT PASSWORD & PASSWORD RESET
+    // ========================================================
+    function openForgotPasswordModal() {
+      dismissAuthAlerts();
+      const modal = document.getElementById('forgotPasswordModal');
+      const prefill = document.getElementById('loginEmail') ? document.getElementById('loginEmail').value.trim() : '';
+      if (prefill) {
+        document.getElementById('forgotEmailInput').value = prefill;
       }
-
-      if (verified) {
-        dismissAccessDenied();
-        currentUser = verified;
-        if (fullName && verified.role === 'admin') currentUser.name = fullName;
-        sessionStorage.setItem('TF26_VERIFIED_SESSION', JSON.stringify(currentUser));
-        startAuthenticatedSession();
-      } else {
-        showAccessDenied(`Signed in with "${email}", but this account is not authorized for TechFEST'26 Calling Portal. Please switch accounts.`);
-        if (window.Clerk) {
-          try { window.Clerk.signOut(); } catch(e) {}
-        }
-      }
+      document.getElementById('forgotErrorCard').classList.add('hidden');
+      document.getElementById('forgotNewPassword').value = '';
+      document.getElementById('forgotConfirmPassword').value = '';
+      modal.classList.remove('hidden');
     }
 
-    function showAccessDenied(msg) {
-      const card = document.getElementById('accessDeniedCard');
-      const txt = document.getElementById('accessDeniedMsg');
-      if (card && txt) {
-        txt.textContent = msg;
+    function closeForgotPasswordModal() {
+      document.getElementById('forgotPasswordModal').classList.add('hidden');
+    }
+
+    async function handleForgotPasswordSubmit(e) {
+      e.preventDefault();
+      const errCard = document.getElementById('forgotErrorCard');
+      const email = document.getElementById('forgotEmailInput').value.trim().toLowerCase();
+      const newPass = document.getElementById('forgotNewPassword').value;
+      const confirmPass = document.getElementById('forgotConfirmPassword').value;
+
+      if (!REGISTERED_ACCOUNTS[email]) {
+        errCard.textContent = `Email "${email}" is not registered in the outreach roster.`;
+        errCard.classList.remove('hidden');
+        return;
+      }
+
+      if (newPass.length < 6) {
+        errCard.textContent = "New password must be at least 6 characters.";
+        errCard.classList.remove('hidden');
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        errCard.textContent = "Passwords do not match.";
+        errCard.classList.remove('hidden');
+        return;
+      }
+
+      // Save new password
+      const newHash = await hashPassword(newPass);
+      setAccountPasswordHash(email, newHash);
+
+      closeForgotPasswordModal();
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginPassword').value = '';
+      showAuthSuccess("Password Reset Successful", `Password updated for ${email}. Please sign in with your new password.`);
+    }
+
+    // ========================================================
+    // 🔐 IN-DASHBOARD CHANGE PASSWORD
+    // ========================================================
+    function openChangePasswordModal() {
+      const modal = document.getElementById('changePasswordModal');
+      document.getElementById('changeErrorCard').classList.add('hidden');
+      document.getElementById('changeCurrentPassword').value = '';
+      document.getElementById('changeNewPassword').value = '';
+      document.getElementById('changeConfirmPassword').value = '';
+      modal.classList.remove('hidden');
+    }
+
+    function closeChangePasswordModal() {
+      document.getElementById('changePasswordModal').classList.add('hidden');
+    }
+
+    async function handleChangePasswordSubmit(e) {
+      e.preventDefault();
+      const errCard = document.getElementById('changeErrorCard');
+      const currentPass = document.getElementById('changeCurrentPassword').value;
+      const newPass = document.getElementById('changeNewPassword').value;
+      const confirmPass = document.getElementById('changeConfirmPassword').value;
+
+      if (!currentUser || !currentUser.email) return;
+
+      const currHash = await hashPassword(currentPass);
+      const expectedHash = getAccountPasswordHash(currentUser.email);
+
+      if (currHash !== expectedHash) {
+        errCard.textContent = "Current password is incorrect.";
+        errCard.classList.remove('hidden');
+        return;
+      }
+
+      if (newPass.length < 6) {
+        errCard.textContent = "New password must be at least 6 characters.";
+        errCard.classList.remove('hidden');
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        errCard.textContent = "New passwords do not match.";
+        errCard.classList.remove('hidden');
+        return;
+      }
+
+      const newHash = await hashPassword(newPass);
+      setAccountPasswordHash(currentUser.email, newHash);
+
+      closeChangePasswordModal();
+      alert("✅ Password changed successfully!");
+    }
+
+    function showAuthError(title, msg) {
+      const card = document.getElementById('authErrorCard');
+      const t = document.getElementById('authErrorTitle');
+      const m = document.getElementById('authErrorMsg');
+      if (card && t && m) {
+        t.textContent = title;
+        m.textContent = msg;
         card.classList.remove('hidden');
       } else {
-        alert(msg);
+        alert(title + ": " + msg);
       }
     }
 
-    function dismissAccessDenied() {
-      const card = document.getElementById('accessDeniedCard');
-      if (card) card.classList.add('hidden');
+    function showAuthSuccess(title, msg) {
+      const card = document.getElementById('authSuccessCard');
+      const t = document.getElementById('authSuccessTitle');
+      const m = document.getElementById('authSuccessMsg');
+      if (card && t && m) {
+        t.textContent = title;
+        m.textContent = msg;
+        card.classList.remove('hidden');
+      }
+    }
+
+    function dismissAuthAlerts() {
+      const err = document.getElementById('authErrorCard');
+      const succ = document.getElementById('authSuccessCard');
+      if (err) err.classList.add('hidden');
+      if (succ) succ.classList.add('hidden');
     }
 
     async function logout() {
       sessionStorage.removeItem('TF26_VERIFIED_SESSION');
       localStorage.removeItem('TF26_SESSION_USER');
-      if (window.Clerk && window.Clerk.user) {
-        try { await window.Clerk.signOut(); } catch (e) {}
-      }
       currentUser = null;
       document.getElementById('appShell').classList.add('hidden');
       document.getElementById('authScreen').classList.remove('hidden');
+      dismissAuthAlerts();
     }
 
     function init() {
-      // Clear any legacy unverified sessions
+      // Clear legacy unverified tokens
       localStorage.removeItem('TF26_SESSION_USER');
 
-      // Initialize Clerk if configured
-      if (CLERK_PUBLISHABLE_KEY) {
-        loadAndInitClerk(false);
-      }
-
-      // Check for an active verified session
+      // Check active verified session
       const savedVerified = sessionStorage.getItem('TF26_VERIFIED_SESSION');
       if (savedVerified) {
         try {
           const parsed = JSON.parse(savedVerified);
-          const stillValid = verifyUserByEmail(parsed.email);
-          if (stillValid) {
+          if (parsed && parsed.email && REGISTERED_ACCOUNTS[parsed.email.toLowerCase()]) {
             currentUser = parsed;
             startAuthenticatedSession();
             return;
@@ -3799,15 +3941,15 @@
         } catch(e) {}
       }
 
-      // Check if email query param is present for convenience prefill
+      // Check for prefill query param
       const urlParams = new URLSearchParams(window.location.search);
       const urlEmail = urlParams.get('email');
       if (urlEmail) {
-        const input = document.getElementById('verifyEmailInput');
+        const input = document.getElementById('loginEmail');
         if (input) input.value = urlEmail;
       }
 
-      // Default: Strictly locked on auth screen
+      // Default: show login screen
       document.getElementById('authScreen').classList.remove('hidden');
       document.getElementById('appShell').classList.add('hidden');
     }
