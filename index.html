@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>TechFEST'26 SLIET — Outreach Calling &amp; CR Tracker</title>
   
+  <!-- PWA Manifest & Meta -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f141c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TF26 Calling">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
   <!-- Material 3 Fonts & Google Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,10 +56,6 @@
               errorContainer: '#8c1d18',
               onErrorContainer: '#f9dedc'
             }
-          },
-          borderRadius: {
-            '4xl': '2rem',
-            '5xl': '2.5rem'
           }
         }
       }
@@ -67,7 +71,6 @@
     .material-symbols-filled {
       font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
     }
-    /* M3 Expressive state layers */
     .state-layer {
       position: relative;
       overflow: hidden;
@@ -76,332 +79,278 @@
     .state-layer:active {
       transform: scale(0.98);
     }
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #2f384a;
-      border-radius: 9999px;
-    }
   </style>
 </head>
 
 <body class="bg-m3-surface text-slate-100 min-h-screen flex flex-col font-sans selection:bg-m3-primary/30 selection:text-white">
 
   <!-- ======================================================== -->
-  <!-- 🔐 AUTH GATE SCREEN (Visible when unauthenticated) -->
+  <!-- 🔐 FASTEST 1-TAP LOGIN / PROFILE PICKER (Zero Password Required) -->
   <!-- ======================================================== -->
-  <div id="authScreen" class="fixed inset-0 z-50 bg-m3-surface flex flex-col items-center justify-center p-4">
-    <!-- Ambient Background Glow -->
-    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-96 h-96 bg-m3-primary/10 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -bottom-40 left-1/2 -translate-x-1/2 w-96 h-96 bg-m3-tertiary/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div id="authScreen" class="fixed inset-0 z-50 bg-m3-surface flex flex-col items-center justify-center p-4 overflow-y-auto">
+    <!-- Ambient Glow -->
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-80 h-80 bg-m3-primary/10 rounded-full blur-3xl pointer-events-none"></div>
 
-    <div class="relative w-full max-w-md bg-m3-surfaceContainer rounded-[2rem] p-6 sm:p-8 border border-white/5 shadow-2xl space-y-6">
-      <!-- M3 Expressive Brand Header -->
-      <div class="text-center space-y-2">
-        <div class="w-16 h-16 rounded-3xl bg-m3-primaryContainer text-m3-onPrimaryContainer mx-auto flex items-center justify-center shadow-lg shadow-blue-500/10">
+    <div class="relative w-full max-w-md bg-m3-surfaceContainer rounded-[2rem] p-6 sm:p-7 border border-white/5 shadow-2xl space-y-5 my-auto">
+      
+      <!-- Brand & Header -->
+      <div class="text-center space-y-1.5">
+        <div class="w-14 h-14 rounded-2xl bg-m3-primaryContainer text-m3-onPrimaryContainer mx-auto flex items-center justify-center shadow-lg shadow-blue-500/20">
           <span class="material-symbols-outlined text-3xl material-symbols-filled">phone_in_talk</span>
         </div>
-        <h1 class="text-2xl font-extrabold text-white tracking-tight">TechFEST'26 Outreach</h1>
-        <p class="text-xs text-m3-secondary font-medium">SLIET Longowal • Calling &amp; CR Command Portal</p>
+        <h1 class="text-xl font-extrabold text-white tracking-tight">TechFEST'26 Outreach</h1>
+        <p class="text-xs text-m3-secondary">Tap your name to immediately open your queue</p>
       </div>
 
-      <!-- Auth Method Segmented Button -->
-      <div class="bg-m3-surfaceContainerLow p-1 rounded-2xl flex border border-white/5">
-        <button onclick="setAuthRole('caller')" id="authTabCaller" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-m3-primaryContainer text-white">
-          <span class="material-symbols-outlined text-sm">support_agent</span>
-          <span>Caller Access</span>
-        </button>
-        <button onclick="setAuthRole('admin')" id="authTabAdmin" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white">
-          <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
-          <span>Admin Command</span>
+      <!-- PWA Install Prompt Banner inside Auth Screen -->
+      <div id="installBannerAuth" class="hidden p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-emerald-400 text-lg">install_mobile</span>
+          <span class="text-xs text-emerald-300 font-semibold">Install App on Phone</span>
+        </div>
+        <button onclick="triggerPwaInstall()" class="px-3 py-1 rounded-full bg-emerald-500 text-slate-950 text-xs font-bold state-layer">
+          Install
         </button>
       </div>
 
-      <!-- Caller Sign-In Form -->
-      <form id="callerAuthForm" onsubmit="handleCallerLogin(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-m3-secondary mb-1.5">SELECT YOUR CALLER PROFILE</label>
-          <div class="relative">
-            <select id="loginCallerSelect" class="w-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 rounded-2xl px-4 py-3.5 text-sm text-white font-semibold outline-none focus:border-m3-primary transition appearance-none">
-              <!-- Rendered via JS -->
-            </select>
-            <span class="material-symbols-outlined absolute right-4 top-3.5 pointer-events-none text-m3-outline">expand_more</span>
-          </div>
+      <!-- Quick 1-Tap Caller Grid (Fastest Login Ever) -->
+      <div>
+        <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-2.5">Select Your Profile (1-Tap Sign In)</label>
+        <div class="grid grid-cols-2 gap-2" id="quickCallerGrid">
+          <!-- Rendered by JS -->
         </div>
-
-        <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="block text-xs font-bold text-m3-secondary">CALLER PASSCODE / PIN</label>
-            <span class="text-[11px] text-m3-primary font-medium">Default: 2026</span>
-          </div>
-          <div class="relative">
-            <input type="password" id="callerPasscode" placeholder="Enter 4-digit PIN" maxlength="10" required
-              class="w-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 rounded-2xl px-4 py-3.5 text-sm text-white font-mono tracking-widest outline-none focus:border-m3-primary transition placeholder:tracking-normal placeholder:font-sans">
-            <span class="material-symbols-outlined absolute right-4 top-3.5 text-m3-outline">lock</span>
-          </div>
-        </div>
-
-        <div class="flex items-center space-x-2 pt-1">
-          <input type="checkbox" id="rememberMeCaller" checked class="w-4 h-4 rounded-md accent-m3-primary bg-m3-surfaceContainerHigh border-m3-outlineVariant">
-          <label for="rememberMeCaller" class="text-xs text-m3-secondary font-medium">Remember my session on this phone</label>
-        </div>
-
-        <button type="submit" class="w-full py-4 rounded-full bg-m3-primary text-m3-onPrimary font-extrabold text-sm transition shadow-lg shadow-blue-400/20 state-layer flex items-center justify-center gap-2">
-          <span>Sign In to Calling Queue</span>
-          <span class="material-symbols-outlined text-lg">arrow_forward</span>
-        </button>
-      </form>
-
-      <!-- Admin Sign-In Form -->
-      <form id="adminAuthForm" onsubmit="handleAdminLogin(event)" class="space-y-4 hidden">
-        <div>
-          <label class="block text-xs font-bold text-m3-secondary mb-1.5">ADMIN USERNAME / EMAIL</label>
-          <div class="relative">
-            <input type="text" id="adminEmail" value="techfest@sliet.ac.in" readonly
-              class="w-full bg-m3-surfaceContainerHigh/60 border border-m3-outlineVariant/30 rounded-2xl px-4 py-3.5 text-sm text-white/80 font-mono outline-none">
-            <span class="material-symbols-outlined absolute right-4 top-3.5 text-m3-outline">badge</span>
-          </div>
-        </div>
-
-        <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="block text-xs font-bold text-m3-secondary">ADMIN PASSCODE</label>
-            <span class="text-[11px] text-m3-primary font-medium">Default: admin2026</span>
-          </div>
-          <div class="relative">
-            <input type="password" id="adminPasscode" placeholder="Enter admin password" required
-              class="w-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 rounded-2xl px-4 py-3.5 text-sm text-white font-mono tracking-widest outline-none focus:border-m3-primary transition placeholder:tracking-normal placeholder:font-sans">
-            <span class="material-symbols-outlined absolute right-4 top-3.5 text-m3-outline">key</span>
-          </div>
-        </div>
-
-        <button type="submit" class="w-full py-4 rounded-full bg-m3-primary text-m3-onPrimary font-extrabold text-sm transition shadow-lg shadow-blue-400/20 state-layer flex items-center justify-center gap-2">
-          <span>Enter Admin Command Center</span>
-          <span class="material-symbols-outlined text-lg">security</span>
-        </button>
-      </form>
-
-      <!-- Google Sign In Alternative Banner -->
-      <div class="pt-3 border-t border-white/5 text-center">
-        <p class="text-[11px] text-m3-secondary">
-          <span class="material-symbols-outlined text-[13px] mr-1 align-text-bottom text-m3-primary">verified_user</span>
-          Secured with client-side SHA-256 session tokens.
-        </p>
       </div>
+
+      <!-- Admin Passcode Gate (Collapsible) -->
+      <div class="pt-3 border-t border-white/5">
+        <button type="button" onclick="toggleAdminBox()" class="w-full text-xs font-bold text-m3-secondary hover:text-white flex items-center justify-between py-1 transition">
+          <span class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">security</span>
+            <span>Admin Command Center</span>
+          </span>
+          <span class="material-symbols-outlined text-sm" id="adminChevron">expand_more</span>
+        </button>
+
+        <div id="adminPasscodeBox" class="mt-3 space-y-2 hidden">
+          <div class="relative">
+            <input type="password" id="adminPinInput" placeholder="Enter Admin PIN (admin2026)" class="w-full bg-m3-surfaceContainerHigh border border-white/5 rounded-2xl px-4 py-2.5 text-xs text-white outline-none focus:border-m3-primary">
+            <button onclick="quickAdminLogin()" class="absolute right-2 top-1.5 px-3 py-1 rounded-xl bg-m3-primary text-m3-onPrimary text-xs font-bold state-layer">
+              Enter
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
+
   <!-- ======================================================== -->
-  <!-- 📱 MAIN APP SHELL (Visible when authenticated) -->
+  <!-- 📱 MAIN APP SHELL -->
   <!-- ======================================================== -->
-  <div id="appShell" class="flex-1 flex flex-col hidden">
+  <div id="appShell" class="flex-1 flex flex-col hidden pb-6">
     
-    <!-- Top App Bar (Material 3 Expressive) -->
-    <header class="sticky top-0 z-40 bg-m3-surfaceContainer/90 backdrop-blur-xl border-b border-white/5 px-4 py-3 flex items-center justify-between shadow-sm">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-          <span class="material-symbols-outlined text-xl material-symbols-filled">bolt</span>
+    <!-- Top Bar with Install Button & User Info -->
+    <header class="sticky top-0 z-40 bg-m3-surfaceContainer/90 backdrop-blur-xl border-b border-white/5 px-4 py-2.5 flex items-center justify-between shadow-sm">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+          <span class="material-symbols-outlined text-lg material-symbols-filled">bolt</span>
         </div>
         <div>
-          <h1 class="text-sm font-extrabold tracking-tight text-white flex items-center gap-1.5">
-            <span>TechFEST'26 Outreach</span>
-            <span class="px-2 py-0.5 rounded-full text-[10px] bg-m3-primary/10 text-m3-primary border border-m3-primary/20 font-bold" id="userRoleBadge">Caller</span>
+          <h1 class="text-xs font-black tracking-tight text-white flex items-center gap-1.5 leading-tight">
+            <span>TechFEST'26</span>
+            <span class="px-1.5 py-0.2 rounded-full text-[9px] bg-m3-primary/10 text-m3-primary border border-m3-primary/20 font-bold" id="userRoleBadge">Caller</span>
           </h1>
-          <p class="text-[11px] text-m3-secondary font-medium" id="userIdentityLabel">Logged in</p>
+          <p class="text-[11px] text-m3-secondary font-semibold" id="userIdentityLabel">Caller</p>
         </div>
       </div>
 
-      <div class="flex items-center space-x-2">
-        <button onclick="logout()" title="Sign Out" class="w-9 h-9 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white flex items-center justify-center transition border border-white/5 state-layer">
-          <span class="material-symbols-outlined text-lg">logout</span>
+      <div class="flex items-center space-x-1.5">
+        <!-- PWA Install Button (Always visible on mobile/desktop until installed) -->
+        <button id="pwaInstallBtn" onclick="triggerPwaInstall()" class="hidden px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-bold transition flex items-center gap-1 state-layer">
+          <span class="material-symbols-outlined text-sm">install_mobile</span>
+          <span>Install App</span>
+        </button>
+
+        <button onclick="logout()" title="Switch Account" class="w-8 h-8 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white flex items-center justify-center transition border border-white/5 state-layer">
+          <span class="material-symbols-outlined text-base">switch_account</span>
         </button>
       </div>
     </header>
 
-    <!-- Navigation Switcher (Admin / Caller view toggle) -->
+    <!-- Navigation Switcher -->
     <div class="max-w-4xl w-full mx-auto px-4 mt-3">
       <div class="bg-m3-surfaceContainerLow p-1 rounded-2xl flex border border-white/5">
-        <button onclick="switchView('queue')" id="navQueue" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-m3-primaryContainer text-white">
+        <button onclick="switchView('queue')" id="navQueue" class="flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-m3-primaryContainer text-white">
           <span class="material-symbols-outlined text-sm">call</span>
-          <span>Calling Queue</span>
+          <span>Queue</span>
         </button>
-        <button onclick="switchView('crList')" id="navCR" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white">
+        <button onclick="switchView('crList')" id="navCR" class="flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white">
           <span class="material-symbols-outlined text-sm">contact_phone</span>
-          <span>CR Directory</span>
+          <span>CR Numbers</span>
         </button>
-        <button onclick="switchView('admin')" id="navAdmin" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white hidden">
+        <button onclick="switchView('admin')" id="navAdmin" class="flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white hidden">
           <span class="material-symbols-outlined text-sm">analytics</span>
-          <span>Admin Board</span>
+          <span>Admin</span>
         </button>
       </div>
     </div>
 
-    <!-- MAIN VIEW AREA -->
-    <main class="max-w-4xl w-full mx-auto px-4 py-4 flex-1 space-y-4">
+    <!-- MAIN VIEWS -->
+    <main class="max-w-4xl w-full mx-auto px-4 py-3 flex-1 space-y-4">
       
-      <!-- ==================== VIEW 1: CALLING QUEUE ==================== -->
-      <div id="viewQueue" class="space-y-4">
+      <!-- ==================== VIEW 1: QUEUE ==================== -->
+      <div id="viewQueue" class="space-y-3.5">
         
-        <!-- Caller Expressive Card Header -->
-        <div class="bg-m3-surfaceContainer rounded-3xl p-5 border border-white/5 shadow-lg space-y-4">
+        <!-- Caller Card -->
+        <div class="bg-m3-surfaceContainer rounded-3xl p-4 sm:p-5 border border-white/5 shadow-md space-y-3">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div class="flex items-center space-x-3">
-              <div class="w-12 h-12 rounded-2xl bg-m3-primary/10 text-m3-primary border border-m3-primary/20 flex items-center justify-center text-lg font-black" id="callerInitials">
+              <div class="w-11 h-11 rounded-2xl bg-m3-primary/10 text-m3-primary border border-m3-primary/20 flex items-center justify-center text-base font-black" id="callerInitials">
                 AS
               </div>
               <div>
-                <span class="text-[10px] font-extrabold text-m3-secondary uppercase tracking-wider block">Sales Representative</span>
-                <h2 class="text-base font-extrabold text-white" id="activeCallerName">Ayansh Sahay</h2>
+                <span class="text-[10px] font-extrabold text-m3-secondary uppercase tracking-wider block">Assigned Queue</span>
+                <h2 class="text-sm font-extrabold text-white" id="activeCallerName">Ayansh Sahay</h2>
               </div>
             </div>
 
-            <!-- Stats Tonal Pill Grid -->
-            <div class="grid grid-cols-4 gap-2 text-center">
-              <div class="bg-m3-surfaceContainerLow px-3 py-2 rounded-2xl border border-white/5">
-                <span class="text-[10px] text-m3-secondary font-medium block">Total</span>
-                <span class="text-sm font-extrabold text-white" id="statTotal">0</span>
+            <div class="grid grid-cols-4 gap-1.5 text-center">
+              <div class="bg-m3-surfaceContainerLow px-2 py-1.5 rounded-xl border border-white/5">
+                <span class="text-[9px] text-m3-secondary block">Total</span>
+                <span class="text-xs font-extrabold text-white" id="statTotal">0</span>
               </div>
-              <div class="bg-m3-surfaceContainerLow px-3 py-2 rounded-2xl border border-white/5">
-                <span class="text-[10px] text-m3-secondary font-medium block">Called</span>
-                <span class="text-sm font-extrabold text-emerald-400" id="statDone">0</span>
+              <div class="bg-m3-surfaceContainerLow px-2 py-1.5 rounded-xl border border-white/5">
+                <span class="text-[9px] text-m3-secondary block">Done</span>
+                <span class="text-xs font-extrabold text-emerald-400" id="statDone">0</span>
               </div>
-              <div class="bg-m3-surfaceContainerLow px-3 py-2 rounded-2xl border border-white/5">
-                <span class="text-[10px] text-m3-secondary font-medium block">Pending</span>
-                <span class="text-sm font-extrabold text-amber-400" id="statPending">0</span>
+              <div class="bg-m3-surfaceContainerLow px-2 py-1.5 rounded-xl border border-white/5">
+                <span class="text-[9px] text-m3-secondary block">Pending</span>
+                <span class="text-xs font-extrabold text-amber-400" id="statPending">0</span>
               </div>
-              <div class="bg-m3-surfaceContainerLow px-3 py-2 rounded-2xl border border-white/5">
-                <span class="text-[10px] text-m3-secondary font-medium block">Paid (₹)</span>
-                <span class="text-sm font-extrabold text-emerald-300" id="statPaid">₹0</span>
+              <div class="bg-m3-surfaceContainerLow px-2 py-1.5 rounded-xl border border-white/5">
+                <span class="text-[9px] text-m3-secondary block">Paid (₹)</span>
+                <span class="text-xs font-extrabold text-emerald-300" id="statPaid">₹0</span>
               </div>
             </div>
           </div>
 
-          <!-- Material 3 Expressive Progress Bar -->
-          <div class="space-y-1.5">
-            <div class="flex justify-between text-[11px] font-semibold text-m3-secondary">
-              <span>Queue Completion</span>
+          <!-- Progress Bar -->
+          <div class="space-y-1">
+            <div class="flex justify-between text-[10px] font-bold text-m3-secondary">
+              <span>Task Completion</span>
               <span id="queuePercentLabel">0%</span>
             </div>
-            <div class="w-full bg-m3-surfaceContainerLow rounded-full h-3 p-0.5 border border-white/5 overflow-hidden">
-              <div id="queueProgressBar" class="bg-gradient-to-r from-blue-500 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            <div class="w-full bg-m3-surfaceContainerLow rounded-full h-2.5 p-0.5 border border-white/5 overflow-hidden">
+              <div id="queueProgressBar" class="bg-gradient-to-r from-blue-500 to-emerald-400 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
             </div>
           </div>
         </div>
 
-        <!-- Search & Filter Chips (Material 3 Expressive Filter Bar) -->
-        <div class="space-y-2.5">
+        <!-- Filter Chips & Search -->
+        <div class="space-y-2">
           <div class="relative">
-            <span class="material-symbols-outlined absolute left-4 top-3.5 text-m3-outline text-lg">search</span>
-            <input type="text" id="searchInput" oninput="renderLeadCards()" placeholder="Search by student, college, or mobile number..."
-              class="w-full bg-m3-surfaceContainer rounded-full pl-11 pr-4 py-3 text-sm text-white placeholder-m3-outline border border-white/5 focus:outline-none focus:border-m3-primary focus:ring-2 focus:ring-m3-primary/20 transition">
+            <span class="material-symbols-outlined absolute left-3.5 top-3 text-m3-outline text-base">search</span>
+            <input type="text" id="searchInput" oninput="renderLeadCards()" placeholder="Search candidate, college, or phone..."
+              class="w-full bg-m3-surfaceContainer rounded-full pl-10 pr-4 py-2.5 text-xs text-white placeholder-m3-outline border border-white/5 focus:outline-none focus:border-m3-primary transition">
           </div>
 
-          <!-- Expressive Filter Chips (Horizontal Scrollable) -->
-          <div class="flex overflow-x-auto gap-2 py-1 scrollbar-none text-xs">
-            <button onclick="setFilter('all')" id="filterChip_all" class="px-4 py-2 rounded-full font-bold whitespace-nowrap bg-m3-primary text-m3-onPrimary transition flex items-center gap-1.5">
-              <span>All Leads</span>
-            </button>
-            <button onclick="setFilter('Pending')" id="filterChip_Pending" class="px-4 py-2 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition flex items-center gap-1.5 border border-white/5">
-              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-              <span>Pending</span>
-            </button>
-            <button onclick="setFilter('Interested')" id="filterChip_Interested" class="px-4 py-2 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition flex items-center gap-1.5 border border-white/5">
-              <span class="w-2 h-2 rounded-full bg-blue-400"></span>
-              <span>Interested</span>
-            </button>
-            <button onclick="setFilter('Paid / Confirmed')" id="filterChip_Paid / Confirmed" class="px-4 py-2 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition flex items-center gap-1.5 border border-white/5">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-              <span>Paid</span>
-            </button>
-            <button onclick="setFilter('Call Back')" id="filterChip_Call Back" class="px-4 py-2 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition flex items-center gap-1.5 border border-white/5">
-              <span class="w-2 h-2 rounded-full bg-purple-400"></span>
-              <span>Call Back</span>
-            </button>
+          <div class="flex overflow-x-auto gap-1.5 py-0.5 scrollbar-none text-xs">
+            <button onclick="setFilter('all')" id="filterChip_all" class="px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap bg-m3-primary text-m3-onPrimary transition">All</button>
+            <button onclick="setFilter('Pending')" id="filterChip_Pending" class="px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition border border-white/5">Pending</button>
+            <button onclick="setFilter('Interested')" id="filterChip_Interested" class="px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition border border-white/5">Interested</button>
+            <button onclick="setFilter('Paid / Confirmed')" id="filterChip_Paid / Confirmed" class="px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition border border-white/5">Paid</button>
+            <button onclick="setFilter('Call Back')" id="filterChip_Call Back" class="px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition border border-white/5">Call Back</button>
           </div>
         </div>
 
-        <!-- Candidate Cards Container -->
-        <div id="leadsList" class="space-y-3">
+        <!-- Leads List -->
+        <div id="leadsList" class="space-y-2.5">
           <!-- Rendered via JS -->
         </div>
 
       </div>
 
-      <!-- ==================== VIEW 2: CR DIRECTORY ==================== -->
-      <div id="viewCR" class="space-y-4 hidden">
-        <div class="bg-m3-surfaceContainer rounded-3xl p-5 border border-white/5 shadow-lg flex items-center justify-between">
+      <!-- ==================== VIEW 2: CR NUMBERS ==================== -->
+      <div id="viewCR" class="space-y-3 hidden">
+        <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md flex items-center justify-between">
           <div>
-            <h2 class="text-base font-extrabold text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-m3-tertiary">groups</span>
-              <span>Class Representative (CR) Directory</span>
+            <h2 class="text-xs font-black text-white flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-m3-tertiary text-base">groups</span>
+              <span>Class Representative (CR) Contacts</span>
             </h2>
-            <p class="text-xs text-m3-secondary font-medium">Direct college contact numbers collected for bulk outreach</p>
+            <p class="text-[11px] text-m3-secondary">Numbers gathered for bulk student outreach</p>
           </div>
-          <button onclick="exportCRCSV()" class="px-3.5 py-2 rounded-full bg-m3-surfaceContainerHigh text-white hover:bg-m3-primary hover:text-m3-onPrimary text-xs font-bold transition flex items-center gap-1.5 border border-white/5">
-            <span class="material-symbols-outlined text-sm">download</span>
+          <button onclick="exportCRCSV()" class="px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh text-white hover:bg-m3-primary hover:text-m3-onPrimary text-xs font-bold transition flex items-center gap-1 border border-white/5">
+            <span class="material-symbols-outlined text-xs">download</span>
             <span>Export CSV</span>
           </button>
         </div>
 
-        <div id="crCardsList" class="space-y-3">
+        <div id="crCardsList" class="space-y-2.5">
           <!-- Rendered via JS -->
         </div>
       </div>
 
-      <!-- ==================== VIEW 3: ADMIN BOARD ==================== -->
-      <div id="viewAdmin" class="space-y-5 hidden">
+      <!-- ==================== VIEW 3: ADMIN ==================== -->
+      <div id="viewAdmin" class="space-y-4 hidden">
         
-        <!-- KPI Cards Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md">
-            <span class="text-[10px] font-extrabold text-m3-secondary uppercase tracking-wider">Total Leads</span>
-            <p class="text-2xl font-black text-white mt-1" id="adminTotalLeads">212</p>
-            <span class="text-[10px] text-m3-outline">8 Team Callers</span>
+        <!-- WhatsApp Quick Invite Links Generator -->
+        <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-extrabold text-white flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-emerald-400 text-base">send_to_mobile</span>
+              <span>1-Click Caller WhatsApp Invite Links</span>
+            </h3>
+            <button onclick="copyAllWhatsAppLinks()" class="px-2.5 py-1 rounded-full bg-m3-primary/10 text-m3-primary border border-m3-primary/20 text-[11px] font-bold hover:bg-m3-primary/20 transition">
+              Copy All Links
+            </button>
           </div>
-          <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md">
-            <span class="text-[10px] font-extrabold text-m3-secondary uppercase tracking-wider">Completed</span>
-            <p class="text-2xl font-black text-m3-primary mt-1" id="adminCompletedCalls">0</p>
-            <span class="text-[10px] text-m3-primary" id="adminCompletionRate">0%</span>
+          <p class="text-[11px] text-m3-secondary">Share these links with your callers on WhatsApp. Tapping their personalized link instantly logs them in without any passwords!</p>
+          
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1" id="callerLinksGrid">
+            <!-- Rendered by JS -->
           </div>
-          <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md">
-            <span class="text-[10px] font-extrabold text-m3-secondary uppercase tracking-wider">Paid Total</span>
-            <p class="text-2xl font-black text-emerald-400 mt-1" id="adminTotalPaid">₹0</p>
-            <span class="text-[10px] text-emerald-400/80">Confirmed fees</span>
+        </div>
+
+        <!-- KPI Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div class="bg-m3-surfaceContainer rounded-2xl p-3 border border-white/5">
+            <span class="text-[9px] font-extrabold text-m3-secondary uppercase">Total Leads</span>
+            <p class="text-xl font-black text-white mt-0.5" id="adminTotalLeads">212</p>
           </div>
-          <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md">
-            <span class="text-[10px] font-extrabold text-m3-secondary uppercase tracking-wider">Pipeline</span>
-            <p class="text-2xl font-black text-amber-400 mt-1" id="adminTotalExpected">₹0</p>
-            <span class="text-[10px] text-amber-400/80">Expected soon</span>
+          <div class="bg-m3-surfaceContainer rounded-2xl p-3 border border-white/5">
+            <span class="text-[9px] font-extrabold text-m3-secondary uppercase">Calls Done</span>
+            <p class="text-xl font-black text-m3-primary mt-0.5" id="adminCompletedCalls">0</p>
+          </div>
+          <div class="bg-m3-surfaceContainer rounded-2xl p-3 border border-white/5">
+            <span class="text-[9px] font-extrabold text-m3-secondary uppercase">Paid (₹)</span>
+            <p class="text-xl font-black text-emerald-400 mt-0.5" id="adminTotalPaid">₹0</p>
+          </div>
+          <div class="bg-m3-surfaceContainer rounded-2xl p-3 border border-white/5">
+            <span class="text-[9px] font-extrabold text-m3-secondary uppercase">Pipeline (₹)</span>
+            <p class="text-xl font-black text-amber-400 mt-0.5" id="adminTotalExpected">₹0</p>
           </div>
         </div>
 
         <!-- Leaderboard -->
-        <div class="bg-m3-surfaceContainer rounded-3xl p-5 border border-white/5 shadow-lg space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-amber-400">leaderboard</span>
-              <span>Caller Team Performance Leaderboard</span>
-            </h3>
-            <span class="text-[11px] font-bold text-m3-secondary">Live Progress</span>
-          </div>
+        <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md space-y-3">
+          <h3 class="text-xs font-extrabold text-white flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-amber-400 text-sm">leaderboard</span>
+            <span>Caller Performance Leaderboard</span>
+          </h3>
 
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
               <thead>
                 <tr class="border-b border-white/5 text-m3-secondary font-bold">
-                  <th class="py-2.5 px-3">Caller Name</th>
-                  <th class="py-2.5 px-3 text-center">Assigned</th>
-                  <th class="py-2.5 px-3 text-center">Called</th>
-                  <th class="py-2.5 px-3 text-center">Pending</th>
-                  <th class="py-2.5 px-3">Progress</th>
-                  <th class="py-2.5 px-3 text-center">Paid (₹)</th>
-                  <th class="py-2.5 px-3 text-center">CRs</th>
+                  <th class="py-2 px-2.5">Caller</th>
+                  <th class="py-2 px-2 text-center">Assigned</th>
+                  <th class="py-2 px-2 text-center">Done</th>
+                  <th class="py-2 px-2 text-center">Pending</th>
+                  <th class="py-2 px-2">Progress</th>
+                  <th class="py-2 px-2 text-center">Paid (₹)</th>
+                  <th class="py-2 px-2 text-center">CRs</th>
                 </tr>
               </thead>
               <tbody id="leaderboardBody">
@@ -417,82 +366,71 @@
 
   </div>
 
-  <!-- ======================================================== -->
-  <!-- 📝 MATERIAL 3 EXPRESSIVE BOTTOM SHEET / MODAL -->
-  <!-- ======================================================== -->
-  <div id="outcomeModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden transition-opacity duration-200">
-    <div class="w-full sm:max-w-lg bg-m3-surfaceContainerLow sm:bg-m3-surfaceContainer rounded-t-[2.5rem] sm:rounded-3xl border-t sm:border border-white/10 p-6 space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl">
+  <!-- Outcome Modal / Bottom Sheet -->
+  <div id="outcomeModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="w-full sm:max-w-lg bg-m3-surfaceContainerLow sm:bg-m3-surfaceContainer rounded-t-[2.5rem] sm:rounded-3xl border-t sm:border border-white/10 p-5 sm:p-6 space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl">
       
-      <!-- Drag handle indicator for mobile bottom sheet -->
       <div class="w-12 h-1.5 rounded-full bg-m3-outlineVariant/60 mx-auto -mt-2 mb-2 sm:hidden"></div>
 
-      <div class="flex items-start justify-between border-b border-white/5 pb-3">
+      <div class="flex items-start justify-between border-b border-white/5 pb-2.5">
         <div>
-          <span class="text-[10px] font-bold text-m3-primary uppercase tracking-wider block">Update Call Outcome</span>
-          <h3 class="text-base font-extrabold text-white" id="modalStudentName">Candidate Name</h3>
+          <span class="text-[9px] font-bold text-m3-primary uppercase tracking-wider block">Log Outcome</span>
+          <h3 class="text-sm font-extrabold text-white" id="modalStudentName">Candidate Name</h3>
           <p class="text-xs text-m3-secondary" id="modalCollegeName">College Name</p>
         </div>
-        <button onclick="closeOutcomeModal()" class="w-8 h-8 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white flex items-center justify-center transition">
-          <span class="material-symbols-outlined text-lg">close</span>
+        <button onclick="closeOutcomeModal()" class="w-7 h-7 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white flex items-center justify-center transition">
+          <span class="material-symbols-outlined text-base">close</span>
         </button>
       </div>
 
       <input type="hidden" id="modalLeadId">
 
-      <div class="space-y-4 text-xs">
-        
-        <!-- Call Status Chips Selector -->
+      <div class="space-y-3.5 text-xs">
         <div>
-          <label class="block font-bold text-m3-secondary mb-2">CALL STATUS</label>
-          <div class="flex flex-wrap gap-1.5" id="callStatusChips">
-            <!-- Rendered by JS -->
-          </div>
+          <label class="block font-bold text-m3-secondary mb-1.5">CALL STATUS</label>
+          <div class="flex flex-wrap gap-1.5" id="callStatusChips"></div>
           <input type="hidden" id="modalCallStatusVal" value="Pending">
         </div>
 
-        <!-- Payment Status Chips Selector -->
         <div>
-          <label class="block font-bold text-m3-secondary mb-2">PAYMENT STATUS</label>
-          <div class="flex flex-wrap gap-1.5" id="payStatusChips">
-            <!-- Rendered by JS -->
-          </div>
+          <label class="block font-bold text-m3-secondary mb-1.5">PAYMENT STATUS</label>
+          <div class="flex flex-wrap gap-1.5" id="payStatusChips"></div>
           <input type="hidden" id="modalPayStatusVal" value="Pending">
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div>
-            <label class="block font-bold text-m3-secondary mb-1.5">PAYMENT AMOUNT (₹)</label>
+            <label class="block font-bold text-m3-secondary mb-1">PAYMENT AMOUNT (₹)</label>
             <div class="relative">
-              <span class="absolute left-3.5 top-3 text-m3-outline font-bold">₹</span>
-              <input type="number" id="modalAmount" placeholder="500" class="w-full bg-m3-surfaceContainerHigh border border-white/5 rounded-2xl pl-8 pr-3 py-2.5 text-white font-mono outline-none focus:border-m3-primary focus:ring-1 focus:ring-m3-primary">
+              <span class="absolute left-3 top-2.5 text-m3-outline font-bold">₹</span>
+              <input type="number" id="modalAmount" placeholder="500" class="w-full bg-m3-surfaceContainerHigh border border-white/5 rounded-xl pl-7 pr-3 py-2 text-white font-mono outline-none focus:border-m3-primary">
             </div>
           </div>
 
           <div>
-            <label class="block font-bold text-m3-tertiary mb-1.5 flex items-center gap-1">
-              <span class="material-symbols-outlined text-sm">badge</span>
+            <label class="block font-bold text-m3-tertiary mb-1 flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">badge</span>
               <span>CR PHONE NUMBER</span>
             </label>
-            <input type="tel" id="modalCrNumber" placeholder="+91XXXXXXXXXX" class="w-full bg-m3-surfaceContainerHigh border border-m3-tertiary/40 rounded-2xl px-3.5 py-2.5 text-white font-mono outline-none focus:border-m3-tertiary focus:ring-1 focus:ring-m3-tertiary">
+            <input type="tel" id="modalCrNumber" placeholder="+91XXXXXXXXXX" class="w-full bg-m3-surfaceContainerHigh border border-m3-tertiary/40 rounded-xl px-3 py-2 text-white font-mono outline-none focus:border-m3-tertiary">
           </div>
         </div>
 
         <div>
-          <label class="block font-bold text-m3-secondary mb-1.5">EXPECTED PAYMENT DATE</label>
-          <input type="date" id="modalExpDate" class="w-full bg-m3-surfaceContainerHigh border border-white/5 rounded-2xl px-3.5 py-2.5 text-white outline-none focus:border-m3-primary focus:ring-1 focus:ring-m3-primary">
+          <label class="block font-bold text-m3-secondary mb-1">EXPECTED PAYMENT DATE</label>
+          <input type="date" id="modalExpDate" class="w-full bg-m3-surfaceContainerHigh border border-white/5 rounded-xl px-3 py-2 text-white outline-none focus:border-m3-primary">
         </div>
 
         <div>
-          <label class="block font-bold text-m3-secondary mb-1.5">CALLER REMARKS &amp; NOTES</label>
-          <textarea id="modalRemarks" rows="2" placeholder="Participant interest, questions, team size, etc." class="w-full bg-m3-surfaceContainerHigh border border-white/5 rounded-2xl p-3 text-white outline-none focus:border-m3-primary focus:ring-1 focus:ring-m3-primary"></textarea>
+          <label class="block font-bold text-m3-secondary mb-1">CALLER REMARKS</label>
+          <textarea id="modalRemarks" rows="2" placeholder="Participant interest, questions, team size, etc." class="w-full bg-m3-surfaceContainerHigh border border-white/5 rounded-xl p-2.5 text-white outline-none focus:border-m3-primary"></textarea>
         </div>
-
       </div>
 
       <div class="pt-2 border-t border-white/5 flex gap-2">
-        <button onclick="closeOutcomeModal()" class="flex-1 py-3 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary font-bold text-xs hover:text-white transition">Cancel</button>
-        <button onclick="saveModalOutcome()" class="flex-1 py-3 rounded-full bg-m3-primary text-m3-onPrimary font-extrabold text-xs shadow-lg shadow-blue-500/20 state-layer flex items-center justify-center gap-1.5">
-          <span class="material-symbols-outlined text-base">check_circle</span>
+        <button onclick="closeOutcomeModal()" class="flex-1 py-2.5 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary font-bold text-xs hover:text-white transition">Cancel</button>
+        <button onclick="saveModalOutcome()" class="flex-1 py-2.5 rounded-full bg-m3-primary text-m3-onPrimary font-extrabold text-xs shadow-md state-layer flex items-center justify-center gap-1">
+          <span class="material-symbols-outlined text-sm">check</span>
           <span>Save Outcome</span>
         </button>
       </div>
@@ -501,9 +439,7 @@
   </div>
 
 
-  <!-- ======================================================== -->
-  <!-- SCRIPT LOGIC -->
-  <!-- ======================================================== -->
+  <!-- PWA & CLIENT CODE -->
   <script>
     let CALLING_DATA = {
   "Balwant": [
@@ -3534,11 +3470,11 @@
   }
 ];
 
-    let currentUser = null; // { role: 'caller'|'admin', name: string, email: string }
+    let currentUser = null;
     let currentFilter = 'all';
     let currentView = 'queue';
+    let deferredPrompt = null;
 
-    // Call status options for M3 Chips
     const CALL_STATUS_OPTIONS = [
       'Pending', 'Interested', 'Paid / Confirmed', 'Call Back',
       'Not Reachable', 'Busy / Cut Call', 'Not Interested', 'Wrong Number'
@@ -3548,18 +3484,63 @@
       'Pending', 'Paid', 'Expected Soon', 'Declined'
     ];
 
-    function init() {
-      // Populate Caller dropdown on Auth Screen
-      const select = document.getElementById('loginCallerSelect');
-      select.innerHTML = '';
-      TEAM_ROSTER.forEach(member => {
-        const opt = document.createElement('option');
-        opt.value = member.name;
-        opt.textContent = `${member.name} (${member.email})`;
-        select.appendChild(opt);
-      });
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
 
-      // Restore saved local session if present
+    // Capture PWA Install Prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('pwaInstallBtn').classList.remove('hidden');
+      document.getElementById('installBannerAuth').classList.remove('hidden');
+    });
+
+    function triggerPwaInstall() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            document.getElementById('pwaInstallBtn').classList.add('hidden');
+            document.getElementById('installBannerAuth').classList.add('hidden');
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        alert("To install on iOS / Safari: tap Share (📤) and select 'Add to Home Screen' (+)\n\nOn Chrome: tap Settings (⋮) and tap 'Install app'.");
+      }
+    }
+
+    function init() {
+      // Render 1-Tap Quick Caller Grid
+      const grid = document.getElementById('quickCallerGrid');
+      grid.innerHTML = TEAM_ROSTER.map(member => `
+        <button type="button" onclick="quickLoginCaller('${member.name}')" class="p-3 rounded-2xl bg-m3-surfaceContainerHigh hover:bg-m3-primary/10 border border-white/5 hover:border-m3-primary/30 text-left transition state-layer group">
+          <span class="text-xs font-bold text-white group-hover:text-m3-primary block truncate">${member.name}</span>
+          <span class="text-[10px] text-m3-secondary block">Tap to open</span>
+        </button>
+      `).join('');
+
+      // Check URL query parameters for INSTANT 1-CLICK LOGIN
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlCaller = urlParams.get('caller') || urlParams.get('user');
+      const urlAdmin = urlParams.get('admin');
+
+      if (urlCaller) {
+        const matched = TEAM_ROSTER.find(m => m.name.toLowerCase().includes(urlCaller.toLowerCase()));
+        if (matched) {
+          quickLoginCaller(matched.name);
+          return;
+        }
+      }
+
+      if (urlAdmin === 'techfest2026' || urlAdmin === '2626') {
+        quickAdminLogin();
+        return;
+      }
+
+      // Restore saved session
       const savedUser = localStorage.getItem('TF26_SESSION_USER');
       const savedData = localStorage.getItem('TF26_CALLING_DATA');
       if (savedData) {
@@ -3574,73 +3555,47 @@
         } catch(e) {}
       }
 
-      // Show Auth Screen
       document.getElementById('authScreen').classList.remove('hidden');
       document.getElementById('appShell').classList.add('hidden');
     }
 
-    function setAuthRole(role) {
-      const tabCaller = document.getElementById('authTabCaller');
-      const tabAdmin = document.getElementById('authTabAdmin');
-      const formCaller = document.getElementById('callerAuthForm');
-      const formAdmin = document.getElementById('adminAuthForm');
-
-      if (role === 'caller') {
-        tabCaller.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-m3-primaryContainer text-white';
-        tabAdmin.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white';
-        formCaller.classList.remove('hidden');
-        formAdmin.classList.add('hidden');
-      } else {
-        tabAdmin.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-m3-primaryContainer text-white';
-        tabCaller.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white';
-        formAdmin.classList.remove('hidden');
-        formCaller.classList.add('hidden');
-      }
-    }
-
-    function handleCallerLogin(e) {
-      e.preventDefault();
-      const callerName = document.getElementById('loginCallerSelect').value;
-      const passcode = document.getElementById('callerPasscode').value.trim();
-
-      // Demo PIN is 2026 or 1234
-      if (passcode !== '2026' && passcode !== '1234') {
-        alert('Invalid caller passcode! Hint: Use default passcode 2026');
-        return;
-      }
-
+    function quickLoginCaller(callerName) {
       const member = TEAM_ROSTER.find(m => m.name === callerName) || { name: callerName, email: '' };
       currentUser = {
         role: 'caller',
         name: member.name,
         email: member.email
       };
-
-      if (document.getElementById('rememberMeCaller').checked) {
-        localStorage.setItem('TF26_SESSION_USER', JSON.stringify(currentUser));
-      }
-
+      localStorage.setItem('TF26_SESSION_USER', JSON.stringify(currentUser));
       startAuthenticatedSession();
     }
 
-    function handleAdminLogin(e) {
-      e.preventDefault();
-      const passcode = document.getElementById('adminPasscode').value.trim();
-
-      // Demo Admin PIN is admin2026 or 2626
-      if (passcode !== 'admin2026' && passcode !== '2626') {
-        alert('Invalid admin passcode! Hint: Use default admin2026');
-        return;
+    function toggleAdminBox() {
+      const box = document.getElementById('adminPasscodeBox');
+      const chevron = document.getElementById('adminChevron');
+      if (box.classList.contains('hidden')) {
+        box.classList.remove('hidden');
+        chevron.textContent = 'expand_less';
+      } else {
+        box.classList.add('hidden');
+        chevron.textContent = 'expand_more';
       }
+    }
 
-      currentUser = {
-        role: 'admin',
-        name: 'techFEST Admin',
-        email: 'techfest@sliet.ac.in'
-      };
-
-      localStorage.setItem('TF26_SESSION_USER', JSON.stringify(currentUser));
-      startAuthenticatedSession();
+    function quickAdminLogin() {
+      const pin = document.getElementById('adminPinInput') ? document.getElementById('adminPinInput').value.trim() : '';
+      const urlAdmin = new URLSearchParams(window.location.search).get('admin');
+      if (pin === 'admin2026' || pin === '2626' || urlAdmin === 'techfest2026' || urlAdmin === '2626') {
+        currentUser = {
+          role: 'admin',
+          name: 'techFEST Admin',
+          email: 'techfest@sliet.ac.in'
+        };
+        localStorage.setItem('TF26_SESSION_USER', JSON.stringify(currentUser));
+        startAuthenticatedSession();
+      } else {
+        alert('Invalid Admin PIN. (Default: admin2026)');
+      }
     }
 
     function logout() {
@@ -3655,13 +3610,14 @@
       document.getElementById('appShell').classList.remove('hidden');
 
       const isCaller = currentUser.role === 'caller';
-      document.getElementById('userRoleBadge').textContent = isCaller ? 'Sales Rep' : 'Admin';
-      document.getElementById('userIdentityLabel').textContent = `${currentUser.name} (${currentUser.email})`;
+      document.getElementById('userRoleBadge').textContent = isCaller ? 'Caller' : 'Admin';
+      document.getElementById('userIdentityLabel').textContent = currentUser.name;
 
       const navAdmin = document.getElementById('navAdmin');
       if (!isCaller) {
         navAdmin.classList.remove('hidden');
         switchView('admin');
+        renderAdminLinksGrid();
       } else {
         navAdmin.classList.add('hidden');
         switchView('queue');
@@ -3673,6 +3629,40 @@
       renderAdminDashboard();
     }
 
+    function renderAdminLinksGrid() {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const container = document.getElementById('callerLinksGrid');
+      if (!container) return;
+      
+      container.innerHTML = TEAM_ROSTER.map(m => {
+        const link = `${baseUrl}?caller=${encodeURIComponent(m.name)}`;
+        return `
+          <button onclick="copySingleLink('${link}', '${m.name}')" class="p-2 rounded-xl bg-m3-surfaceContainerHigh hover:bg-m3-primary/10 border border-white/5 text-left transition state-layer">
+            <span class="text-xs font-bold text-white block truncate">${m.name}</span>
+            <span class="text-[10px] text-emerald-400 font-semibold block flex items-center gap-1">
+              <span class="material-symbols-outlined text-[11px]">content_copy</span> Copy Link
+            </span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function copySingleLink(link, name) {
+      navigator.clipboard.writeText(link);
+      alert(`Copied 1-click login link for ${name}! Paste it on WhatsApp.`);
+    }
+
+    function copyAllWhatsAppLinks() {
+      const baseUrl = window.location.origin + window.location.pathname;
+      let text = "🚀 TechFEST'26 Outreach Calling Portal (1-Click Login Links):\n\n";
+      TEAM_ROSTER.forEach(m => {
+        text += `• ${m.name}: ${baseUrl}?caller=${encodeURIComponent(m.name)}\n`;
+      });
+      text += `\n👑 Admin Dashboard: ${baseUrl}?admin=techfest2026`;
+      navigator.clipboard.writeText(text);
+      alert("All caller links copied to clipboard! You can paste and send directly to your WhatsApp group.");
+    }
+
     function switchView(view) {
       currentView = view;
       ['queue', 'crList', 'admin'].forEach(v => {
@@ -3681,10 +3671,10 @@
         if (el && btn) {
           if (v === view) {
             el.classList.remove('hidden');
-            btn.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-m3-primaryContainer text-white';
+            btn.className = 'flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-m3-primaryContainer text-white';
           } else {
             el.classList.add('hidden');
-            btn.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white';
+            btn.className = 'flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white';
           }
         }
       });
@@ -3710,7 +3700,7 @@
       document.getElementById('statPending').textContent = pending;
       document.getElementById('statPaid').textContent = '₹' + paidAmt.toLocaleString('en-IN');
       
-      document.getElementById('queuePercentLabel').textContent = `${pct}% (${done}/${leads.length} calls)`;
+      document.getElementById('queuePercentLabel').textContent = `${pct}% (${done}/${leads.length})`;
       document.getElementById('queueProgressBar').style.width = `${pct}%`;
     }
 
@@ -3720,9 +3710,9 @@
         const btn = document.getElementById('filterChip_' + f);
         if (btn) {
           if (f === filter) {
-            btn.className = 'px-4 py-2 rounded-full font-bold whitespace-nowrap bg-m3-primary text-m3-onPrimary transition flex items-center gap-1.5';
+            btn.className = 'px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap bg-m3-primary text-m3-onPrimary transition';
           } else {
-            btn.className = 'px-4 py-2 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition flex items-center gap-1.5 border border-white/5';
+            btn.className = 'px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition border border-white/5';
           }
         }
       });
@@ -3746,73 +3736,70 @@
 
       if (filtered.length === 0) {
         container.innerHTML = `
-          <div class="bg-m3-surfaceContainer rounded-3xl p-10 text-center text-m3-secondary border border-white/5">
-            <span class="material-symbols-outlined text-4xl mb-2 text-m3-outline">inbox</span>
-            <p class="text-sm font-semibold">No candidates match your query or filter.</p>
+          <div class="bg-m3-surfaceContainer rounded-3xl p-8 text-center text-m3-secondary border border-white/5">
+            <span class="material-symbols-outlined text-3xl mb-1 text-m3-outline">inbox</span>
+            <p class="text-xs font-semibold">No candidates match your filter.</p>
           </div>
         `;
         return;
       }
 
       container.innerHTML = filtered.map(lead => {
-        let statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary border border-white/5">Pending</span>';
-        if (lead.callStatus === 'Interested') statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">Interested</span>';
-        else if (lead.callStatus === 'Paid / Confirmed') statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Paid</span>';
-        else if (lead.callStatus === 'Call Back') statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">Call Back</span>';
-        else if (lead.callStatus === 'Not Reachable') statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">Not Reachable</span>';
+        let statusBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary border border-white/5">Pending</span>';
+        if (lead.callStatus === 'Interested') statusBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">Interested</span>';
+        else if (lead.callStatus === 'Paid / Confirmed') statusBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Paid</span>';
+        else if (lead.callStatus === 'Call Back') statusBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">Call Back</span>';
+        else if (lead.callStatus === 'Not Reachable') statusBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">Not Reachable</span>';
 
         return `
-          <div class="bg-m3-surfaceContainer rounded-3xl p-4 sm:p-5 border border-white/5 shadow-md space-y-3 transition hover:border-m3-outlineVariant/50">
-            <div class="flex items-start justify-between gap-3">
+          <div class="bg-m3-surfaceContainer rounded-3xl p-3.5 sm:p-4 border border-white/5 shadow-sm space-y-2.5 transition hover:border-m3-outlineVariant/50">
+            <div class="flex items-start justify-between gap-2">
               <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2">
-                  <h3 class="text-sm font-extrabold text-white truncate">${lead.name}</h3>
+                <div class="flex items-center gap-1.5">
+                  <h3 class="text-xs font-extrabold text-white truncate">${lead.name}</h3>
                   ${statusBadge}
                 </div>
-                <p class="text-xs text-m3-secondary mt-1 flex items-center gap-1.5 truncate">
-                  <span class="material-symbols-outlined text-[15px] text-m3-outline">school</span>
+                <p class="text-[11px] text-m3-secondary mt-0.5 flex items-center gap-1 truncate">
+                  <span class="material-symbols-outlined text-[13px] text-m3-outline">school</span>
                   <span>${lead.college}</span>
                 </p>
-                <p class="text-[11px] text-m3-outline mt-1 line-clamp-1 flex items-center gap-1.5">
-                  <span class="material-symbols-outlined text-[15px] text-amber-400/80">emoji_events</span>
+                <p class="text-[10px] text-m3-outline mt-0.5 line-clamp-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[13px] text-amber-400/80">emoji_events</span>
                   <span>${lead.events}</span>
                 </p>
               </div>
             </div>
 
-            <!-- CR Contact Pill if recorded -->
             ${lead.crNumber ? `
-              <div class="px-3 py-1.5 rounded-2xl bg-m3-tertiary/10 border border-m3-tertiary/20 text-m3-tertiary text-xs flex items-center justify-between font-medium">
-                <span class="flex items-center gap-1.5">
-                  <span class="material-symbols-outlined text-sm">badge</span>
+              <div class="px-2.5 py-1 rounded-xl bg-m3-tertiary/10 border border-m3-tertiary/20 text-m3-tertiary text-[11px] flex items-center justify-between font-medium">
+                <span class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-xs">badge</span>
                   <b>CR Phone:</b> ${lead.crNumber}
                 </span>
-                ${lead.expectedDate ? `<span class="text-m3-secondary text-[11px]">Due: ${lead.expectedDate}</span>` : ''}
+                ${lead.expectedDate ? `<span class="text-m3-secondary text-[10px]">Due: ${lead.expectedDate}</span>` : ''}
               </div>
             ` : ''}
 
-            <!-- Remarks if present -->
             ${lead.remarks ? `
-              <p class="text-[11px] text-m3-secondary italic bg-m3-surfaceContainerLow p-2.5 rounded-2xl border border-white/5">
+              <p class="text-[10px] text-m3-secondary italic bg-m3-surfaceContainerLow p-2 rounded-xl border border-white/5">
                 "${lead.remarks}"
               </p>
             ` : ''}
 
-            <!-- Action Buttons (M3 Tonal & Primary Buttons) -->
-            <div class="pt-2 border-t border-white/5 flex items-center justify-between gap-2">
-              <div class="flex items-center gap-1.5">
-                <a href="tel:${lead.mobile}" class="px-4 py-2 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs flex items-center gap-1.5 shadow-md shadow-emerald-500/20 state-layer">
-                  <span class="material-symbols-outlined text-base">call</span>
-                  <span>Call Now</span>
+            <div class="pt-2 border-t border-white/5 flex items-center justify-between gap-1.5">
+              <div class="flex items-center gap-1">
+                <a href="tel:${lead.mobile}" class="px-3 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center gap-1 shadow-sm state-layer">
+                  <span class="material-symbols-outlined text-sm">call</span>
+                  <span>Call</span>
                 </a>
-                <a href="https://wa.me/${lead.mobile.replace(/[^0-9]/g, '')}" target="_blank" class="w-9 h-9 rounded-full bg-m3-surfaceContainerHigh hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-white/5 transition state-layer">
-                  <span class="material-symbols-outlined text-base">chat</span>
+                <a href="https://wa.me/${lead.mobile.replace(/[^0-9]/g, '')}" target="_blank" class="w-8 h-8 rounded-full bg-m3-surfaceContainerHigh text-emerald-400 hover:bg-emerald-500/20 flex items-center justify-center border border-white/5 transition state-layer">
+                  <span class="material-symbols-outlined text-sm">chat</span>
                 </a>
               </div>
 
-              <button onclick="openOutcomeModal(${lead.id})" class="px-4 py-2 rounded-full bg-m3-primary/10 hover:bg-m3-primary/20 text-m3-primary border border-m3-primary/20 font-bold text-xs flex items-center gap-1.5 transition state-layer">
-                <span class="material-symbols-outlined text-base">edit_note</span>
-                <span>Log Outcome &amp; CR</span>
+              <button onclick="openOutcomeModal(${lead.id})" class="px-3 py-1.5 rounded-full bg-m3-primary/10 hover:bg-m3-primary/20 text-m3-primary border border-m3-primary/20 font-bold text-xs flex items-center gap-1 transition state-layer">
+                <span class="material-symbols-outlined text-sm">edit_note</span>
+                <span>Update</span>
               </button>
             </div>
           </div>
@@ -3834,27 +3821,25 @@
       document.getElementById('modalExpDate').value = lead.expectedDate || '';
       document.getElementById('modalRemarks').value = lead.remarks || '';
 
-      // Render Call Status Chips
       document.getElementById('modalCallStatusVal').value = lead.callStatus || 'Pending';
       const callChipsContainer = document.getElementById('callStatusChips');
       callChipsContainer.innerHTML = CALL_STATUS_OPTIONS.map(opt => {
         const isSelected = (lead.callStatus || 'Pending') === opt;
         return `
           <button type="button" onclick="selectCallStatusChip('${opt}')" id="csChip_${opt}"
-            class="px-3 py-1.5 rounded-full text-xs font-bold transition ${isSelected ? 'bg-m3-primary text-m3-onPrimary' : 'bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5'}">
+            class="px-2.5 py-1 rounded-full text-xs font-bold transition ${isSelected ? 'bg-m3-primary text-m3-onPrimary' : 'bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5'}">
             ${opt}
           </button>
         `;
       }).join('');
 
-      // Render Pay Status Chips
       document.getElementById('modalPayStatusVal').value = lead.payStatus || 'Pending';
       const payChipsContainer = document.getElementById('payStatusChips');
       payChipsContainer.innerHTML = PAY_STATUS_OPTIONS.map(opt => {
         const isSelected = (lead.payStatus || 'Pending') === opt;
         return `
           <button type="button" onclick="selectPayStatusChip('${opt}')" id="psChip_${opt}"
-            class="px-3 py-1.5 rounded-full text-xs font-bold transition ${isSelected ? 'bg-m3-tertiary text-m3-onPrimary' : 'bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5'}">
+            class="px-2.5 py-1 rounded-full text-xs font-bold transition ${isSelected ? 'bg-m3-tertiary text-m3-onPrimary' : 'bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5'}">
             ${opt}
           </button>
         `;
@@ -3869,9 +3854,9 @@
         const btn = document.getElementById('csChip_' + o);
         if (btn) {
           if (o === opt) {
-            btn.className = 'px-3 py-1.5 rounded-full text-xs font-bold transition bg-m3-primary text-m3-onPrimary';
+            btn.className = 'px-2.5 py-1 rounded-full text-xs font-bold transition bg-m3-primary text-m3-onPrimary';
           } else {
-            btn.className = 'px-3 py-1.5 rounded-full text-xs font-bold transition bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5';
+            btn.className = 'px-2.5 py-1 rounded-full text-xs font-bold transition bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5';
           }
         }
       });
@@ -3883,9 +3868,9 @@
         const btn = document.getElementById('psChip_' + o);
         if (btn) {
           if (o === opt) {
-            btn.className = 'px-3 py-1.5 rounded-full text-xs font-bold transition bg-m3-tertiary text-m3-onPrimary';
+            btn.className = 'px-2.5 py-1 rounded-full text-xs font-bold transition bg-m3-tertiary text-m3-onPrimary';
           } else {
-            btn.className = 'px-3 py-1.5 rounded-full text-xs font-bold transition bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5';
+            btn.className = 'px-2.5 py-1 rounded-full text-xs font-bold transition bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5';
           }
         }
       });
@@ -3935,40 +3920,38 @@
 
       if (crList.length === 0) {
         container.innerHTML = `
-          <div class="bg-m3-surfaceContainer rounded-3xl p-10 text-center text-m3-secondary border border-white/5">
-            <span class="material-symbols-outlined text-4xl mb-2 text-m3-outline">contact_phone</span>
-            <p class="text-sm font-semibold">No Class Representative (CR) numbers logged yet.</p>
-            <p class="text-xs text-m3-outline mt-1">When callers ask for the CR's phone number during calls, it will automatically show here.</p>
+          <div class="bg-m3-surfaceContainer rounded-3xl p-8 text-center text-m3-secondary border border-white/5">
+            <span class="material-symbols-outlined text-3xl mb-1 text-m3-outline">contact_phone</span>
+            <p class="text-xs font-semibold">No Class Representative (CR) numbers logged yet.</p>
           </div>
         `;
         return;
       }
 
       container.innerHTML = crList.map(item => `
-        <div class="bg-m3-surfaceContainer rounded-3xl p-4 sm:p-5 border border-white/5 shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div class="space-y-1">
-            <div class="flex items-center gap-2">
+        <div class="bg-m3-surfaceContainer rounded-3xl p-3.5 sm:p-4 border border-white/5 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+          <div class="space-y-0.5">
+            <div class="flex items-center gap-1.5">
               <span class="text-xs font-bold text-m3-primary">${item.lead.name}</span>
-              <span class="text-[10px] text-m3-outline">via ${item.caller}</span>
+              <span class="text-[9px] text-m3-outline">via ${item.caller}</span>
             </div>
-            <p class="text-xs text-white font-bold flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-base text-m3-tertiary">badge</span>
+            <p class="text-xs text-white font-bold flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm text-m3-tertiary">badge</span>
               <span>CR Phone: ${item.lead.crNumber}</span>
             </p>
-            <p class="text-[11px] text-m3-secondary flex items-center gap-1">
-              <span class="material-symbols-outlined text-xs text-m3-outline">school</span>
+            <p class="text-[10px] text-m3-secondary flex items-center gap-1">
+              <span class="material-symbols-outlined text-[11px] text-m3-outline">school</span>
               <span>${item.lead.college}</span>
             </p>
-            ${item.lead.remarks ? `<p class="text-[11px] text-m3-outline italic">"${item.lead.remarks}"</p>` : ''}
           </div>
 
-          <div class="flex items-center gap-2">
-            <a href="tel:${item.lead.crNumber}" class="px-4 py-2 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs flex items-center gap-1.5 state-layer shadow-sm">
-              <span class="material-symbols-outlined text-base">call</span>
+          <div class="flex items-center gap-1.5">
+            <a href="tel:${item.lead.crNumber}" class="px-3.5 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center gap-1 state-layer">
+              <span class="material-symbols-outlined text-sm">call</span>
               <span>Call CR</span>
             </a>
-            <a href="https://wa.me/${item.lead.crNumber.replace(/[^0-9]/g, '')}" target="_blank" class="w-9 h-9 rounded-full bg-m3-surfaceContainerHigh text-emerald-400 hover:bg-emerald-500/20 flex items-center justify-center border border-white/5 transition state-layer">
-              <span class="material-symbols-outlined text-base">chat</span>
+            <a href="https://wa.me/${item.lead.crNumber.replace(/[^0-9]/g, '')}" target="_blank" class="w-8 h-8 rounded-full bg-m3-surfaceContainerHigh text-emerald-400 hover:bg-emerald-500/20 flex items-center justify-center border border-white/5 transition state-layer">
+              <span class="material-symbols-outlined text-sm">chat</span>
             </a>
           </div>
         </div>
@@ -4017,26 +4000,24 @@
 
       document.getElementById('adminTotalLeads').textContent = totalLeads;
       document.getElementById('adminCompletedCalls').textContent = totalDone;
-      const rate = totalLeads > 0 ? Math.round((totalDone / totalLeads) * 100) : 0;
-      document.getElementById('adminCompletionRate').textContent = `${rate}% completed`;
       document.getElementById('adminTotalPaid').textContent = '₹' + totalPaidAmt.toLocaleString('en-IN');
       document.getElementById('adminTotalExpected').textContent = '₹' + totalExpectedAmt.toLocaleString('en-IN');
 
       const tb = document.getElementById('leaderboardBody');
       tb.innerHTML = leaderboardData.map(row => `
         <tr class="border-b border-white/5 hover:bg-white/[0.02]">
-          <td class="py-3 px-3 font-bold text-white">${row.name}</td>
-          <td class="py-3 px-3 text-center text-m3-secondary">${row.total}</td>
-          <td class="py-3 px-3 text-center text-emerald-400 font-bold">${row.called}</td>
-          <td class="py-3 px-3 text-center text-amber-400 font-semibold">${row.pending}</td>
-          <td class="py-3 px-3">
+          <td class="py-2.5 px-2.5 font-bold text-white">${row.name}</td>
+          <td class="py-2.5 px-2 text-center text-m3-secondary">${row.total}</td>
+          <td class="py-2.5 px-2 text-center text-emerald-400 font-bold">${row.called}</td>
+          <td class="py-2.5 px-2 text-center text-amber-400 font-semibold">${row.pending}</td>
+          <td class="py-2.5 px-2">
             <div class="w-full bg-m3-surfaceContainerLow rounded-full h-2 overflow-hidden flex items-center border border-white/5">
               <div class="bg-gradient-to-r from-blue-500 to-emerald-400 h-2 rounded-full" style="width: ${row.pct}%"></div>
             </div>
-            <span class="text-[10px] text-m3-outline mt-0.5 block">${row.pct}%</span>
+            <span class="text-[9px] text-m3-outline mt-0.5 block">${row.pct}%</span>
           </td>
-          <td class="py-3 px-3 text-center text-emerald-300 font-bold">₹${row.paidAmt.toLocaleString('en-IN')}</td>
-          <td class="py-3 px-3 text-center text-m3-tertiary font-bold">${row.crCount}</td>
+          <td class="py-2.5 px-2 text-center text-emerald-300 font-bold">₹${row.paidAmt.toLocaleString('en-IN')}</td>
+          <td class="py-2.5 px-2 text-center text-m3-tertiary font-bold">${row.crCount}</td>
         </tr>
       `).join('');
     }
@@ -4054,7 +4035,7 @@
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "techfest_class_representatives_cr_list.csv");
+      link.setAttribute("download", "techfest_cr_contacts.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
