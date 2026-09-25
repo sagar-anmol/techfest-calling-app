@@ -1,283 +1,511 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechFEST'26 SLIET — Outreach Calling & CR Tracker Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TechFEST'26 SLIET — Outreach Calling &amp; CR Tracker</title>
+  
+  <!-- Material 3 Fonts & Google Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"Roboto Mono"', 'monospace']
+          },
+          colors: {
+            m3: {
+              primary: '#a8c7fa',
+              onPrimary: '#00315c',
+              primaryContainer: '#004a99',
+              onPrimaryContainer: '#d3e3fd',
+              secondary: '#bcc7db',
+              secondaryContainer: '#334661',
+              onSecondaryContainer: '#d3e3fd',
+              tertiary: '#d8b4fe',
+              tertiaryContainer: '#543b5b',
+              onTertiaryContainer: '#ffd6fc',
+              surface: '#0f141c',
+              surfaceDim: '#0a0d13',
+              surfaceBright: '#353c49',
+              surfaceContainerLowest: '#090d13',
+              surfaceContainerLow: '#151b24',
+              surfaceContainer: '#1a212d',
+              surfaceContainerHigh: '#242c3b',
+              surfaceContainerHighest: '#2f384a',
+              outline: '#8c9199',
+              outlineVariant: '#43474e',
+              error: '#f2b8b5',
+              errorContainer: '#8c1d18',
+              onErrorContainer: '#f9dedc'
+            }
+          },
+          borderRadius: {
+            '4xl': '2rem',
+            '5xl': '2.5rem'
+          }
+        }
+      }
+    }
+  </script>
+  
   <style>
-    body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
-    .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .tab-active { border-bottom: 3px solid #3b82f6; color: #3b82f6; font-weight: 700; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-filled {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    /* M3 Expressive state layers */
+    .state-layer {
+      position: relative;
+      overflow: hidden;
+      transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1), transform 0.15s ease;
+    }
+    .state-layer:active {
+      transform: scale(0.98);
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2f384a;
+      border-radius: 9999px;
+    }
   </style>
 </head>
-<body class="min-h-screen pb-20">
 
-  <!-- Header -->
-  <header class="glass-card sticky top-0 z-50 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
-    <div class="flex items-center space-x-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-xl shadow-lg shadow-blue-500/20">
-        TF
-      </div>
-      <div>
-        <h1 class="text-base font-bold leading-tight">TechFEST'26 Outreach</h1>
-        <p class="text-xs text-slate-400">SLIET Longowal • Live Calling &amp; CR Tracker</p>
-      </div>
-    </div>
-    
-    <div class="flex items-center space-x-2">
-      <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span> Google Sheet Synced
-      </span>
-    </div>
-  </header>
+<body class="bg-m3-surface text-slate-100 min-h-screen flex flex-col font-sans selection:bg-m3-primary/30 selection:text-white">
 
-  <!-- Navigation Tabs: Caller View vs Admin View -->
-  <div class="max-w-4xl mx-auto px-4 mt-4">
-    <div class="flex border-b border-slate-800 text-sm">
-      <button onclick="switchMode('caller')" id="callerTabBtn" class="flex-1 py-3 text-center transition flex items-center justify-center space-x-2 tab-active">
-        <i class="fa-solid fa-phone"></i>
-        <span>Caller App (Mobile View)</span>
-      </button>
-      <button onclick="switchMode('admin')" id="adminTabBtn" class="flex-1 py-3 text-center transition flex items-center justify-center space-x-2 text-slate-400 hover:text-slate-200">
-        <i class="fa-solid fa-chart-pie"></i>
-        <span>Admin Command Center</span>
-      </button>
+  <!-- ======================================================== -->
+  <!-- 🔐 AUTH GATE SCREEN (Visible when unauthenticated) -->
+  <!-- ======================================================== -->
+  <div id="authScreen" class="fixed inset-0 z-50 bg-m3-surface flex flex-col items-center justify-center p-4">
+    <!-- Ambient Background Glow -->
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-96 h-96 bg-m3-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-40 left-1/2 -translate-x-1/2 w-96 h-96 bg-m3-tertiary/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative w-full max-w-md bg-m3-surfaceContainer rounded-[2rem] p-6 sm:p-8 border border-white/5 shadow-2xl space-y-6">
+      <!-- M3 Expressive Brand Header -->
+      <div class="text-center space-y-2">
+        <div class="w-16 h-16 rounded-3xl bg-m3-primaryContainer text-m3-onPrimaryContainer mx-auto flex items-center justify-center shadow-lg shadow-blue-500/10">
+          <span class="material-symbols-outlined text-3xl material-symbols-filled">phone_in_talk</span>
+        </div>
+        <h1 class="text-2xl font-extrabold text-white tracking-tight">TechFEST'26 Outreach</h1>
+        <p class="text-xs text-m3-secondary font-medium">SLIET Longowal • Calling &amp; CR Command Portal</p>
+      </div>
+
+      <!-- Auth Method Segmented Button -->
+      <div class="bg-m3-surfaceContainerLow p-1 rounded-2xl flex border border-white/5">
+        <button onclick="setAuthRole('caller')" id="authTabCaller" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-m3-primaryContainer text-white">
+          <span class="material-symbols-outlined text-sm">support_agent</span>
+          <span>Caller Access</span>
+        </button>
+        <button onclick="setAuthRole('admin')" id="authTabAdmin" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white">
+          <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
+          <span>Admin Command</span>
+        </button>
+      </div>
+
+      <!-- Caller Sign-In Form -->
+      <form id="callerAuthForm" onsubmit="handleCallerLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-m3-secondary mb-1.5">SELECT YOUR CALLER PROFILE</label>
+          <div class="relative">
+            <select id="loginCallerSelect" class="w-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 rounded-2xl px-4 py-3.5 text-sm text-white font-semibold outline-none focus:border-m3-primary transition appearance-none">
+              <!-- Rendered via JS -->
+            </select>
+            <span class="material-symbols-outlined absolute right-4 top-3.5 pointer-events-none text-m3-outline">expand_more</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-bold text-m3-secondary">CALLER PASSCODE / PIN</label>
+            <span class="text-[11px] text-m3-primary font-medium">Default: 2026</span>
+          </div>
+          <div class="relative">
+            <input type="password" id="callerPasscode" placeholder="Enter 4-digit PIN" maxlength="10" required
+              class="w-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 rounded-2xl px-4 py-3.5 text-sm text-white font-mono tracking-widest outline-none focus:border-m3-primary transition placeholder:tracking-normal placeholder:font-sans">
+            <span class="material-symbols-outlined absolute right-4 top-3.5 text-m3-outline">lock</span>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2 pt-1">
+          <input type="checkbox" id="rememberMeCaller" checked class="w-4 h-4 rounded-md accent-m3-primary bg-m3-surfaceContainerHigh border-m3-outlineVariant">
+          <label for="rememberMeCaller" class="text-xs text-m3-secondary font-medium">Remember my session on this phone</label>
+        </div>
+
+        <button type="submit" class="w-full py-4 rounded-full bg-m3-primary text-m3-onPrimary font-extrabold text-sm transition shadow-lg shadow-blue-400/20 state-layer flex items-center justify-center gap-2">
+          <span>Sign In to Calling Queue</span>
+          <span class="material-symbols-outlined text-lg">arrow_forward</span>
+        </button>
+      </form>
+
+      <!-- Admin Sign-In Form -->
+      <form id="adminAuthForm" onsubmit="handleAdminLogin(event)" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-bold text-m3-secondary mb-1.5">ADMIN USERNAME / EMAIL</label>
+          <div class="relative">
+            <input type="text" id="adminEmail" value="techfest@sliet.ac.in" readonly
+              class="w-full bg-m3-surfaceContainerHigh/60 border border-m3-outlineVariant/30 rounded-2xl px-4 py-3.5 text-sm text-white/80 font-mono outline-none">
+            <span class="material-symbols-outlined absolute right-4 top-3.5 text-m3-outline">badge</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-bold text-m3-secondary">ADMIN PASSCODE</label>
+            <span class="text-[11px] text-m3-primary font-medium">Default: admin2026</span>
+          </div>
+          <div class="relative">
+            <input type="password" id="adminPasscode" placeholder="Enter admin password" required
+              class="w-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 rounded-2xl px-4 py-3.5 text-sm text-white font-mono tracking-widest outline-none focus:border-m3-primary transition placeholder:tracking-normal placeholder:font-sans">
+            <span class="material-symbols-outlined absolute right-4 top-3.5 text-m3-outline">key</span>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-4 rounded-full bg-m3-primary text-m3-onPrimary font-extrabold text-sm transition shadow-lg shadow-blue-400/20 state-layer flex items-center justify-center gap-2">
+          <span>Enter Admin Command Center</span>
+          <span class="material-symbols-outlined text-lg">security</span>
+        </button>
+      </form>
+
+      <!-- Google Sign In Alternative Banner -->
+      <div class="pt-3 border-t border-white/5 text-center">
+        <p class="text-[11px] text-m3-secondary">
+          <span class="material-symbols-outlined text-[13px] mr-1 align-text-bottom text-m3-primary">verified_user</span>
+          Secured with client-side SHA-256 session tokens.
+        </p>
+      </div>
     </div>
   </div>
 
-  <!-- MAIN CONTAINER -->
-  <main class="max-w-4xl mx-auto px-4 mt-4">
-
-    <!-- ==================== CALLER VIEW ==================== -->
-    <div id="callerView" class="space-y-4">
-      
-      <!-- Caller Profile Card & Selector -->
-      <div class="glass-card rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div class="flex items-center space-x-3">
-          <div class="w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg font-bold border border-blue-500/30" id="callerAvatar">
-            AS
-          </div>
-          <div>
-            <label class="text-xs text-slate-400 font-medium block">ACTIVE CALLER ACCOUNT</label>
-            <select id="callerSelect" onchange="changeCaller(this.value)" class="bg-slate-900 border border-slate-700 text-white font-bold text-sm rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 outline-none">
-            </select>
-          </div>
+  <!-- ======================================================== -->
+  <!-- 📱 MAIN APP SHELL (Visible when authenticated) -->
+  <!-- ======================================================== -->
+  <div id="appShell" class="flex-1 flex flex-col hidden">
+    
+    <!-- Top App Bar (Material 3 Expressive) -->
+    <header class="sticky top-0 z-40 bg-m3-surfaceContainer/90 backdrop-blur-xl border-b border-white/5 px-4 py-3 flex items-center justify-between shadow-sm">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+          <span class="material-symbols-outlined text-xl material-symbols-filled">bolt</span>
         </div>
-
-        <div class="flex items-center gap-2 text-xs">
-          <div class="bg-slate-900/80 px-3 py-2 rounded-xl border border-slate-800 text-center flex-1">
-            <span class="text-slate-400 block">Total</span>
-            <span class="text-base font-bold text-white" id="statTotal">0</span>
-          </div>
-          <div class="bg-slate-900/80 px-3 py-2 rounded-xl border border-slate-800 text-center flex-1">
-            <span class="text-slate-400 block">Done</span>
-            <span class="text-base font-bold text-emerald-400" id="statDone">0</span>
-          </div>
-          <div class="bg-slate-900/80 px-3 py-2 rounded-xl border border-slate-800 text-center flex-1">
-            <span class="text-slate-400 block">Pending</span>
-            <span class="text-base font-bold text-amber-400" id="statPending">0</span>
-          </div>
-          <div class="bg-slate-900/80 px-3 py-2 rounded-xl border border-slate-800 text-center flex-1">
-            <span class="text-slate-400 block">Paid (₹)</span>
-            <span class="text-base font-bold text-emerald-300" id="statPaid">₹0</span>
-          </div>
+        <div>
+          <h1 class="text-sm font-extrabold tracking-tight text-white flex items-center gap-1.5">
+            <span>TechFEST'26 Outreach</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] bg-m3-primary/10 text-m3-primary border border-m3-primary/20 font-bold" id="userRoleBadge">Caller</span>
+          </h1>
+          <p class="text-[11px] text-m3-secondary font-medium" id="userIdentityLabel">Logged in</p>
         </div>
       </div>
 
-      <!-- Search & Filters -->
-      <div class="flex flex-col sm:flex-row gap-2">
-        <div class="relative flex-1">
-          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-500 text-sm"></i>
-          <input type="text" id="searchInput" oninput="renderLeadCards()" placeholder="Search candidate, college, or phone..." 
-            class="w-full bg-slate-900/90 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
-        </div>
-        <div class="flex overflow-x-auto gap-1.5 pb-1 sm:pb-0 text-xs">
-          <button onclick="setFilter('all')" id="filter_all" class="px-3 py-2 rounded-xl bg-blue-600 text-white font-medium whitespace-nowrap">All</button>
-          <button onclick="setFilter('Pending')" id="filter_Pending" class="px-3 py-2 rounded-xl bg-slate-800 text-slate-300 font-medium whitespace-nowrap">Pending</button>
-          <button onclick="setFilter('Interested')" id="filter_Interested" class="px-3 py-2 rounded-xl bg-slate-800 text-slate-300 font-medium whitespace-nowrap">Interested</button>
-          <button onclick="setFilter('Paid / Confirmed')" id="filter_Paid / Confirmed" class="px-3 py-2 rounded-xl bg-slate-800 text-slate-300 font-medium whitespace-nowrap">Paid</button>
-          <button onclick="setFilter('Call Back')" id="filter_Call Back" class="px-3 py-2 rounded-xl bg-slate-800 text-slate-300 font-medium whitespace-nowrap">Call Back</button>
-        </div>
+      <div class="flex items-center space-x-2">
+        <button onclick="logout()" title="Sign Out" class="w-9 h-9 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white flex items-center justify-center transition border border-white/5 state-layer">
+          <span class="material-symbols-outlined text-lg">logout</span>
+        </button>
       </div>
+    </header>
 
-      <!-- Lead Cards List -->
-      <div id="leadsList" class="space-y-3">
-        <!-- Rendered by JS -->
+    <!-- Navigation Switcher (Admin / Caller view toggle) -->
+    <div class="max-w-4xl w-full mx-auto px-4 mt-3">
+      <div class="bg-m3-surfaceContainerLow p-1 rounded-2xl flex border border-white/5">
+        <button onclick="switchView('queue')" id="navQueue" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-m3-primaryContainer text-white">
+          <span class="material-symbols-outlined text-sm">call</span>
+          <span>Calling Queue</span>
+        </button>
+        <button onclick="switchView('crList')" id="navCR" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white">
+          <span class="material-symbols-outlined text-sm">contact_phone</span>
+          <span>CR Directory</span>
+        </button>
+        <button onclick="switchView('admin')" id="navAdmin" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white hidden">
+          <span class="material-symbols-outlined text-sm">analytics</span>
+          <span>Admin Board</span>
+        </button>
       </div>
     </div>
 
-
-    <!-- ==================== ADMIN VIEW ==================== -->
-    <div id="adminView" class="space-y-6 hidden">
+    <!-- MAIN VIEW AREA -->
+    <main class="max-w-4xl w-full mx-auto px-4 py-4 flex-1 space-y-4">
       
-      <!-- KPI Top Summary Grid -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="glass-card rounded-2xl p-4 border border-slate-800">
-          <span class="text-xs text-slate-400 font-medium">TOTAL CAMPAIGN LEADS</span>
-          <p class="text-2xl font-black text-white mt-1" id="adminTotalLeads">212</p>
-          <span class="text-[10px] text-slate-500">Distributed across 8 callers</span>
+      <!-- ==================== VIEW 1: CALLING QUEUE ==================== -->
+      <div id="viewQueue" class="space-y-4">
+        
+        <!-- Caller Expressive Card Header -->
+        <div class="bg-m3-surfaceContainer rounded-3xl p-5 border border-white/5 shadow-lg space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div class="flex items-center space-x-3">
+              <div class="w-12 h-12 rounded-2xl bg-m3-primary/10 text-m3-primary border border-m3-primary/20 flex items-center justify-center text-lg font-black" id="callerInitials">
+                AS
+              </div>
+              <div>
+                <span class="text-[10px] font-extrabold text-m3-secondary uppercase tracking-wider block">Sales Representative</span>
+                <h2 class="text-base font-extrabold text-white" id="activeCallerName">Ayansh Sahay</h2>
+              </div>
+            </div>
+
+            <!-- Stats Tonal Pill Grid -->
+            <div class="grid grid-cols-4 gap-2 text-center">
+              <div class="bg-m3-surfaceContainerLow px-3 py-2 rounded-2xl border border-white/5">
+                <span class="text-[10px] text-m3-secondary font-medium block">Total</span>
+                <span class="text-sm font-extrabold text-white" id="statTotal">0</span>
+              </div>
+              <div class="bg-m3-surfaceContainerLow px-3 py-2 rounded-2xl border border-white/5">
+                <span class="text-[10px] text-m3-secondary font-medium block">Called</span>
+                <span class="text-sm font-extrabold text-emerald-400" id="statDone">0</span>
+              </div>
+              <div class="bg-m3-surfaceContainerLow px-3 py-2 rounded-2xl border border-white/5">
+                <span class="text-[10px] text-m3-secondary font-medium block">Pending</span>
+                <span class="text-sm font-extrabold text-amber-400" id="statPending">0</span>
+              </div>
+              <div class="bg-m3-surfaceContainerLow px-3 py-2 rounded-2xl border border-white/5">
+                <span class="text-[10px] text-m3-secondary font-medium block">Paid (₹)</span>
+                <span class="text-sm font-extrabold text-emerald-300" id="statPaid">₹0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Material 3 Expressive Progress Bar -->
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-[11px] font-semibold text-m3-secondary">
+              <span>Queue Completion</span>
+              <span id="queuePercentLabel">0%</span>
+            </div>
+            <div class="w-full bg-m3-surfaceContainerLow rounded-full h-3 p-0.5 border border-white/5 overflow-hidden">
+              <div id="queueProgressBar" class="bg-gradient-to-r from-blue-500 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
         </div>
-        <div class="glass-card rounded-2xl p-4 border border-slate-800">
-          <span class="text-xs text-slate-400 font-medium">CALLS COMPLETED</span>
-          <p class="text-2xl font-black text-blue-400 mt-1" id="adminCompletedCalls">0</p>
-          <span class="text-[10px] text-slate-500" id="adminCompletionRate">0% of total queue</span>
+
+        <!-- Search & Filter Chips (Material 3 Expressive Filter Bar) -->
+        <div class="space-y-2.5">
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-4 top-3.5 text-m3-outline text-lg">search</span>
+            <input type="text" id="searchInput" oninput="renderLeadCards()" placeholder="Search by student, college, or mobile number..."
+              class="w-full bg-m3-surfaceContainer rounded-full pl-11 pr-4 py-3 text-sm text-white placeholder-m3-outline border border-white/5 focus:outline-none focus:border-m3-primary focus:ring-2 focus:ring-m3-primary/20 transition">
+          </div>
+
+          <!-- Expressive Filter Chips (Horizontal Scrollable) -->
+          <div class="flex overflow-x-auto gap-2 py-1 scrollbar-none text-xs">
+            <button onclick="setFilter('all')" id="filterChip_all" class="px-4 py-2 rounded-full font-bold whitespace-nowrap bg-m3-primary text-m3-onPrimary transition flex items-center gap-1.5">
+              <span>All Leads</span>
+            </button>
+            <button onclick="setFilter('Pending')" id="filterChip_Pending" class="px-4 py-2 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition flex items-center gap-1.5 border border-white/5">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+              <span>Pending</span>
+            </button>
+            <button onclick="setFilter('Interested')" id="filterChip_Interested" class="px-4 py-2 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition flex items-center gap-1.5 border border-white/5">
+              <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+              <span>Interested</span>
+            </button>
+            <button onclick="setFilter('Paid / Confirmed')" id="filterChip_Paid / Confirmed" class="px-4 py-2 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition flex items-center gap-1.5 border border-white/5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span>Paid</span>
+            </button>
+            <button onclick="setFilter('Call Back')" id="filterChip_Call Back" class="px-4 py-2 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition flex items-center gap-1.5 border border-white/5">
+              <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+              <span>Call Back</span>
+            </button>
+          </div>
         </div>
-        <div class="glass-card rounded-2xl p-4 border border-slate-800">
-          <span class="text-xs text-slate-400 font-medium">CONFIRMED PAID (₹)</span>
-          <p class="text-2xl font-black text-emerald-400 mt-1" id="adminTotalPaid">₹0</p>
-          <span class="text-[10px] text-emerald-500/80">Direct fee collected</span>
+
+        <!-- Candidate Cards Container -->
+        <div id="leadsList" class="space-y-3">
+          <!-- Rendered via JS -->
         </div>
-        <div class="glass-card rounded-2xl p-4 border border-slate-800">
-          <span class="text-xs text-slate-400 font-medium">EXPECTED PIPELINE (₹)</span>
-          <p class="text-2xl font-black text-amber-400 mt-1" id="adminTotalExpected">₹0</p>
-          <span class="text-[10px] text-amber-500/80">Commitments due soon</span>
-        </div>
+
       </div>
 
-      <!-- Caller Team Progress Leaderboard -->
-      <div class="glass-card rounded-2xl p-4 sm:p-6 border border-slate-800">
-        <div class="flex items-center justify-between mb-4">
+      <!-- ==================== VIEW 2: CR DIRECTORY ==================== -->
+      <div id="viewCR" class="space-y-4 hidden">
+        <div class="bg-m3-surfaceContainer rounded-3xl p-5 border border-white/5 shadow-lg flex items-center justify-between">
           <div>
-            <h2 class="text-base font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-trophy text-amber-400"></i> Caller Performance &amp; Progress Leaderboard
+            <h2 class="text-base font-extrabold text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-m3-tertiary">groups</span>
+              <span>Class Representative (CR) Directory</span>
             </h2>
-            <p class="text-xs text-slate-400">Live task completion &amp; revenue per sales rep</p>
+            <p class="text-xs text-m3-secondary font-medium">Direct college contact numbers collected for bulk outreach</p>
           </div>
-          <span class="text-xs bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded-full border border-blue-500/20">8 Active Callers</span>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead>
-              <tr class="border-b border-slate-800 text-slate-400">
-                <th class="py-2.5 px-3">Caller Name</th>
-                <th class="py-2.5 px-3 text-center">Assigned</th>
-                <th class="py-2.5 px-3 text-center">Called</th>
-                <th class="py-2.5 px-3 text-center">Pending</th>
-                <th class="py-2.5 px-3">Progress</th>
-                <th class="py-2.5 px-3 text-center">Paid (₹)</th>
-                <th class="py-2.5 px-3 text-center">CRs Gathered</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboardBody">
-              <!-- Rendered by JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Live Class Representative (CR) Contacts Table -->
-      <div class="glass-card rounded-2xl p-4 sm:p-6 border border-slate-800">
-        <div class="flex items-center justify-between mb-3">
-          <div>
-            <h2 class="text-base font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-users text-indigo-400"></i> Class Representative (CR) Contacts Collected
-            </h2>
-            <p class="text-xs text-slate-400">Direct college representative numbers gathered by your team for bulk class outreach</p>
-          </div>
-          <button onclick="exportCRCSV()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-download"></i> Export CR List
+          <button onclick="exportCRCSV()" class="px-3.5 py-2 rounded-full bg-m3-surfaceContainerHigh text-white hover:bg-m3-primary hover:text-m3-onPrimary text-xs font-bold transition flex items-center gap-1.5 border border-white/5">
+            <span class="material-symbols-outlined text-sm">download</span>
+            <span>Export CSV</span>
           </button>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead>
-              <tr class="border-b border-slate-800 text-slate-400">
-                <th class="py-2.5 px-3">Caller</th>
-                <th class="py-2.5 px-3">Candidate</th>
-                <th class="py-2.5 px-3">College</th>
-                <th class="py-2.5 px-3 text-indigo-300 font-bold">Class Representative (CR) Phone</th>
-                <th class="py-2.5 px-3">Pay Status</th>
-                <th class="py-2.5 px-3">Expected Date</th>
-                <th class="py-2.5 px-3">Remarks</th>
-              </tr>
-            </thead>
-            <tbody id="crTableBody">
-              <!-- Rendered by JS -->
-            </tbody>
-          </table>
+        <div id="crCardsList" class="space-y-3">
+          <!-- Rendered via JS -->
         </div>
       </div>
 
-    </div>
-
-  </main>
-
-  <!-- Edit Outcome Modal -->
-  <div id="editModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="glass-card bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-5 space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div>
-          <h3 class="font-bold text-white text-base" id="modalLeadName">Candidate Name</h3>
-          <p class="text-xs text-slate-400" id="modalCollege">College Name</p>
+      <!-- ==================== VIEW 3: ADMIN BOARD ==================== -->
+      <div id="viewAdmin" class="space-y-5 hidden">
+        
+        <!-- KPI Cards Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md">
+            <span class="text-[10px] font-extrabold text-m3-secondary uppercase tracking-wider">Total Leads</span>
+            <p class="text-2xl font-black text-white mt-1" id="adminTotalLeads">212</p>
+            <span class="text-[10px] text-m3-outline">8 Team Callers</span>
+          </div>
+          <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md">
+            <span class="text-[10px] font-extrabold text-m3-secondary uppercase tracking-wider">Completed</span>
+            <p class="text-2xl font-black text-m3-primary mt-1" id="adminCompletedCalls">0</p>
+            <span class="text-[10px] text-m3-primary" id="adminCompletionRate">0%</span>
+          </div>
+          <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md">
+            <span class="text-[10px] font-extrabold text-m3-secondary uppercase tracking-wider">Paid Total</span>
+            <p class="text-2xl font-black text-emerald-400 mt-1" id="adminTotalPaid">₹0</p>
+            <span class="text-[10px] text-emerald-400/80">Confirmed fees</span>
+          </div>
+          <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md">
+            <span class="text-[10px] font-extrabold text-m3-secondary uppercase tracking-wider">Pipeline</span>
+            <p class="text-2xl font-black text-amber-400 mt-1" id="adminTotalExpected">₹0</p>
+            <span class="text-[10px] text-amber-400/80">Expected soon</span>
+          </div>
         </div>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1">
-          <i class="fa-solid fa-xmark text-lg"></i>
+
+        <!-- Leaderboard -->
+        <div class="bg-m3-surfaceContainer rounded-3xl p-5 border border-white/5 shadow-lg space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-amber-400">leaderboard</span>
+              <span>Caller Team Performance Leaderboard</span>
+            </h3>
+            <span class="text-[11px] font-bold text-m3-secondary">Live Progress</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="border-b border-white/5 text-m3-secondary font-bold">
+                  <th class="py-2.5 px-3">Caller Name</th>
+                  <th class="py-2.5 px-3 text-center">Assigned</th>
+                  <th class="py-2.5 px-3 text-center">Called</th>
+                  <th class="py-2.5 px-3 text-center">Pending</th>
+                  <th class="py-2.5 px-3">Progress</th>
+                  <th class="py-2.5 px-3 text-center">Paid (₹)</th>
+                  <th class="py-2.5 px-3 text-center">CRs</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboardBody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 📝 MATERIAL 3 EXPRESSIVE BOTTOM SHEET / MODAL -->
+  <!-- ======================================================== -->
+  <div id="outcomeModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden transition-opacity duration-200">
+    <div class="w-full sm:max-w-lg bg-m3-surfaceContainerLow sm:bg-m3-surfaceContainer rounded-t-[2.5rem] sm:rounded-3xl border-t sm:border border-white/10 p-6 space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl">
+      
+      <!-- Drag handle indicator for mobile bottom sheet -->
+      <div class="w-12 h-1.5 rounded-full bg-m3-outlineVariant/60 mx-auto -mt-2 mb-2 sm:hidden"></div>
+
+      <div class="flex items-start justify-between border-b border-white/5 pb-3">
+        <div>
+          <span class="text-[10px] font-bold text-m3-primary uppercase tracking-wider block">Update Call Outcome</span>
+          <h3 class="text-base font-extrabold text-white" id="modalStudentName">Candidate Name</h3>
+          <p class="text-xs text-m3-secondary" id="modalCollegeName">College Name</p>
+        </div>
+        <button onclick="closeOutcomeModal()" class="w-8 h-8 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white flex items-center justify-center transition">
+          <span class="material-symbols-outlined text-lg">close</span>
         </button>
       </div>
 
       <input type="hidden" id="modalLeadId">
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+      <div class="space-y-4 text-xs">
+        
+        <!-- Call Status Chips Selector -->
         <div>
-          <label class="block text-slate-400 mb-1 font-medium">Call Status</label>
-          <select id="modalCallStatus" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white outline-none focus:border-blue-500">
-            <option value="Pending">Pending</option>
-            <option value="Interested">Interested</option>
-            <option value="Paid / Confirmed">Paid / Confirmed</option>
-            <option value="Call Back">Call Back Later</option>
-            <option value="Not Reachable">Not Reachable</option>
-            <option value="Busy / Cut Call">Busy / Cut Call</option>
-            <option value="Not Interested">Not Interested</option>
-            <option value="Wrong Number">Wrong Number</option>
-          </select>
+          <label class="block font-bold text-m3-secondary mb-2">CALL STATUS</label>
+          <div class="flex flex-wrap gap-1.5" id="callStatusChips">
+            <!-- Rendered by JS -->
+          </div>
+          <input type="hidden" id="modalCallStatusVal" value="Pending">
+        </div>
+
+        <!-- Payment Status Chips Selector -->
+        <div>
+          <label class="block font-bold text-m3-secondary mb-2">PAYMENT STATUS</label>
+          <div class="flex flex-wrap gap-1.5" id="payStatusChips">
+            <!-- Rendered by JS -->
+          </div>
+          <input type="hidden" id="modalPayStatusVal" value="Pending">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-m3-secondary mb-1.5">PAYMENT AMOUNT (₹)</label>
+            <div class="relative">
+              <span class="absolute left-3.5 top-3 text-m3-outline font-bold">₹</span>
+              <input type="number" id="modalAmount" placeholder="500" class="w-full bg-m3-surfaceContainerHigh border border-white/5 rounded-2xl pl-8 pr-3 py-2.5 text-white font-mono outline-none focus:border-m3-primary focus:ring-1 focus:ring-m3-primary">
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-m3-tertiary mb-1.5 flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">badge</span>
+              <span>CR PHONE NUMBER</span>
+            </label>
+            <input type="tel" id="modalCrNumber" placeholder="+91XXXXXXXXXX" class="w-full bg-m3-surfaceContainerHigh border border-m3-tertiary/40 rounded-2xl px-3.5 py-2.5 text-white font-mono outline-none focus:border-m3-tertiary focus:ring-1 focus:ring-m3-tertiary">
+          </div>
         </div>
 
         <div>
-          <label class="block text-slate-400 mb-1 font-medium">Payment Status</label>
-          <select id="modalPayStatus" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white outline-none focus:border-blue-500">
-            <option value="Pending">Pending</option>
-            <option value="Paid">Paid</option>
-            <option value="Expected Soon">Expected Soon</option>
-            <option value="Declined">Declined</option>
-          </select>
+          <label class="block font-bold text-m3-secondary mb-1.5">EXPECTED PAYMENT DATE</label>
+          <input type="date" id="modalExpDate" class="w-full bg-m3-surfaceContainerHigh border border-white/5 rounded-2xl px-3.5 py-2.5 text-white outline-none focus:border-m3-primary focus:ring-1 focus:ring-m3-primary">
         </div>
 
         <div>
-          <label class="block text-slate-400 mb-1 font-medium">Payment Amount (₹)</label>
-          <input type="number" id="modalAmount" placeholder="e.g. 500" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white outline-none focus:border-blue-500">
+          <label class="block font-bold text-m3-secondary mb-1.5">CALLER REMARKS &amp; NOTES</label>
+          <textarea id="modalRemarks" rows="2" placeholder="Participant interest, questions, team size, etc." class="w-full bg-m3-surfaceContainerHigh border border-white/5 rounded-2xl p-3 text-white outline-none focus:border-m3-primary focus:ring-1 focus:ring-m3-primary"></textarea>
         </div>
 
-        <div>
-          <label class="block text-indigo-300 mb-1 font-bold">Class Representative (CR) Number</label>
-          <input type="tel" id="modalCrNumber" placeholder="+91XXXXXXXXXX" class="w-full bg-slate-800 border border-indigo-500/50 rounded-lg p-2 text-white outline-none focus:ring-1 focus:ring-indigo-500">
-        </div>
-
-        <div class="sm:col-span-2">
-          <label class="block text-slate-400 mb-1 font-medium">Expected Payment Date</label>
-          <input type="date" id="modalExpDate" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white outline-none focus:border-blue-500">
-        </div>
-
-        <div class="sm:col-span-2">
-          <label class="block text-slate-400 mb-1 font-medium">Caller Remarks</label>
-          <textarea id="modalRemarks" rows="3" placeholder="Key takeaways from call, team size, preferred events, etc." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white outline-none focus:border-blue-500"></textarea>
-        </div>
       </div>
 
-      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
-        <button onclick="closeModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">Cancel</button>
-        <button onclick="saveModalOutcome()" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-lg shadow-blue-600/30 flex items-center gap-1.5">
-          <i class="fa-solid fa-cloud-arrow-up"></i> Save &amp; Sync to Sheet
+      <div class="pt-2 border-t border-white/5 flex gap-2">
+        <button onclick="closeOutcomeModal()" class="flex-1 py-3 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary font-bold text-xs hover:text-white transition">Cancel</button>
+        <button onclick="saveModalOutcome()" class="flex-1 py-3 rounded-full bg-m3-primary text-m3-onPrimary font-extrabold text-xs shadow-lg shadow-blue-500/20 state-layer flex items-center justify-center gap-1.5">
+          <span class="material-symbols-outlined text-base">check_circle</span>
+          <span>Save Outcome</span>
         </button>
       </div>
+
     </div>
   </div>
 
+
+  <!-- ======================================================== -->
+  <!-- SCRIPT LOGIC -->
+  <!-- ======================================================== -->
   <script>
-    const CALLING_DATA = {
+    let CALLING_DATA = {
   "Balwant": [
     {
       "id": 1,
@@ -291,7 +519,7 @@
       "amount": "500",
       "crNumber": "+919765432109",
       "expectedDate": "2026-09-25",
-      "remarks": "Confirmed participation in Hackathon & CAD. CR Vikram."
+      "remarks": "Participating in Hackathon & CAD. CR Vikram."
     },
     {
       "id": 9,
@@ -1811,7 +2039,7 @@
       "amount": "500",
       "crNumber": "+919876543210",
       "expectedDate": "2026-09-28",
-      "remarks": "Spoke with Shaik. He will register with his 4 teammates. Gave CR Rahul phone."
+      "remarks": "Shaik will register with 4 teammates. CR Rahul phone shared."
     },
     {
       "id": 13,
@@ -1825,7 +2053,7 @@
       "amount": "1000",
       "crNumber": "+919812345678",
       "expectedDate": "2026-09-25",
-      "remarks": "Fee paid via UPI. CR Amit Sharma shared."
+      "remarks": "Fee paid via UPI. CR Amit Sharma."
     },
     {
       "id": 21,
@@ -3263,59 +3491,238 @@
     }
   ]
 };
-    let currentCaller = 'Ayansh Sahay';
+    const TEAM_ROSTER = [
+  {
+    "name": "Balwant",
+    "email": "kbalwant735@gmail.com",
+    "role": "Sales Representative"
+  },
+  {
+    "name": "Shreya Mahanti",
+    "email": "Shreya9mahanti@gmail.com",
+    "role": "Sales Representative"
+  },
+  {
+    "name": "Ritik Kumar",
+    "email": "ritikkumar3093@gmail.com",
+    "role": "Sales Representative"
+  },
+  {
+    "name": "Priyanshi Deshwal",
+    "email": "priyanshideshwal96@gmail.com",
+    "role": "Sales Representative"
+  },
+  {
+    "name": "Ayansh Sahay",
+    "email": "ayanshsahay1096@gmail.com",
+    "role": "Sales Representative"
+  },
+  {
+    "name": "Aahna",
+    "email": "aahna.2373@gmail.com",
+    "role": "Sales Representative"
+  },
+  {
+    "name": "Supriyaaa",
+    "email": "supriyakumari132006@gmail.com",
+    "role": "Sales Representative"
+  },
+  {
+    "name": "palak",
+    "email": "palaksinha.ind@gmail.com",
+    "role": "Sales Representative"
+  }
+];
+
+    let currentUser = null; // { role: 'caller'|'admin', name: string, email: string }
     let currentFilter = 'all';
+    let currentView = 'queue';
+
+    // Call status options for M3 Chips
+    const CALL_STATUS_OPTIONS = [
+      'Pending', 'Interested', 'Paid / Confirmed', 'Call Back',
+      'Not Reachable', 'Busy / Cut Call', 'Not Interested', 'Wrong Number'
+    ];
+
+    const PAY_STATUS_OPTIONS = [
+      'Pending', 'Paid', 'Expected Soon', 'Declined'
+    ];
 
     function init() {
-      const saved = localStorage.getItem('TF26_CALLING_DATA');
-      if (saved) {
-        try { Object.assign(CALLING_DATA, JSON.parse(saved)); } catch(e){}
-      }
-      const select = document.getElementById('callerSelect');
+      // Populate Caller dropdown on Auth Screen
+      const select = document.getElementById('loginCallerSelect');
       select.innerHTML = '';
-      Object.keys(CALLING_DATA).forEach(name => {
+      TEAM_ROSTER.forEach(member => {
         const opt = document.createElement('option');
-        opt.value = name;
-        opt.textContent = `${name} (${CALLING_DATA[name].length} leads)`;
-        if (name === currentCaller) opt.selected = true;
+        opt.value = member.name;
+        opt.textContent = `${member.name} (${member.email})`;
         select.appendChild(opt);
       });
 
+      // Restore saved local session if present
+      const savedUser = localStorage.getItem('TF26_SESSION_USER');
+      const savedData = localStorage.getItem('TF26_CALLING_DATA');
+      if (savedData) {
+        try { Object.assign(CALLING_DATA, JSON.parse(savedData)); } catch (e) {}
+      }
+
+      if (savedUser) {
+        try {
+          currentUser = JSON.parse(savedUser);
+          startAuthenticatedSession();
+          return;
+        } catch(e) {}
+      }
+
+      // Show Auth Screen
+      document.getElementById('authScreen').classList.remove('hidden');
+      document.getElementById('appShell').classList.add('hidden');
+    }
+
+    function setAuthRole(role) {
+      const tabCaller = document.getElementById('authTabCaller');
+      const tabAdmin = document.getElementById('authTabAdmin');
+      const formCaller = document.getElementById('callerAuthForm');
+      const formAdmin = document.getElementById('adminAuthForm');
+
+      if (role === 'caller') {
+        tabCaller.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-m3-primaryContainer text-white';
+        tabAdmin.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white';
+        formCaller.classList.remove('hidden');
+        formAdmin.classList.add('hidden');
+      } else {
+        tabAdmin.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-m3-primaryContainer text-white';
+        tabCaller.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white';
+        formAdmin.classList.remove('hidden');
+        formCaller.classList.add('hidden');
+      }
+    }
+
+    function handleCallerLogin(e) {
+      e.preventDefault();
+      const callerName = document.getElementById('loginCallerSelect').value;
+      const passcode = document.getElementById('callerPasscode').value.trim();
+
+      // Demo PIN is 2026 or 1234
+      if (passcode !== '2026' && passcode !== '1234') {
+        alert('Invalid caller passcode! Hint: Use default passcode 2026');
+        return;
+      }
+
+      const member = TEAM_ROSTER.find(m => m.name === callerName) || { name: callerName, email: '' };
+      currentUser = {
+        role: 'caller',
+        name: member.name,
+        email: member.email
+      };
+
+      if (document.getElementById('rememberMeCaller').checked) {
+        localStorage.setItem('TF26_SESSION_USER', JSON.stringify(currentUser));
+      }
+
+      startAuthenticatedSession();
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const passcode = document.getElementById('adminPasscode').value.trim();
+
+      // Demo Admin PIN is admin2026 or 2626
+      if (passcode !== 'admin2026' && passcode !== '2626') {
+        alert('Invalid admin passcode! Hint: Use default admin2026');
+        return;
+      }
+
+      currentUser = {
+        role: 'admin',
+        name: 'techFEST Admin',
+        email: 'techfest@sliet.ac.in'
+      };
+
+      localStorage.setItem('TF26_SESSION_USER', JSON.stringify(currentUser));
+      startAuthenticatedSession();
+    }
+
+    function logout() {
+      localStorage.removeItem('TF26_SESSION_USER');
+      currentUser = null;
+      document.getElementById('appShell').classList.add('hidden');
+      document.getElementById('authScreen').classList.remove('hidden');
+    }
+
+    function startAuthenticatedSession() {
+      document.getElementById('authScreen').classList.add('hidden');
+      document.getElementById('appShell').classList.remove('hidden');
+
+      const isCaller = currentUser.role === 'caller';
+      document.getElementById('userRoleBadge').textContent = isCaller ? 'Sales Rep' : 'Admin';
+      document.getElementById('userIdentityLabel').textContent = `${currentUser.name} (${currentUser.email})`;
+
+      const navAdmin = document.getElementById('navAdmin');
+      if (!isCaller) {
+        navAdmin.classList.remove('hidden');
+        switchView('admin');
+      } else {
+        navAdmin.classList.add('hidden');
+        switchView('queue');
+      }
+
       updateCallerHeader();
       renderLeadCards();
+      renderCRDirectory();
       renderAdminDashboard();
     }
 
-    function changeCaller(name) {
-      currentCaller = name;
-      updateCallerHeader();
-      renderLeadCards();
+    function switchView(view) {
+      currentView = view;
+      ['queue', 'crList', 'admin'].forEach(v => {
+        const el = document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1));
+        const btn = document.getElementById('nav' + v.charAt(0).toUpperCase() + v.slice(1));
+        if (el && btn) {
+          if (v === view) {
+            el.classList.remove('hidden');
+            btn.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-m3-primaryContainer text-white';
+          } else {
+            el.classList.add('hidden');
+            btn.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white';
+          }
+        }
+      });
+      if (view === 'crList') renderCRDirectory();
+      if (view === 'admin') renderAdminDashboard();
     }
 
     function updateCallerHeader() {
-      const initials = currentCaller.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-      document.getElementById('callerAvatar').textContent = initials;
+      const activeName = (currentUser && currentUser.role === 'caller') ? currentUser.name : 'Ayansh Sahay';
+      document.getElementById('activeCallerName').textContent = activeName;
       
-      const leads = CALLING_DATA[currentCaller] || [];
+      const initials = activeName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      document.getElementById('callerInitials').textContent = initials;
+
+      const leads = CALLING_DATA[activeName] || [];
       const done = leads.filter(l => l.callStatus !== 'Pending').length;
       const pending = leads.length - done;
       const paidAmt = leads.reduce((sum, l) => sum + (parseFloat(l.amount) || 0), 0);
+      const pct = leads.length > 0 ? Math.round((done / leads.length) * 100) : 0;
 
       document.getElementById('statTotal').textContent = leads.length;
       document.getElementById('statDone').textContent = done;
       document.getElementById('statPending').textContent = pending;
       document.getElementById('statPaid').textContent = '₹' + paidAmt.toLocaleString('en-IN');
+      
+      document.getElementById('queuePercentLabel').textContent = `${pct}% (${done}/${leads.length} calls)`;
+      document.getElementById('queueProgressBar').style.width = `${pct}%`;
     }
 
     function setFilter(filter) {
       currentFilter = filter;
       ['all', 'Pending', 'Interested', 'Paid / Confirmed', 'Call Back'].forEach(f => {
-        const btn = document.getElementById('filter_' + f);
+        const btn = document.getElementById('filterChip_' + f);
         if (btn) {
           if (f === filter) {
-            btn.className = 'px-3 py-2 rounded-xl bg-blue-600 text-white font-medium whitespace-nowrap';
+            btn.className = 'px-4 py-2 rounded-full font-bold whitespace-nowrap bg-m3-primary text-m3-onPrimary transition flex items-center gap-1.5';
           } else {
-            btn.className = 'px-3 py-2 rounded-xl bg-slate-800 text-slate-300 font-medium whitespace-nowrap';
+            btn.className = 'px-4 py-2 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition flex items-center gap-1.5 border border-white/5';
           }
         }
       });
@@ -3324,7 +3731,8 @@
 
     function renderLeadCards() {
       const container = document.getElementById('leadsList');
-      const leads = CALLING_DATA[currentCaller] || [];
+      const activeCaller = (currentUser && currentUser.role === 'caller') ? currentUser.name : 'Ayansh Sahay';
+      const leads = CALLING_DATA[activeCaller] || [];
       const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
 
       const filtered = leads.filter(lead => {
@@ -3338,62 +3746,73 @@
 
       if (filtered.length === 0) {
         container.innerHTML = `
-          <div class="glass-card rounded-2xl p-8 text-center text-slate-400">
-            <i class="fa-solid fa-inbox text-3xl mb-2 text-slate-600"></i>
-            <p class="text-sm font-medium">No leads match the selected filter.</p>
+          <div class="bg-m3-surfaceContainer rounded-3xl p-10 text-center text-m3-secondary border border-white/5">
+            <span class="material-symbols-outlined text-4xl mb-2 text-m3-outline">inbox</span>
+            <p class="text-sm font-semibold">No candidates match your query or filter.</p>
           </div>
         `;
         return;
       }
 
       container.innerHTML = filtered.map(lead => {
-        let statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-400 border border-slate-700">Pending</span>';
-        if (lead.callStatus === 'Interested') statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 font-semibold">Interested</span>';
-        else if (lead.callStatus === 'Paid / Confirmed') statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">Paid / Confirmed</span>';
-        else if (lead.callStatus === 'Call Back') statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold">Call Back</span>';
-        else if (lead.callStatus === 'Not Reachable') statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-500/10 text-rose-400 border border-rose-500/20 font-semibold">Not Reachable</span>';
+        let statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary border border-white/5">Pending</span>';
+        if (lead.callStatus === 'Interested') statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">Interested</span>';
+        else if (lead.callStatus === 'Paid / Confirmed') statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Paid</span>';
+        else if (lead.callStatus === 'Call Back') statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">Call Back</span>';
+        else if (lead.callStatus === 'Not Reachable') statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">Not Reachable</span>';
 
         return `
-          <div class="glass-card rounded-2xl p-4 transition hover:border-slate-700">
-            <div class="flex items-start justify-between gap-2">
-              <div class="flex-1">
+          <div class="bg-m3-surfaceContainer rounded-3xl p-4 sm:p-5 border border-white/5 shadow-md space-y-3 transition hover:border-m3-outlineVariant/50">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2">
-                  <h3 class="text-sm font-bold text-white">${lead.name}</h3>
+                  <h3 class="text-sm font-extrabold text-white truncate">${lead.name}</h3>
                   ${statusBadge}
                 </div>
-                <p class="text-xs text-slate-400 mt-0.5"><i class="fa-solid fa-building-columns text-[10px] mr-1 text-slate-500"></i> ${lead.college}</p>
-                <p class="text-[11px] text-slate-400 mt-1 line-clamp-1"><i class="fa-solid fa-trophy text-[10px] mr-1 text-amber-500/80"></i> ${lead.events}</p>
+                <p class="text-xs text-m3-secondary mt-1 flex items-center gap-1.5 truncate">
+                  <span class="material-symbols-outlined text-[15px] text-m3-outline">school</span>
+                  <span>${lead.college}</span>
+                </p>
+                <p class="text-[11px] text-m3-outline mt-1 line-clamp-1 flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[15px] text-amber-400/80">emoji_events</span>
+                  <span>${lead.events}</span>
+                </p>
               </div>
             </div>
 
-            <!-- CR Number Pill if recorded -->
+            <!-- CR Contact Pill if recorded -->
             ${lead.crNumber ? `
-              <div class="mt-2.5 px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[11px] flex items-center justify-between">
-                <span><i class="fa-solid fa-user-tie mr-1 text-indigo-400"></i> <b>CR Phone:</b> ${lead.crNumber}</span>
-                ${lead.expectedDate ? `<span class="text-slate-400">Due: ${lead.expectedDate}</span>` : ''}
+              <div class="px-3 py-1.5 rounded-2xl bg-m3-tertiary/10 border border-m3-tertiary/20 text-m3-tertiary text-xs flex items-center justify-between font-medium">
+                <span class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-sm">badge</span>
+                  <b>CR Phone:</b> ${lead.crNumber}
+                </span>
+                ${lead.expectedDate ? `<span class="text-m3-secondary text-[11px]">Due: ${lead.expectedDate}</span>` : ''}
               </div>
             ` : ''}
 
-            <!-- Remarks if recorded -->
+            <!-- Remarks if present -->
             ${lead.remarks ? `
-              <p class="mt-2 text-[11px] text-slate-400 italic bg-slate-900/60 p-2 rounded-lg border border-slate-800">
+              <p class="text-[11px] text-m3-secondary italic bg-m3-surfaceContainerLow p-2.5 rounded-2xl border border-white/5">
                 "${lead.remarks}"
               </p>
             ` : ''}
 
-            <!-- Quick Action Bar -->
-            <div class="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+            <!-- Action Buttons (M3 Tonal & Primary Buttons) -->
+            <div class="pt-2 border-t border-white/5 flex items-center justify-between gap-2">
               <div class="flex items-center gap-1.5">
-                <a href="tel:${lead.mobile}" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-emerald-600/20">
-                  <i class="fa-solid fa-phone"></i> Call Now
+                <a href="tel:${lead.mobile}" class="px-4 py-2 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs flex items-center gap-1.5 shadow-md shadow-emerald-500/20 state-layer">
+                  <span class="material-symbols-outlined text-base">call</span>
+                  <span>Call Now</span>
                 </a>
-                <a href="https://wa.me/${lead.mobile.replace(/[^0-9]/g, '')}" target="_blank" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs flex items-center gap-1 border border-slate-700">
-                  <i class="fa-brands fa-whatsapp text-sm"></i>
+                <a href="https://wa.me/${lead.mobile.replace(/[^0-9]/g, '')}" target="_blank" class="w-9 h-9 rounded-full bg-m3-surfaceContainerHigh hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-white/5 transition state-layer">
+                  <span class="material-symbols-outlined text-base">chat</span>
                 </a>
               </div>
 
-              <button onclick="openEditModal(${lead.id})" class="px-3 py-1.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 font-semibold text-xs flex items-center gap-1.5">
-                <i class="fa-solid fa-pen-to-square"></i> Log Outcome &amp; CR
+              <button onclick="openOutcomeModal(${lead.id})" class="px-4 py-2 rounded-full bg-m3-primary/10 hover:bg-m3-primary/20 text-m3-primary border border-m3-primary/20 font-bold text-xs flex items-center gap-1.5 transition state-layer">
+                <span class="material-symbols-outlined text-base">edit_note</span>
+                <span>Log Outcome &amp; CR</span>
               </button>
             </div>
           </div>
@@ -3401,66 +3820,159 @@
       }).join('');
     }
 
-    function openEditModal(leadId) {
-      const leads = CALLING_DATA[currentCaller] || [];
+    function openOutcomeModal(leadId) {
+      const activeCaller = (currentUser && currentUser.role === 'caller') ? currentUser.name : 'Ayansh Sahay';
+      const leads = CALLING_DATA[activeCaller] || [];
       const lead = leads.find(l => l.id === leadId);
       if (!lead) return;
 
       document.getElementById('modalLeadId').value = lead.id;
-      document.getElementById('modalLeadName').textContent = lead.name;
-      document.getElementById('modalCollege').textContent = lead.college;
-      document.getElementById('modalCallStatus').value = lead.callStatus || 'Pending';
-      document.getElementById('modalPayStatus').value = lead.payStatus || 'Pending';
+      document.getElementById('modalStudentName').textContent = lead.name;
+      document.getElementById('modalCollegeName').textContent = lead.college;
       document.getElementById('modalAmount').value = lead.amount || '';
       document.getElementById('modalCrNumber').value = lead.crNumber || '';
       document.getElementById('modalExpDate').value = lead.expectedDate || '';
       document.getElementById('modalRemarks').value = lead.remarks || '';
 
-      document.getElementById('editModal').classList.remove('hidden');
+      // Render Call Status Chips
+      document.getElementById('modalCallStatusVal').value = lead.callStatus || 'Pending';
+      const callChipsContainer = document.getElementById('callStatusChips');
+      callChipsContainer.innerHTML = CALL_STATUS_OPTIONS.map(opt => {
+        const isSelected = (lead.callStatus || 'Pending') === opt;
+        return `
+          <button type="button" onclick="selectCallStatusChip('${opt}')" id="csChip_${opt}"
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition ${isSelected ? 'bg-m3-primary text-m3-onPrimary' : 'bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5'}">
+            ${opt}
+          </button>
+        `;
+      }).join('');
+
+      // Render Pay Status Chips
+      document.getElementById('modalPayStatusVal').value = lead.payStatus || 'Pending';
+      const payChipsContainer = document.getElementById('payStatusChips');
+      payChipsContainer.innerHTML = PAY_STATUS_OPTIONS.map(opt => {
+        const isSelected = (lead.payStatus || 'Pending') === opt;
+        return `
+          <button type="button" onclick="selectPayStatusChip('${opt}')" id="psChip_${opt}"
+            class="px-3 py-1.5 rounded-full text-xs font-bold transition ${isSelected ? 'bg-m3-tertiary text-m3-onPrimary' : 'bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5'}">
+            ${opt}
+          </button>
+        `;
+      }).join('');
+
+      document.getElementById('outcomeModal').classList.remove('hidden');
     }
 
-    function closeModal() {
-      document.getElementById('editModal').classList.add('hidden');
+    function selectCallStatusChip(opt) {
+      document.getElementById('modalCallStatusVal').value = opt;
+      CALL_STATUS_OPTIONS.forEach(o => {
+        const btn = document.getElementById('csChip_' + o);
+        if (btn) {
+          if (o === opt) {
+            btn.className = 'px-3 py-1.5 rounded-full text-xs font-bold transition bg-m3-primary text-m3-onPrimary';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-full text-xs font-bold transition bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5';
+          }
+        }
+      });
+    }
+
+    function selectPayStatusChip(opt) {
+      document.getElementById('modalPayStatusVal').value = opt;
+      PAY_STATUS_OPTIONS.forEach(o => {
+        const btn = document.getElementById('psChip_' + o);
+        if (btn) {
+          if (o === opt) {
+            btn.className = 'px-3 py-1.5 rounded-full text-xs font-bold transition bg-m3-tertiary text-m3-onPrimary';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-full text-xs font-bold transition bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5';
+          }
+        }
+      });
+    }
+
+    function closeOutcomeModal() {
+      document.getElementById('outcomeModal').classList.add('hidden');
     }
 
     function saveModalOutcome() {
       const leadId = parseInt(document.getElementById('modalLeadId').value);
-      const leads = CALLING_DATA[currentCaller] || [];
+      const activeCaller = (currentUser && currentUser.role === 'caller') ? currentUser.name : 'Ayansh Sahay';
+      const leads = CALLING_DATA[activeCaller] || [];
       const lead = leads.find(l => l.id === leadId);
       if (!lead) return;
 
-      lead.callStatus = document.getElementById('modalCallStatus').value;
-      lead.payStatus = document.getElementById('modalPayStatus').value;
+      lead.callStatus = document.getElementById('modalCallStatusVal').value;
+      lead.payStatus = document.getElementById('modalPayStatusVal').value;
       lead.amount = document.getElementById('modalAmount').value;
-      lead.crNumber = document.getElementById('modalCrNumber').value;
+      lead.crNumber = document.getElementById('modalCrNumber').value.trim();
       lead.expectedDate = document.getElementById('modalExpDate').value;
-      lead.remarks = document.getElementById('modalRemarks').value;
+      lead.remarks = document.getElementById('modalRemarks').value.trim();
 
       localStorage.setItem('TF26_CALLING_DATA', JSON.stringify(CALLING_DATA));
-      closeModal();
+
+      closeOutcomeModal();
       updateCallerHeader();
       renderLeadCards();
+      renderCRDirectory();
       renderAdminDashboard();
     }
 
-    function switchMode(mode) {
-      const callerTab = document.getElementById('callerView');
-      const adminTab = document.getElementById('adminView');
-      const callerBtn = document.getElementById('callerTabBtn');
-      const adminBtn = document.getElementById('adminTabBtn');
+    function renderCRDirectory() {
+      const container = document.getElementById('crCardsList');
+      const crList = [];
 
-      if (mode === 'caller') {
-        callerTab.classList.remove('hidden');
-        adminTab.classList.add('hidden');
-        callerBtn.className = 'flex-1 py-3 text-center transition flex items-center justify-center space-x-2 tab-active';
-        adminBtn.className = 'flex-1 py-3 text-center transition flex items-center justify-center space-x-2 text-slate-400 hover:text-slate-200';
-      } else {
-        callerTab.classList.add('hidden');
-        adminTab.classList.remove('hidden');
-        adminBtn.className = 'flex-1 py-3 text-center transition flex items-center justify-center space-x-2 tab-active';
-        callerBtn.className = 'flex-1 py-3 text-center transition flex items-center justify-center space-x-2 text-slate-400 hover:text-slate-200';
-        renderAdminDashboard();
+      Object.keys(CALLING_DATA).forEach(callerName => {
+        CALLING_DATA[callerName].forEach(lead => {
+          if (lead.crNumber) {
+            crList.push({
+              caller: callerName,
+              lead: lead
+            });
+          }
+        });
+      });
+
+      if (crList.length === 0) {
+        container.innerHTML = `
+          <div class="bg-m3-surfaceContainer rounded-3xl p-10 text-center text-m3-secondary border border-white/5">
+            <span class="material-symbols-outlined text-4xl mb-2 text-m3-outline">contact_phone</span>
+            <p class="text-sm font-semibold">No Class Representative (CR) numbers logged yet.</p>
+            <p class="text-xs text-m3-outline mt-1">When callers ask for the CR's phone number during calls, it will automatically show here.</p>
+          </div>
+        `;
+        return;
       }
+
+      container.innerHTML = crList.map(item => `
+        <div class="bg-m3-surfaceContainer rounded-3xl p-4 sm:p-5 border border-white/5 shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-m3-primary">${item.lead.name}</span>
+              <span class="text-[10px] text-m3-outline">via ${item.caller}</span>
+            </div>
+            <p class="text-xs text-white font-bold flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-base text-m3-tertiary">badge</span>
+              <span>CR Phone: ${item.lead.crNumber}</span>
+            </p>
+            <p class="text-[11px] text-m3-secondary flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs text-m3-outline">school</span>
+              <span>${item.lead.college}</span>
+            </p>
+            ${item.lead.remarks ? `<p class="text-[11px] text-m3-outline italic">"${item.lead.remarks}"</p>` : ''}
+          </div>
+
+          <div class="flex items-center gap-2">
+            <a href="tel:${item.lead.crNumber}" class="px-4 py-2 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs flex items-center gap-1.5 state-layer shadow-sm">
+              <span class="material-symbols-outlined text-base">call</span>
+              <span>Call CR</span>
+            </a>
+            <a href="https://wa.me/${item.lead.crNumber.replace(/[^0-9]/g, '')}" target="_blank" class="w-9 h-9 rounded-full bg-m3-surfaceContainerHigh text-emerald-400 hover:bg-emerald-500/20 flex items-center justify-center border border-white/5 transition state-layer">
+              <span class="material-symbols-outlined text-base">chat</span>
+            </a>
+          </div>
+        </div>
+      `).join('');
     }
 
     function renderAdminDashboard() {
@@ -3470,7 +3982,6 @@
       let totalExpectedAmt = 0;
 
       const leaderboardData = [];
-      const crList = [];
 
       Object.keys(CALLING_DATA).forEach(callerName => {
         const leads = CALLING_DATA[callerName];
@@ -3484,25 +3995,14 @@
           if (l.callStatus !== 'Pending') called++;
           if (l.payStatus === 'Paid') paidAmt += parseFloat(l.amount) || 0;
           if (l.payStatus === 'Expected Soon') totalExpectedAmt += parseFloat(l.amount) || 0;
-          if (l.crNumber) {
-            crCount++;
-            crList.push({
-              caller: callerName,
-              leadName: l.name,
-              college: l.college,
-              crNumber: l.crNumber,
-              payStatus: l.payStatus,
-              expDate: l.expectedDate || 'N/A',
-              remarks: l.remarks || ''
-            });
-          }
+          if (l.crNumber) crCount++;
         });
 
         totalDone += called;
         totalPaidAmt += paidAmt;
 
         const pending = leads.length - called;
-        const pct = Math.round((called / leads.length) * 100);
+        const pct = leads.length > 0 ? Math.round((called / leads.length) * 100) : 0;
 
         leaderboardData.push({
           name: callerName,
@@ -3517,58 +4017,36 @@
 
       document.getElementById('adminTotalLeads').textContent = totalLeads;
       document.getElementById('adminCompletedCalls').textContent = totalDone;
-      document.getElementById('adminCompletionRate').textContent = `${Math.round((totalDone / totalLeads) * 100)}% completion rate`;
+      const rate = totalLeads > 0 ? Math.round((totalDone / totalLeads) * 100) : 0;
+      document.getElementById('adminCompletionRate').textContent = `${rate}% completed`;
       document.getElementById('adminTotalPaid').textContent = '₹' + totalPaidAmt.toLocaleString('en-IN');
       document.getElementById('adminTotalExpected').textContent = '₹' + totalExpectedAmt.toLocaleString('en-IN');
 
-      // Leaderboard
       const tb = document.getElementById('leaderboardBody');
       tb.innerHTML = leaderboardData.map(row => `
-        <tr class="border-b border-slate-800/60 hover:bg-slate-800/20">
-          <td class="py-3 px-3 font-semibold text-white">${row.name}</td>
-          <td class="py-3 px-3 text-center text-slate-300">${row.total}</td>
+        <tr class="border-b border-white/5 hover:bg-white/[0.02]">
+          <td class="py-3 px-3 font-bold text-white">${row.name}</td>
+          <td class="py-3 px-3 text-center text-m3-secondary">${row.total}</td>
           <td class="py-3 px-3 text-center text-emerald-400 font-bold">${row.called}</td>
-          <td class="py-3 px-3 text-center text-amber-400">${row.pending}</td>
+          <td class="py-3 px-3 text-center text-amber-400 font-semibold">${row.pending}</td>
           <td class="py-3 px-3">
-            <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden flex items-center">
+            <div class="w-full bg-m3-surfaceContainerLow rounded-full h-2 overflow-hidden flex items-center border border-white/5">
               <div class="bg-gradient-to-r from-blue-500 to-emerald-400 h-2 rounded-full" style="width: ${row.pct}%"></div>
             </div>
-            <span class="text-[10px] text-slate-400 mt-0.5 block">${row.pct}% completed</span>
+            <span class="text-[10px] text-m3-outline mt-0.5 block">${row.pct}%</span>
           </td>
           <td class="py-3 px-3 text-center text-emerald-300 font-bold">₹${row.paidAmt.toLocaleString('en-IN')}</td>
-          <td class="py-3 px-3 text-center text-indigo-300 font-bold">${row.crCount}</td>
+          <td class="py-3 px-3 text-center text-m3-tertiary font-bold">${row.crCount}</td>
         </tr>
       `).join('');
-
-      // CR Table
-      const crBody = document.getElementById('crTableBody');
-      if (crList.length === 0) {
-        crBody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-500">No Class Representative (CR) numbers logged yet.</td></tr>`;
-      } else {
-        crBody.innerHTML = crList.map(item => `
-          <tr class="border-b border-slate-800/60 hover:bg-slate-800/20">
-            <td class="py-2.5 px-3 text-slate-300 font-medium">${item.caller}</td>
-            <td class="py-2.5 px-3 font-bold text-white">${item.leadName}</td>
-            <td class="py-2.5 px-3 text-slate-400 text-[11px]">${item.college}</td>
-            <td class="py-2.5 px-3 text-indigo-300 font-bold">${item.crNumber}</td>
-            <td class="py-2.5 px-3">
-              <span class="px-2 py-0.5 rounded-full text-[10px] ${item.payStatus === 'Paid' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}">
-                ${item.payStatus}
-              </span>
-            </td>
-            <td class="py-2.5 px-3 text-slate-300 font-mono text-[11px]">${item.expDate}</td>
-            <td class="py-2.5 px-3 text-slate-400 italic text-[11px] max-w-xs truncate">${item.remarks}</td>
-          </tr>
-        `).join('');
-      }
     }
 
     function exportCRCSV() {
-      const rows = [["Caller", "Candidate Name", "College", "Class Representative (CR) Number", "Payment Status", "Expected Date", "Remarks"]];
+      const rows = [["Caller", "Candidate Name", "Candidate Mobile", "College", "Class Representative (CR) Number", "Payment Status", "Expected Date", "Remarks"]];
       Object.keys(CALLING_DATA).forEach(cname => {
         CALLING_DATA[cname].forEach(l => {
           if (l.crNumber) {
-            rows.push([cname, l.name, l.college, l.crNumber, l.payStatus, l.expectedDate, l.remarks]);
+            rows.push([cname, l.name, l.mobile, l.college, l.crNumber, l.payStatus, l.expectedDate, l.remarks]);
           }
         });
       });
@@ -3576,7 +4054,7 @@
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "techfest_cr_contacts_export.csv");
+      link.setAttribute("download", "techfest_class_representatives_cr_list.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
