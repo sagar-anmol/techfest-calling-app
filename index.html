@@ -113,6 +113,27 @@
         </button>
       </div>
 
+      <!-- ⚡ CLERK AUTHENTICATION (Google, Email OTP, Passwordless) -->
+      <div class="space-y-2 pt-1">
+        <button type="button" onclick="handleClerkSignInClick()" class="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 state-layer transition">
+          <span class="material-symbols-outlined text-sm">lock</span>
+          <span>Sign in with Google / Email (Clerk)</span>
+        </button>
+        <div class="flex items-center justify-between px-1">
+          <span class="text-[10px] text-m3-outline" id="clerkStatusLabel">Provider: Clerk Auth</span>
+          <button type="button" onclick="promptClerkKey()" class="text-[10px] text-m3-primary hover:underline flex items-center gap-0.5">
+            <span class="material-symbols-outlined text-[12px]">key</span>
+            <span id="clerkKeyBtnLabel">Set Clerk Key</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 my-1">
+        <div class="h-px bg-white/10 flex-1"></div>
+        <span class="text-[10px] uppercase font-bold text-m3-outline tracking-wider">or instant 1-tap</span>
+        <div class="h-px bg-white/10 flex-1"></div>
+      </div>
+
       <!-- Quick 1-Tap Caller Grid (Fastest Login Ever) -->
       <div>
         <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-2.5">Select Your Profile (1-Tap Sign In)</label>
@@ -172,7 +193,10 @@
           <span>Install App</span>
         </button>
 
-        <button onclick="logout()" title="Switch Account" class="w-8 h-8 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white flex items-center justify-center transition border border-white/5 state-layer">
+        <!-- Clerk Mounted User Button Container -->
+        <div id="clerkUserBtnContainer" class="flex items-center"></div>
+
+        <button onclick="logout()" title="Switch Account / Sign Out" class="w-8 h-8 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white flex items-center justify-center transition border border-white/5 state-layer">
           <span class="material-symbols-outlined text-base">switch_account</span>
         </button>
       </div>
@@ -3512,7 +3536,131 @@
       }
     }
 
+    // ========================================================
+    // ⚡ CLERK AUTHENTICATION (Google, Email OTP, Passwordless)
+    // ========================================================
+    let CLERK_PUBLISHABLE_KEY = localStorage.getItem('TF26_CLERK_KEY') || '';
+
+    async function loadAndInitClerk(autoOpen = false) {
+      if (!CLERK_PUBLISHABLE_KEY) return;
+
+      const statusLbl = document.getElementById('clerkStatusLabel');
+      const keyBtnLbl = document.getElementById('clerkKeyBtnLabel');
+      if (statusLbl) statusLbl.textContent = 'Clerk Active (' + CLERK_PUBLISHABLE_KEY.substring(0, 11) + '...)';
+      if (keyBtnLbl) keyBtnLbl.textContent = 'Change Key';
+
+      try {
+        if (!window.Clerk) {
+          await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.setAttribute('data-clerk-publishable-key', CLERK_PUBLISHABLE_KEY);
+            script.src = 'https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js';
+            script.async = true;
+            script.crossOrigin = 'anonymous';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+          });
+        }
+
+        await window.Clerk.load({
+          appearance: {
+            variables: {
+              colorPrimary: '#a8c7fa',
+              colorBackground: '#1a212d',
+              colorText: '#ffffff',
+              colorInputBackground: '#0f141c',
+              colorInputText: '#ffffff'
+            }
+          }
+        });
+
+        if (window.Clerk.user) {
+          handleClerkUser(window.Clerk.user);
+        } else if (autoOpen) {
+          window.Clerk.openSignIn();
+        }
+      } catch (err) {
+        console.error('Clerk init error:', err);
+        if (autoOpen) {
+          alert('Could not initialize Clerk with this key. Please check that your Publishable Key is valid (from dashboard.clerk.com).');
+        }
+      }
+    }
+
+    function handleClerkSignInClick() {
+      if (!CLERK_PUBLISHABLE_KEY) {
+        promptClerkKey(true);
+      } else if (window.Clerk) {
+        if (window.Clerk.user) {
+          handleClerkUser(window.Clerk.user);
+        } else {
+          window.Clerk.openSignIn();
+        }
+      } else {
+        loadAndInitClerk(true);
+      }
+    }
+
+    function promptClerkKey(openAfter = false) {
+      const key = prompt(
+        "Enter your Clerk Publishable Key (starts with pk_test_ or pk_live_ from https://dashboard.clerk.com):\n\n(Tip: Clerk provides instant 1-click Google Sign-In & Email OTP with zero backend setup)",
+        CLERK_PUBLISHABLE_KEY
+      );
+      if (key !== null && key.trim() !== '') {
+        CLERK_PUBLISHABLE_KEY = key.trim();
+        localStorage.setItem('TF26_CLERK_KEY', CLERK_PUBLISHABLE_KEY);
+        loadAndInitClerk(openAfter);
+      }
+    }
+
+    function handleClerkUser(clerkUser) {
+      const email = (clerkUser.primaryEmailAddress ? clerkUser.primaryEmailAddress.emailAddress : '').toLowerCase();
+      const fullName = (clerkUser.fullName || `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`).trim();
+
+      // Check if Admin
+      if (email === 'techfest@sliet.ac.in' || email.includes('admin') || fullName.toLowerCase().includes('admin')) {
+        currentUser = {
+          role: 'admin',
+          name: fullName || 'TechFEST Admin',
+          email: email
+        };
+      } else {
+        // Match against TEAM_ROSTER by email or name
+        let matched = TEAM_ROSTER.find(m => m.email && email && m.email.toLowerCase() === email);
+        if (!matched) {
+          matched = TEAM_ROSTER.find(m => fullName && (fullName.toLowerCase().includes(m.name.toLowerCase()) || m.name.toLowerCase().includes(fullName.toLowerCase())));
+        }
+
+        if (matched) {
+          currentUser = {
+            role: 'caller',
+            name: matched.name,
+            email: email || matched.email
+          };
+        } else {
+          currentUser = {
+            role: 'caller',
+            name: fullName || (email ? email.split('@')[0] : 'Caller'),
+            email: email
+          };
+          if (!CALLING_DATA[currentUser.name]) {
+            const fallback = TEAM_ROSTER.find(m => CALLING_DATA[m.name]);
+            if (fallback) currentUser.name = fallback.name;
+          }
+        }
+      }
+
+      localStorage.setItem('TF26_SESSION_USER', JSON.stringify(currentUser));
+      startAuthenticatedSession();
+    }
+
     function init() {
+      // Initialize Clerk if configured
+      if (CLERK_PUBLISHABLE_KEY) {
+        loadAndInitClerk(false);
+      }
+
       // Render 1-Tap Quick Caller Grid
       const grid = document.getElementById('quickCallerGrid');
       grid.innerHTML = TEAM_ROSTER.map(member => `
@@ -3598,7 +3746,10 @@
       }
     }
 
-    function logout() {
+    async function logout() {
+      if (window.Clerk && window.Clerk.user) {
+        try { await window.Clerk.signOut(); } catch (e) {}
+      }
       localStorage.removeItem('TF26_SESSION_USER');
       currentUser = null;
       document.getElementById('appShell').classList.add('hidden');
@@ -3612,6 +3763,14 @@
       const isCaller = currentUser.role === 'caller';
       document.getElementById('userRoleBadge').textContent = isCaller ? 'Caller' : 'Admin';
       document.getElementById('userIdentityLabel').textContent = currentUser.name;
+
+      if (window.Clerk && window.Clerk.user) {
+        const cContainer = document.getElementById('clerkUserBtnContainer');
+        if (cContainer) {
+          cContainer.innerHTML = '';
+          window.Clerk.mountUserButton(cContainer);
+        }
+      }
 
       const navAdmin = document.getElementById('navAdmin');
       if (!isCaller) {
