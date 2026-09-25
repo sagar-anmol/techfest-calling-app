@@ -3643,7 +3643,12 @@
       const fullName = (clerkUser.fullName || `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`).trim();
 
       // Check if Admin
-      if (email === 'techfest@sliet.ac.in' || email.includes('admin') || fullName.toLowerCase().includes('admin')) {
+      const isAdminEmail = email === 'techfest@sliet.ac.in' || 
+                           email === 'sagarkumarweebly@gmail.com' ||
+                           email.includes('admin') || 
+                           email.includes('sagaranmol') ||
+                           fullName.toLowerCase().includes('admin');
+      if (isAdminEmail) {
         currentUser = {
           role: 'admin',
           name: fullName || 'TechFEST Admin',
