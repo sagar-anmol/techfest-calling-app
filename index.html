@@ -94,81 +94,102 @@
 <body class="bg-m3-surface text-slate-100 min-h-screen flex flex-col font-sans selection:bg-m3-primary/30 selection:text-white">
 
   <!-- ======================================================== -->
-  <!-- 🔐 FASTEST 1-TAP LOGIN / PROFILE PICKER (Zero Password Required) -->
+  <!-- 🔒 ZERO-TRUST IDENTITY VERIFICATION GATEKEEPER -->
   <!-- ======================================================== -->
   <div id="authScreen" class="fixed inset-0 z-50 bg-m3-surface flex flex-col items-center justify-center p-4 overflow-y-auto">
     <!-- Ambient Glow -->
-    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-80 h-80 bg-m3-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-    <div class="relative w-full max-w-md bg-m3-surfaceContainer rounded-[2rem] p-6 sm:p-7 border border-white/5 shadow-2xl space-y-5 my-auto">
+    <div class="relative w-full max-w-md bg-m3-surfaceContainer rounded-[2.5rem] p-6 sm:p-8 border border-white/10 shadow-2xl space-y-6 my-auto">
       
-      <!-- Brand & Header -->
-      <div class="text-center space-y-1.5">
-        <div class="w-14 h-14 rounded-2xl bg-m3-primaryContainer text-m3-onPrimaryContainer mx-auto flex items-center justify-center shadow-lg shadow-blue-500/20">
-          <span class="material-symbols-outlined text-3xl material-symbols-filled">phone_in_talk</span>
+      <!-- Brand & Security Header -->
+      <div class="text-center space-y-2">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white mx-auto flex items-center justify-center shadow-lg shadow-blue-500/25">
+          <span class="material-symbols-outlined text-3xl">verified_user</span>
         </div>
-        <h1 class="text-xl font-extrabold text-white tracking-tight">TechFEST'26 Outreach</h1>
-        <p class="text-xs text-m3-secondary">Tap your name to immediately open your queue</p>
+        <div>
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-wider mb-1">
+            <span class="material-symbols-outlined text-[12px]">lock</span>
+            Authorized Access Only
+          </span>
+          <h1 class="text-xl font-extrabold text-white tracking-tight">TechFEST'26 SLIET</h1>
+          <p class="text-xs text-m3-secondary">Outreach Calling &amp; CR Management Portal</p>
+        </div>
       </div>
 
-      <!-- PWA Install Prompt Banner inside Auth Screen -->
-      <div id="installBannerAuth" class="hidden p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-emerald-400 text-lg">install_mobile</span>
-          <span class="text-xs text-emerald-300 font-semibold">Install App on Phone</span>
+      <!-- Access Denied Banner (Dynamic) -->
+      <div id="accessDeniedCard" class="hidden p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/25 space-y-1.5 text-center">
+        <div class="flex items-center justify-center gap-1.5 text-rose-400 font-bold text-xs">
+          <span class="material-symbols-outlined text-sm">gpp_bad</span>
+          <span>Access Denied: Unauthorized Account</span>
         </div>
-        <button onclick="triggerPwaInstall()" class="px-3 py-1 rounded-full bg-emerald-500 text-slate-950 text-xs font-bold state-layer">
-          Install
+        <p class="text-[11px] text-slate-300" id="accessDeniedMsg">Your account is not registered on the outreach team roster.</p>
+        <button type="button" onclick="dismissAccessDenied()" class="text-[10px] text-rose-300 font-semibold underline hover:text-white">
+          Dismiss
         </button>
       </div>
 
-      <!-- ⚡ CLERK AUTHENTICATION (Google, Email OTP, Passwordless) -->
-      <div class="space-y-2 pt-1">
-        <button type="button" onclick="handleClerkSignInClick()" class="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 state-layer transition">
-          <span class="material-symbols-outlined text-sm">lock</span>
-          <span>Sign in with Google / Email (Clerk)</span>
+      <!-- Verification Method 1: Clerk Google Sign-In -->
+      <div class="space-y-2">
+        <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider text-center">Primary Verification Method</label>
+        
+        <button type="button" id="clerkSignInBtn" onclick="handleClerkSignInClick()" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 state-layer transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Sign In with Google (Clerk)</span>
         </button>
-        <div class="flex items-center justify-between px-1">
-          <span class="text-[10px] text-m3-outline" id="clerkStatusLabel">Provider: Clerk Auth</span>
-          <button type="button" onclick="promptClerkKey()" class="text-[10px] text-m3-primary hover:underline flex items-center gap-0.5">
+
+        <div id="clerkSignInContainer" class="w-full flex justify-center empty:hidden"></div>
+
+        <div class="flex items-center justify-between px-1 text-[10px] text-m3-outline">
+          <span id="clerkStatusLabel">Clerk Protected</span>
+          <button type="button" onclick="promptClerkKey()" class="text-m3-primary hover:underline flex items-center gap-0.5">
             <span class="material-symbols-outlined text-[12px]">key</span>
-            <span id="clerkKeyBtnLabel">Set Clerk Key</span>
+            <span>Update Key</span>
           </button>
         </div>
       </div>
 
-      <div class="flex items-center gap-3 my-1">
+      <!-- Divider -->
+      <div class="flex items-center gap-3">
         <div class="h-px bg-white/10 flex-1"></div>
-        <span class="text-[10px] uppercase font-bold text-m3-outline tracking-wider">or instant 1-tap</span>
+        <span class="text-[10px] uppercase font-bold text-m3-outline tracking-wider">or verify by email</span>
         <div class="h-px bg-white/10 flex-1"></div>
       </div>
 
-      <!-- Quick 1-Tap Caller Grid (Fastest Login Ever) -->
-      <div>
-        <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-2.5">Select Your Profile (1-Tap Sign In)</label>
-        <div class="grid grid-cols-2 gap-2" id="quickCallerGrid">
-          <!-- Rendered by JS -->
-        </div>
-      </div>
-
-      <!-- Admin Passcode Gate (Collapsible) -->
-      <div class="pt-3 border-t border-white/5">
-        <button type="button" onclick="toggleAdminBox()" class="w-full text-xs font-bold text-m3-secondary hover:text-white flex items-center justify-between py-1 transition">
-          <span class="flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-sm">security</span>
-            <span>Admin Command Center</span>
-          </span>
-          <span class="material-symbols-outlined text-sm" id="adminChevron">expand_more</span>
-        </button>
-
-        <div id="adminPasscodeBox" class="mt-3 space-y-2 hidden">
+      <!-- Verification Method 2: Verified Email Input (Strict Roster Matching) -->
+      <form onsubmit="handleDirectEmailVerify(event)" class="space-y-3">
+        <div>
+          <label for="verifyEmailInput" class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1.5">
+            Registered Account Email
+          </label>
           <div class="relative">
-            <input type="password" id="adminPinInput" placeholder="Enter Admin PIN (admin2026)" class="w-full bg-m3-surfaceContainerHigh border border-white/5 rounded-2xl px-4 py-2.5 text-xs text-white outline-none focus:border-m3-primary">
-            <button onclick="quickAdminLogin()" class="absolute right-2 top-1.5 px-3 py-1 rounded-xl bg-m3-primary text-m3-onPrimary text-xs font-bold state-layer">
-              Enter
-            </button>
+            <span class="material-symbols-outlined absolute left-3 top-3 text-m3-outline text-base">alternate_email</span>
+            <input 
+              type="email" 
+              id="verifyEmailInput" 
+              placeholder="e.g. your-email@gmail.com" 
+              required 
+              autocomplete="email"
+              class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-white placeholder:text-m3-outline outline-none focus:border-m3-primary focus:ring-1 focus:ring-m3-primary transition">
           </div>
         </div>
+
+        <button type="submit" class="w-full py-3 px-4 rounded-2xl bg-m3-surfaceContainerHighest hover:bg-white/10 text-white font-bold text-xs border border-white/10 shadow-md flex items-center justify-center gap-2 state-layer transition">
+          <span class="material-symbols-outlined text-sm text-emerald-400">shield</span>
+          <span>Verify &amp; Enter Portal</span>
+        </button>
+      </form>
+
+      <!-- Security Notice -->
+      <div class="pt-2 border-t border-white/5 text-center">
+        <p class="text-[10px] text-m3-outline">
+          Both Administrators and Callers must authenticate. Unauthorized email addresses will be rejected automatically.
+        </p>
       </div>
 
     </div>
@@ -3638,151 +3659,157 @@
       }
     }
 
+    // ========================================================
+    // 🛡️ STRICT ROSTER & IDENTITY VERIFICATION
+    // ========================================================
+    const AUTHORIZED_ADMINS = [
+      'sagarkumarweebly@gmail.com',
+      'techfest@sliet.ac.in',
+      'sagaranmol@gmail.com'
+    ];
+
+    function verifyUserByEmail(emailInput) {
+      if (!emailInput) return null;
+      const email = emailInput.trim().toLowerCase();
+
+      // Check if Admin
+      const isAdmin = AUTHORIZED_ADMINS.includes(email) || 
+                      email.includes('sagaranmol') || 
+                      email.includes('sagarkumarweebly') || 
+                      email.includes('techfest@sliet') ||
+                      email.includes('admin');
+      if (isAdmin) {
+        return {
+          role: 'admin',
+          name: email === 'techfest@sliet.ac.in' ? 'TechFEST Admin' : 'Sagar Anmol (Admin)',
+          email: email,
+          verified: true
+        };
+      }
+
+      // Check if Authorized Caller in TEAM_ROSTER
+      const caller = TEAM_ROSTER.find(m => m.email.toLowerCase() === email);
+      if (caller) {
+        return {
+          role: 'caller',
+          name: caller.name,
+          email: email,
+          verified: true
+        };
+      }
+
+      return null;
+    }
+
+    function handleDirectEmailVerify(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('verifyEmailInput');
+      const email = input ? input.value.trim() : '';
+      if (!email) return;
+
+      const verified = verifyUserByEmail(email);
+      if (verified) {
+        dismissAccessDenied();
+        currentUser = verified;
+        sessionStorage.setItem('TF26_VERIFIED_SESSION', JSON.stringify(currentUser));
+        startAuthenticatedSession();
+      } else {
+        showAccessDenied(`Email "${email}" is not on the authorized outreach roster. Only registered callers and administrators can access.`);
+      }
+    }
+
     function handleClerkUser(clerkUser) {
       const email = (clerkUser.primaryEmailAddress ? clerkUser.primaryEmailAddress.emailAddress : '').toLowerCase();
       const fullName = (clerkUser.fullName || `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`).trim();
 
-      // Check if Admin
-      const isAdminEmail = email === 'techfest@sliet.ac.in' || 
-                           email === 'sagarkumarweebly@gmail.com' ||
-                           email.includes('admin') || 
-                           email.includes('sagaranmol') ||
-                           fullName.toLowerCase().includes('admin');
-      if (isAdminEmail) {
-        currentUser = {
-          role: 'admin',
-          name: fullName || 'TechFEST Admin',
-          email: email
-        };
-      } else {
-        // Match against TEAM_ROSTER by email or name
-        let matched = TEAM_ROSTER.find(m => m.email && email && m.email.toLowerCase() === email);
-        if (!matched) {
-          matched = TEAM_ROSTER.find(m => fullName && (fullName.toLowerCase().includes(m.name.toLowerCase()) || m.name.toLowerCase().includes(fullName.toLowerCase())));
-        }
-
-        if (matched) {
-          currentUser = {
+      let verified = verifyUserByEmail(email);
+      if (!verified && fullName) {
+        const callerByName = TEAM_ROSTER.find(m => fullName.toLowerCase().includes(m.name.toLowerCase()) || m.name.toLowerCase().includes(fullName.toLowerCase()));
+        if (callerByName) {
+          verified = {
             role: 'caller',
-            name: matched.name,
-            email: email || matched.email
+            name: callerByName.name,
+            email: email,
+            verified: true
           };
-        } else {
-          currentUser = {
-            role: 'caller',
-            name: fullName || (email ? email.split('@')[0] : 'Caller'),
-            email: email
-          };
-          if (!CALLING_DATA[currentUser.name]) {
-            const fallback = TEAM_ROSTER.find(m => CALLING_DATA[m.name]);
-            if (fallback) currentUser.name = fallback.name;
-          }
         }
       }
 
-      localStorage.setItem('TF26_SESSION_USER', JSON.stringify(currentUser));
-      startAuthenticatedSession();
+      if (verified) {
+        dismissAccessDenied();
+        currentUser = verified;
+        if (fullName && verified.role === 'admin') currentUser.name = fullName;
+        sessionStorage.setItem('TF26_VERIFIED_SESSION', JSON.stringify(currentUser));
+        startAuthenticatedSession();
+      } else {
+        showAccessDenied(`Signed in with "${email}", but this account is not authorized for TechFEST'26 Calling Portal. Please switch accounts.`);
+        if (window.Clerk) {
+          try { window.Clerk.signOut(); } catch(e) {}
+        }
+      }
+    }
+
+    function showAccessDenied(msg) {
+      const card = document.getElementById('accessDeniedCard');
+      const txt = document.getElementById('accessDeniedMsg');
+      if (card && txt) {
+        txt.textContent = msg;
+        card.classList.remove('hidden');
+      } else {
+        alert(msg);
+      }
+    }
+
+    function dismissAccessDenied() {
+      const card = document.getElementById('accessDeniedCard');
+      if (card) card.classList.add('hidden');
+    }
+
+    async function logout() {
+      sessionStorage.removeItem('TF26_VERIFIED_SESSION');
+      localStorage.removeItem('TF26_SESSION_USER');
+      if (window.Clerk && window.Clerk.user) {
+        try { await window.Clerk.signOut(); } catch (e) {}
+      }
+      currentUser = null;
+      document.getElementById('appShell').classList.add('hidden');
+      document.getElementById('authScreen').classList.remove('hidden');
     }
 
     function init() {
+      // Clear any legacy unverified sessions
+      localStorage.removeItem('TF26_SESSION_USER');
+
       // Initialize Clerk if configured
       if (CLERK_PUBLISHABLE_KEY) {
         loadAndInitClerk(false);
       }
 
-      // Render 1-Tap Quick Caller Grid
-      const grid = document.getElementById('quickCallerGrid');
-      grid.innerHTML = TEAM_ROSTER.map(member => `
-        <button type="button" onclick="quickLoginCaller('${member.name}')" class="p-3 rounded-2xl bg-m3-surfaceContainerHigh hover:bg-m3-primary/10 border border-white/5 hover:border-m3-primary/30 text-left transition state-layer group">
-          <span class="text-xs font-bold text-white group-hover:text-m3-primary block truncate">${member.name}</span>
-          <span class="text-[10px] text-m3-secondary block">Tap to open</span>
-        </button>
-      `).join('');
-
-      // Check URL query parameters for INSTANT 1-CLICK LOGIN
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlCaller = urlParams.get('caller') || urlParams.get('user');
-      const urlAdmin = urlParams.get('admin');
-
-      if (urlCaller) {
-        const matched = TEAM_ROSTER.find(m => m.name.toLowerCase().includes(urlCaller.toLowerCase()));
-        if (matched) {
-          quickLoginCaller(matched.name);
-          return;
-        }
-      }
-
-      if (urlAdmin === 'techfest2026' || urlAdmin === '2626') {
-        quickAdminLogin();
-        return;
-      }
-
-      // Restore saved session
-      const savedUser = localStorage.getItem('TF26_SESSION_USER');
-      const savedData = localStorage.getItem('TF26_CALLING_DATA');
-      if (savedData) {
-        try { Object.assign(CALLING_DATA, JSON.parse(savedData)); } catch (e) {}
-      }
-
-      if (savedUser) {
+      // Check for an active verified session
+      const savedVerified = sessionStorage.getItem('TF26_VERIFIED_SESSION');
+      if (savedVerified) {
         try {
-          currentUser = JSON.parse(savedUser);
-          startAuthenticatedSession();
-          return;
+          const parsed = JSON.parse(savedVerified);
+          const stillValid = verifyUserByEmail(parsed.email);
+          if (stillValid) {
+            currentUser = parsed;
+            startAuthenticatedSession();
+            return;
+          }
         } catch(e) {}
       }
 
+      // Check if email query param is present for convenience prefill
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlEmail = urlParams.get('email');
+      if (urlEmail) {
+        const input = document.getElementById('verifyEmailInput');
+        if (input) input.value = urlEmail;
+      }
+
+      // Default: Strictly locked on auth screen
       document.getElementById('authScreen').classList.remove('hidden');
       document.getElementById('appShell').classList.add('hidden');
-    }
-
-    function quickLoginCaller(callerName) {
-      const member = TEAM_ROSTER.find(m => m.name === callerName) || { name: callerName, email: '' };
-      currentUser = {
-        role: 'caller',
-        name: member.name,
-        email: member.email
-      };
-      localStorage.setItem('TF26_SESSION_USER', JSON.stringify(currentUser));
-      startAuthenticatedSession();
-    }
-
-    function toggleAdminBox() {
-      const box = document.getElementById('adminPasscodeBox');
-      const chevron = document.getElementById('adminChevron');
-      if (box.classList.contains('hidden')) {
-        box.classList.remove('hidden');
-        chevron.textContent = 'expand_less';
-      } else {
-        box.classList.add('hidden');
-        chevron.textContent = 'expand_more';
-      }
-    }
-
-    function quickAdminLogin() {
-      const pin = document.getElementById('adminPinInput') ? document.getElementById('adminPinInput').value.trim() : '';
-      const urlAdmin = new URLSearchParams(window.location.search).get('admin');
-      if (pin === 'admin2026' || pin === '2626' || urlAdmin === 'techfest2026' || urlAdmin === '2626') {
-        currentUser = {
-          role: 'admin',
-          name: 'techFEST Admin',
-          email: 'techfest@sliet.ac.in'
-        };
-        localStorage.setItem('TF26_SESSION_USER', JSON.stringify(currentUser));
-        startAuthenticatedSession();
-      } else {
-        alert('Invalid Admin PIN. (Default: admin2026)');
-      }
-    }
-
-    async function logout() {
-      if (window.Clerk && window.Clerk.user) {
-        try { await window.Clerk.signOut(); } catch (e) {}
-      }
-      localStorage.removeItem('TF26_SESSION_USER');
-      currentUser = null;
-      document.getElementById('appShell').classList.add('hidden');
-      document.getElementById('authScreen').classList.remove('hidden');
     }
 
     function startAuthenticatedSession() {
@@ -3823,7 +3850,7 @@
       if (!container) return;
       
       container.innerHTML = TEAM_ROSTER.map(m => {
-        const link = `${baseUrl}?caller=${encodeURIComponent(m.name)}`;
+        const link = `${baseUrl}?email=${encodeURIComponent(m.email)}`;
         return `
           <button onclick="copySingleLink('${link}', '${m.name}')" class="p-2 rounded-xl bg-m3-surfaceContainerHigh hover:bg-m3-primary/10 border border-white/5 text-left transition state-layer">
             <span class="text-xs font-bold text-white block truncate">${m.name}</span>
@@ -3837,18 +3864,18 @@
 
     function copySingleLink(link, name) {
       navigator.clipboard.writeText(link);
-      alert(`Copied 1-click login link for ${name}! Paste it on WhatsApp.`);
+      alert(`Copied verified invite link for ${name}!`);
     }
 
     function copyAllWhatsAppLinks() {
       const baseUrl = window.location.origin + window.location.pathname;
-      let text = "🚀 TechFEST'26 Outreach Calling Portal (1-Click Login Links):\n\n";
+      let text = "🔒 TechFEST'26 Outreach Calling Portal (Verified Team Access):\n\n";
       TEAM_ROSTER.forEach(m => {
-        text += `• ${m.name}: ${baseUrl}?caller=${encodeURIComponent(m.name)}\n`;
+        text += `• ${m.name} (${m.email}): ${baseUrl}?email=${encodeURIComponent(m.email)}\n`;
       });
-      text += `\n👑 Admin Dashboard: ${baseUrl}?admin=techfest2026`;
+      text += `\n👑 Admin Portal: ${baseUrl}`;
       navigator.clipboard.writeText(text);
-      alert("All caller links copied to clipboard! You can paste and send directly to your WhatsApp group.");
+      alert("All caller verified links copied to clipboard!");
     }
 
     function switchView(view) {
