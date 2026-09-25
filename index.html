@@ -168,7 +168,7 @@
           </div>
           <p class="text-[10px] text-m3-outline mt-1.5 flex items-center gap-1">
             <span class="material-symbols-outlined text-[12px] text-blue-400">info</span>
-            <span>Default password for all accounts: <code class="text-blue-300 font-mono">pass@123</code></span>
+            <span>Default caller password: <code class="text-blue-300 font-mono">pass@123</code></span>
           </p>
         </div>
 
@@ -3651,6 +3651,7 @@
     // ========================================================
     const SALT = "_tf26_salt_sliet";
     const DEFAULT_PASS_HASH = "7daf34db03658417fb5ea2c6f32aa8193812c0ea39d483a9bfabfdf35d322a95"; // pass@123
+    const ADMIN_PASS_HASH = "84ad2a0fd57d9dcfe89b43ac966b70a22ddead916a9c747e7fb7509a0e48e11c"; // Sagar3299@
 
     const REGISTERED_ACCOUNTS = {
       // 👑 Administrators
@@ -3706,10 +3707,14 @@
     }
 
     function getAccountPasswordHash(email) {
+      const normalizedEmail = (email || '').toLowerCase().trim();
       try {
         const stored = JSON.parse(localStorage.getItem('TF26_ACCOUNT_PASSWORDS') || '{}');
-        if (stored[email.toLowerCase()]) return stored[email.toLowerCase()];
+        if (stored[normalizedEmail]) return stored[normalizedEmail];
       } catch (e) {}
+      if (normalizedEmail === 'sagarkumarweebly@gmail.com' || normalizedEmail === 'techfest@sliet.ac.in') {
+        return ADMIN_PASS_HASH;
+      }
       return DEFAULT_PASS_HASH;
     }
 
@@ -3747,7 +3752,7 @@
       const expectedHash = getAccountPasswordHash(email);
 
       if (inputHash !== expectedHash) {
-        showAuthError("Incorrect Password", "The password you entered is incorrect. Default password is 'pass@123' or click 'Forgot Password?' to reset.");
+        showAuthError("Incorrect Password", "The password you entered is incorrect. Default caller password is 'pass@123', or click 'Forgot Password?' to reset.");
         return;
       }
 
