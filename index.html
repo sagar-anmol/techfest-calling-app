@@ -363,7 +363,7 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-4 gap-2 text-center">
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
               <div class="bg-[#1b2438] px-3 py-2 rounded-lg border border-[#24334a]">
                 <span class="text-xs text-slate-400 block font-bold uppercase tracking-wider">Total</span>
                 <span class="text-sm sm:text-base font-black text-white" id="statTotal">0</span>
@@ -379,6 +379,10 @@
               <div class="bg-[#1b2438] px-3 py-2 rounded-lg border border-[#24334a]">
                 <span class="text-xs text-slate-400 block font-bold uppercase tracking-wider">Paid (₹)</span>
                 <span class="text-sm sm:text-base font-black text-emerald-300" id="statPaid">₹0</span>
+              </div>
+              <div class="bg-[#1b2438] px-3 py-2 rounded-lg border border-[#24334a] col-span-2 sm:col-span-1">
+                <span class="text-xs text-teal-400 block font-bold uppercase tracking-wider">Attended</span>
+                <span class="text-sm sm:text-base font-black text-teal-300" id="statAttended">0</span>
               </div>
             </div>
           </div>
@@ -511,7 +515,7 @@
         </div>
 
         <!-- KPI Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
           <div class="bg-[#131b2e] rounded-lg p-3.5 border border-[#24334a] shadow-sm">
             <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Leads</span>
             <p class="text-xl font-bold text-white mt-1" id="adminTotalLeads">212</p>
@@ -527,6 +531,10 @@
           <div class="bg-[#131b2e] rounded-lg p-3.5 border border-[#24334a] shadow-sm">
             <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Pipeline Expected (₹)</span>
             <p class="text-xl font-bold text-amber-400 mt-1" id="adminTotalExpected">₹0</p>
+          </div>
+          <div class="bg-[#131b2e] rounded-lg p-3.5 border border-[#24334a] shadow-sm col-span-2 sm:col-span-1">
+            <span class="text-[10px] font-semibold text-teal-400 uppercase tracking-wider">Total Attended</span>
+            <p class="text-xl font-bold text-teal-300 mt-1" id="adminTotalAttended">0</p>
           </div>
         </div>
 
@@ -547,6 +555,7 @@
                   <th class="py-2.5 px-2 text-center">Pending</th>
                   <th class="py-2.5 px-2">Progress</th>
                   <th class="py-2.5 px-2 text-center">Paid (₹)</th>
+                  <th class="py-2.5 px-2 text-center text-teal-400">Attended</th>
                   <th class="py-2.5 px-2 text-center">CRs</th>
                 </tr>
               </thead>
@@ -698,6 +707,23 @@
           <label class="block font-bold text-slate-300 uppercase tracking-wider text-xs mb-2">PAYMENT STATUS</label>
           <div class="flex flex-wrap gap-2" id="payStatusChips"></div>
           <input type="hidden" id="modalPayStatusVal" value="Pending">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 uppercase tracking-wider text-xs mb-2">EVENT ATTENDANCE TAG</label>
+          <div class="flex gap-2.5" id="attendanceChips">
+            <button type="button" onclick="selectAttendanceChip(true)" id="attChip_true"
+              class="flex-1 py-2.5 px-3 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 border border-[#24334a] bg-[#1b2438] text-slate-300 hover:text-white state-layer">
+              <span class="material-symbols-outlined text-base text-teal-400">check_circle</span>
+              <span>🎟️ Attended</span>
+            </button>
+            <button type="button" onclick="selectAttendanceChip(false)" id="attChip_false"
+              class="flex-1 py-2.5 px-3 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 border border-[#24334a] bg-[#1b2438] text-slate-300 hover:text-white state-layer">
+              <span class="material-symbols-outlined text-base text-slate-400">cancel</span>
+              <span>Not Attended</span>
+            </button>
+          </div>
+          <input type="hidden" id="modalAttendedVal" value="false">
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -4339,6 +4365,7 @@
             l.crNumber = '';
             l.expectedDate = '';
             l.remarks = '';
+            l.attended = false;
           });
         });
         saveCallingData();
@@ -4429,6 +4456,58 @@
       return '<span class="px-2.5 py-1 rounded-md text-xs font-bold bg-[#1b2438] text-slate-400 border border-[#24334a]">⏳ Pending Call</span>';
     }
 
+    function getAttendanceBadge(isAttended, leadId) {
+      if (isAttended) {
+        return `
+          <button onclick="toggleAttendance(${leadId})" title="Click to toggle attendance" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs sm:text-sm font-black bg-teal-500/20 text-teal-300 border border-teal-500/50 shadow-sm hover:bg-teal-500/30 transition state-layer">
+            <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+            <span>🎟️ Attended</span>
+          </button>
+        `;
+      }
+      return `
+        <button onclick="toggleAttendance(${leadId})" title="Click to toggle attendance" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-[#1b2438] text-slate-400 border border-[#24334a] hover:border-slate-500 hover:text-slate-200 transition state-layer">
+          <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+          <span>Not Attended</span>
+        </button>
+      `;
+    }
+
+    function toggleAttendance(leadId) {
+      const activeCaller = (currentUser && currentUser.role === 'caller') ? currentUser.name : 'Ayansh Sahay';
+      const leads = CALLING_DATA[activeCaller] || [];
+      const lead = leads.find(l => l.id === leadId);
+      if (!lead) return;
+
+      lead.attended = !lead.attended;
+      saveCallingData();
+      updateCallerHeader();
+      renderFilterButtons();
+      renderLeadCards();
+      renderAdminDashboard();
+
+      if (lead.attended) {
+        showToast(`Marked ${lead.name} as 🎟️ Attended!`);
+      } else {
+        showToast(`Marked ${lead.name} as Not Attended.`);
+      }
+    }
+
+    function selectAttendanceChip(isAttended) {
+      document.getElementById('modalAttendedVal').value = isAttended ? 'true' : 'false';
+      const trueBtn = document.getElementById('attChip_true');
+      const falseBtn = document.getElementById('attChip_false');
+      if (trueBtn && falseBtn) {
+        if (isAttended) {
+          trueBtn.className = 'flex-1 py-2.5 px-3 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 bg-teal-600 text-white shadow-md border border-teal-400 state-layer';
+          falseBtn.className = 'flex-1 py-2.5 px-3 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 border border-[#24334a] bg-[#1b2438] text-slate-400 hover:text-white state-layer';
+        } else {
+          trueBtn.className = 'flex-1 py-2.5 px-3 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 border border-[#24334a] bg-[#1b2438] text-slate-400 hover:text-white state-layer';
+          falseBtn.className = 'flex-1 py-2.5 px-3 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 bg-slate-700 text-white shadow-md border border-slate-500 state-layer';
+        }
+      }
+    }
+
     function updateCallerHeader() {
       const activeName = (currentUser && currentUser.role === 'caller') ? currentUser.name : 'Ayansh Sahay';
       document.getElementById('activeCallerName').textContent = activeName;
@@ -4442,10 +4521,13 @@
       const paidAmt = leads.reduce((sum, l) => sum + (parseFloat(l.amount) || 0), 0);
       const pct = leads.length > 0 ? Math.round((done / leads.length) * 100) : 0;
 
+      const attended = leads.filter(l => !!l.attended).length;
       document.getElementById('statTotal').textContent = leads.length;
       document.getElementById('statDone').textContent = done;
       document.getElementById('statPending').textContent = pending;
       document.getElementById('statPaid').textContent = '₹' + paidAmt.toLocaleString('en-IN');
+      const elAttended = document.getElementById('statAttended');
+      if (elAttended) elAttended.textContent = attended;
       
       document.getElementById('queuePercentLabel').textContent = `${pct}% (${done}/${leads.length})`;
       document.getElementById('queueProgressBar').style.width = `${pct}%`;
@@ -4463,6 +4545,8 @@
 
       const counts = {
         all: leads.length,
+        Attended: leads.filter(l => !!l.attended).length,
+        'Not Attended': leads.filter(l => !l.attended).length,
         Pending: leads.filter(l => (l.payStatus === 'Pending' || l.callStatus === 'Pending') && l.payStatus !== 'Paid').length,
         Paid: leads.filter(l => l.payStatus === 'Paid' || l.callStatus === 'Paid / Confirmed').length,
         'Expected Soon': leads.filter(l => l.payStatus === 'Expected Soon').length,
@@ -4473,6 +4557,8 @@
 
       const tabs = [
         { id: 'all', label: 'All', badgeClass: 'bg-slate-700 text-slate-200' },
+        { id: 'Attended', label: '🎟️ Attended', badgeClass: 'bg-teal-500/30 text-teal-300' },
+        { id: 'Not Attended', label: '❌ Not Attended', badgeClass: 'bg-slate-700 text-slate-300' },
         { id: 'Pending', label: '🔴 Pending', badgeClass: 'bg-rose-500/30 text-rose-300' },
         { id: 'Paid', label: '🟢 Paid', badgeClass: 'bg-emerald-500/30 text-emerald-300' },
         { id: 'Expected Soon', label: '🔵 Expected Soon', badgeClass: 'bg-blue-500/30 text-blue-300' },
@@ -4517,7 +4603,11 @@
 
       return leads.filter(lead => {
         let matchesFilter = true;
-        if (currentFilter === 'Pending') {
+        if (currentFilter === 'Attended') {
+          matchesFilter = !!lead.attended;
+        } else if (currentFilter === 'Not Attended') {
+          matchesFilter = !lead.attended;
+        } else if (currentFilter === 'Pending') {
           matchesFilter = (lead.payStatus === 'Pending' || lead.callStatus === 'Pending') && (lead.payStatus !== 'Paid');
         } else if (currentFilter === 'Paid') {
           matchesFilter = (lead.payStatus === 'Paid' || lead.callStatus === 'Paid / Confirmed');
@@ -4719,11 +4809,12 @@
             <!-- Giant Single Calling Card (Color-coded Red / Green / Blue based on Payment Status) -->
             <div class="rounded-2xl p-5 sm:p-7 shadow-2xl transition duration-150 space-y-5 ${cardTheme.border} ${cardTheme.bg}">
               
-              <!-- Card Top: Payment Status & Call Status Badges -->
+              <!-- Card Top: Payment Status, Call Status & Attendance Badges -->
               <div class="flex items-center justify-between flex-wrap gap-2 border-b border-white/10 pb-3">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center flex-wrap gap-2">
                   ${cardTheme.badge}
                   ${statusBadge}
+                  ${getAttendanceBadge(lead.attended, lead.id)}
                 </div>
                 <span class="text-xs font-mono font-bold text-slate-400">ID #${lead.id}</span>
               </div>
@@ -4793,21 +4884,24 @@
                   <span class="text-xs text-slate-400">Saves immediately</span>
                 </div>
 
-                <div class="grid grid-cols-3 sm:grid-cols-5 gap-1.5 text-xs font-bold">
-                  <button onclick="quickUpdateLead(${lead.id}, 'Paid', 'Paid / Confirmed')" class="py-2.5 px-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 transition flex items-center justify-center gap-1 text-center">
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5 text-xs font-bold">
+                  <button onclick="quickUpdateLead(${lead.id}, 'Paid', 'Paid / Confirmed')" class="py-2.5 px-1 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 transition flex items-center justify-center gap-1 text-center">
                     <span>🟢 Paid</span>
                   </button>
-                  <button onclick="quickUpdateLead(${lead.id}, 'Expected Soon', 'Interested')" class="py-2.5 px-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 transition flex items-center justify-center gap-1 text-center">
+                  <button onclick="quickUpdateLead(${lead.id}, 'Expected Soon', 'Interested')" class="py-2.5 px-1 rounded-lg bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 transition flex items-center justify-center gap-1 text-center">
                     <span>🔵 Expected</span>
                   </button>
-                  <button onclick="quickUpdateLead(${lead.id}, 'Pending', 'Interested')" class="py-2.5 px-1.5 rounded-lg bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white border border-amber-500/40 transition flex items-center justify-center gap-1 text-center">
+                  <button onclick="quickUpdateLead(${lead.id}, 'Pending', 'Interested')" class="py-2.5 px-1 rounded-lg bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white border border-amber-500/40 transition flex items-center justify-center gap-1 text-center">
                     <span>📞 Interested</span>
                   </button>
-                  <button onclick="quickUpdateLead(${lead.id}, 'Pending', 'Call Back')" class="py-2.5 px-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/40 transition flex items-center justify-center gap-1 text-center">
+                  <button onclick="quickUpdateLead(${lead.id}, 'Pending', 'Call Back')" class="py-2.5 px-1 rounded-lg bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/40 transition flex items-center justify-center gap-1 text-center">
                     <span>⏰ Callback</span>
                   </button>
-                  <button onclick="quickUpdateLead(${lead.id}, 'Pending', 'Not Reachable')" class="py-2.5 px-1.5 rounded-lg bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 transition flex items-center justify-center gap-1 text-center">
-                    <span>🚫 Unreach.</span>
+                  <button onclick="quickUpdateLead(${lead.id}, 'Pending', 'Not Reachable')" class="py-2.5 px-1 rounded-lg bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 transition flex items-center justify-center gap-1 text-center">
+                    <span>🚫 Unreach</span>
+                  </button>
+                  <button onclick="toggleAttendance(${lead.id})" class="py-2.5 px-1 rounded-lg ${lead.attended ? 'bg-teal-600 text-white shadow-md border border-teal-400' : 'bg-teal-600/20 text-teal-300 border border-teal-500/40 hover:bg-teal-600 hover:text-white'} transition flex items-center justify-center gap-1 text-center">
+                    <span>${lead.attended ? '🎟️ Attended' : '🎟️ Mark Att.'}</span>
                   </button>
                 </div>
 
@@ -4877,6 +4971,7 @@
                   <h3 class="text-base sm:text-lg font-black text-white truncate">${lead.name}</h3>
                   ${cardTheme.badge}
                   ${statusBadge}
+                  ${getAttendanceBadge(lead.attended, lead.id)}
                 </div>
                 
                 <p class="text-xs sm:text-sm text-slate-300 font-semibold flex items-center gap-1.5 truncate">
@@ -4927,6 +5022,9 @@
               </div>
 
               <div class="flex items-center gap-1.5">
+                <button onclick="toggleAttendance(${lead.id})" class="px-2.5 py-1.5 rounded-lg ${lead.attended ? 'bg-teal-600 text-white' : 'bg-teal-600/20 text-teal-300 border border-teal-500/40 hover:bg-teal-600 hover:text-white'} text-xs font-bold transition">
+                  ${lead.attended ? '🎟️ Attended' : 'Mark Att.'}
+                </button>
                 <button onclick="quickUpdateLead(${lead.id}, 'Paid', 'Paid / Confirmed')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 text-xs font-bold transition">
                   🟢 Paid
                 </button>
@@ -4972,6 +5070,7 @@
       }).join('');
 
       document.getElementById('modalPayStatusVal').value = lead.payStatus || 'Pending';
+      selectAttendanceChip(!!lead.attended);
       const payChipsContainer = document.getElementById('payStatusChips');
       payChipsContainer.innerHTML = PAY_STATUS_OPTIONS.map(opt => {
         const isSelected = (lead.payStatus || 'Pending') === opt;
@@ -5037,6 +5136,7 @@
 
       lead.callStatus = document.getElementById('modalCallStatusVal').value;
       lead.payStatus = document.getElementById('modalPayStatusVal').value;
+      lead.attended = document.getElementById('modalAttendedVal').value === 'true';
       lead.amount = document.getElementById('modalAmount').value;
       lead.crNumber = document.getElementById('modalCrNumber').value.trim();
       lead.expectedDate = document.getElementById('modalExpDate').value;
@@ -5123,12 +5223,14 @@
         let called = 0;
         let paidAmt = 0;
         let crCount = 0;
+        let attendedCount = 0;
 
         leads.forEach(l => {
           if (l.callStatus !== 'Pending') called++;
           if (l.payStatus === 'Paid') paidAmt += parseFloat(l.amount) || 0;
           if (l.payStatus === 'Expected Soon') totalExpectedAmt += parseFloat(l.amount) || 0;
           if (l.crNumber) crCount++;
+          if (l.attended) attendedCount++;
         });
 
         totalDone += called;
@@ -5144,14 +5246,22 @@
           pending: pending,
           pct: pct,
           paidAmt: paidAmt,
+          attendedCount: attendedCount,
           crCount: crCount
         });
+      });
+
+      let totalAttended = 0;
+      Object.keys(CALLING_DATA).forEach(cname => {
+        totalAttended += (CALLING_DATA[cname] || []).filter(l => !!l.attended).length;
       });
 
       document.getElementById('adminTotalLeads').textContent = totalLeads;
       document.getElementById('adminCompletedCalls').textContent = totalDone;
       document.getElementById('adminTotalPaid').textContent = '₹' + totalPaidAmt.toLocaleString('en-IN');
       document.getElementById('adminTotalExpected').textContent = '₹' + totalExpectedAmt.toLocaleString('en-IN');
+      const elAdminAttended = document.getElementById('adminTotalAttended');
+      if (elAdminAttended) elAdminAttended.textContent = totalAttended;
 
       const tb = document.getElementById('leaderboardBody');
       tb.innerHTML = leaderboardData.map(row => `
@@ -5167,17 +5277,18 @@
             <span class="text-[10px] text-slate-500 mt-0.5 block font-mono">${row.pct}%</span>
           </td>
           <td class="py-2.5 px-2 text-center text-emerald-300 font-bold font-mono">₹${row.paidAmt.toLocaleString('en-IN')}</td>
+          <td class="py-2.5 px-2 text-center text-teal-400 font-bold font-mono">${row.attendedCount}</td>
           <td class="py-2.5 px-2 text-center text-purple-400 font-bold font-mono">${row.crCount}</td>
         </tr>
       `).join('');
     }
 
     function exportCRCSV() {
-      const rows = [["Caller", "Candidate Name", "Candidate Mobile", "College", "Class Representative (CR) Number", "Payment Status", "Expected Date", "Remarks"]];
+      const rows = [["Caller", "Candidate Name", "Candidate Mobile", "College", "Attendance", "Class Representative (CR) Number", "Payment Status", "Expected Date", "Remarks"]];
       Object.keys(CALLING_DATA).forEach(cname => {
         CALLING_DATA[cname].forEach(l => {
           if (l.crNumber) {
-            rows.push([cname, l.name, l.mobile, l.college, l.crNumber, l.payStatus, l.expectedDate, l.remarks]);
+            rows.push([cname, l.name, l.mobile, l.college, l.attended ? "Attended" : "Not Attended", l.crNumber, l.payStatus, l.expectedDate, l.remarks]);
           }
         });
       });
