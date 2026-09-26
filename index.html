@@ -273,15 +273,19 @@
       <!-- Sync Status Overview -->
       <div class="bg-[#1b2438] p-3.5 rounded-lg border border-[#24334a] space-y-2">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold text-slate-300">Spreadsheet Target:</span>
-          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">Production Sheet</span>
+          <span class="text-xs font-semibold text-slate-300">Sync Status:</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Always Synced (25s Cycle)</span>
+          </span>
         </div>
-        <div class="text-xs text-white font-medium break-all">
-          TechFEST26 SLIET - Outreach Calling &amp; CR Tracker
+        <div class="flex items-center justify-between text-xs text-white">
+          <span class="text-slate-400">Target:</span>
+          <span class="font-medium">TechFEST26 SLIET - Outreach Calling &amp; CR Tracker</span>
         </div>
-        <div class="flex items-center justify-between pt-1 border-t border-[#24334a]/60">
-          <span class="text-[11px] text-slate-400">Public Access Permission:</span>
-          <span class="text-[11px] text-emerald-400 font-bold flex items-center gap-1">
+        <div class="flex items-center justify-between pt-1 border-t border-[#24334a]/60 text-[11px]">
+          <span class="text-slate-400" id="modalLastSyncTime">Last synced: Initializing...</span>
+          <span class="text-emerald-400 font-bold flex items-center gap-1">
             <span class="material-symbols-outlined text-xs">visibility</span>
             <span>View Only (Protected)</span>
           </span>
@@ -295,13 +299,14 @@
           <span>Open Google Sheet in Browser (View Only)</span>
         </a>
 
-        <div class="flex gap-2">
-          <button onclick="flushSyncQueue()" class="flex-1 py-2 px-3 rounded-lg bg-[#1b2438] hover:bg-[#222f47] text-slate-200 text-xs font-semibold border border-[#24334a] transition flex items-center justify-center gap-1.5 state-layer">
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="pullLeadsFromGoogleSheet()" class="py-2 px-3 rounded-lg bg-[#1b2438] hover:bg-[#222f47] text-slate-200 text-xs font-semibold border border-[#24334a] transition flex items-center justify-center gap-1.5 state-layer">
+            <span class="material-symbols-outlined text-xs text-emerald-400">cloud_download</span>
+            <span>Pull Updates Now</span>
+          </button>
+          <button onclick="flushSyncQueue()" class="py-2 px-3 rounded-lg bg-[#1b2438] hover:bg-[#222f47] text-slate-200 text-xs font-semibold border border-[#24334a] transition flex items-center justify-center gap-1.5 state-layer">
             <span class="material-symbols-outlined text-xs text-blue-400">sync</span>
             <span>Flush Queue Now</span>
-          </button>
-          <button onclick="closeSheetSyncModal()" class="flex-1 py-2 px-3 rounded-lg bg-[#1b2438] hover:bg-[#222f47] text-slate-300 text-xs font-semibold border border-[#24334a] transition text-center">
-            Close
           </button>
         </div>
       </div>
@@ -4091,12 +4096,19 @@
     // 📊 REAL-TIME GOOGLE SHEET SYNC & AUDIT ENGINE
     // SPREADSHEET ID: 1gPlVQ10QzJsnss_HAxRcE9zLoyjgQO4GcksgqZ_bxzg
     // ========================================================
+    const DEFAULT_GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwQ8Jg5jKJNHho5QqnbLRI1R3n87ZLYaC7gUkgJJ0gRukbb2FrmOszChsIpANuEigV2Dw/exec';
     const GOOGLE_SHEET_API_KEY = 'TF26_GOOGLE_SHEET_API_URL';
     const SYNC_QUEUE_KEY = 'TF26_SHEET_SYNC_QUEUE';
     const PUBLIC_SHEET_VIEW_URL = 'https://docs.google.com/spreadsheets/d/1gPlVQ10QzJsnss_HAxRcE9zLoyjgQO4GcksgqZ_bxzg/edit?usp=sharing';
 
+    let lastSyncTimestamp = null;
+    let isPullingLeads = false;
+    let autoSyncInterval = null;
+
     function getGoogleSheetApiUrl() {
-      return localStorage.getItem(GOOGLE_SHEET_API_KEY) || '';
+      const custom = localStorage.getItem(GOOGLE_SHEET_API_KEY);
+      if (custom && custom.trim() !== '') return custom.trim();
+      return DEFAULT_GOOGLE_SHEET_API_URL;
     }
 
     function setGoogleSheetApiUrl(url) {
@@ -4151,6 +4163,7 @@
           body: JSON.stringify(payload)
         });
 
+        lastSyncTimestamp = new Date();
         updateSyncStatusUI('synced');
         flushSyncQueue();
       } catch (err) {
@@ -4180,6 +4193,7 @@
           });
           queue.shift();
           localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(queue));
+          lastSyncTimestamp = new Date();
         } catch (e) {
           break;
         }
@@ -4188,8 +4202,34 @@
       updateSyncStatusUI();
     }
 
+    function startContinuousAutoSync() {
+      if (autoSyncInterval) clearInterval(autoSyncInterval);
+      // Auto-sync every 20 seconds continuously
+      autoSyncInterval = setInterval(async () => {
+        if (!navigator.onLine) {
+          updateSyncStatusUI('offline');
+          return;
+        }
+        await flushSyncQueue();
+        await pullLeadsFromGoogleSheet({ silent: true });
+      }, 20000);
+    }
+
     window.addEventListener('online', () => {
       flushSyncQueue();
+      pullLeadsFromGoogleSheet({ silent: true });
+    });
+
+    window.addEventListener('focus', () => {
+      flushSyncQueue();
+      pullLeadsFromGoogleSheet({ silent: true });
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        flushSyncQueue();
+        pullLeadsFromGoogleSheet({ silent: true });
+      }
     });
 
     function syncLeadOutcomeToSheet(lead, callerName) {
@@ -4247,22 +4287,25 @@
       updateSyncStatusUI('syncing');
 
       try {
-        const pingUrl = url + (url.includes('?') ? '&' : '?') + 'action=ping';
+        const pingUrl = url + (url.includes('?') ? '&' : '?') + 'action=ping&_t=' + Date.now();
         const res = await fetch(pingUrl);
         const data = await res.json();
         if (data && data.status === 'ok') {
           setGoogleSheetApiUrl(url);
+          lastSyncTimestamp = new Date();
           const pingLabel = document.getElementById('syncLastPingTime');
           if (pingLabel) pingLabel.textContent = 'Last ping: Connected ' + new Date().toLocaleTimeString();
           showToast('Connected to Google Sheet successfully! 🎉');
           updateSyncStatusUI('synced');
           flushSyncQueue();
+          pullLeadsFromGoogleSheet({ silent: true });
         } else {
           throw new Error((data && data.message) || 'Invalid response');
         }
       } catch (err) {
         if (url.includes('script.google.com/macros/s/')) {
           setGoogleSheetApiUrl(url);
+          lastSyncTimestamp = new Date();
           const pingLabel = document.getElementById('syncLastPingTime');
           if (pingLabel) pingLabel.textContent = 'Last ping: Saved ' + new Date().toLocaleTimeString();
           showToast('Webhook endpoint saved & active! 🚀');
@@ -4325,6 +4368,7 @@
           })
         });
 
+        lastSyncTimestamp = new Date();
         showToast(`Pushed all ${leadsPayload.length} leads to Google Sheet! 📊`);
         updateSyncStatusUI('synced');
       } catch (e) {
@@ -4337,59 +4381,82 @@
       }
     }
 
-    async function pullLeadsFromGoogleSheet() {
+    async function pullLeadsFromGoogleSheet(options = {}) {
+      const silent = !!options.silent;
       const apiUrl = getGoogleSheetApiUrl();
       if (!apiUrl) {
-        alert("Please set and test your Google Apps Script Web App URL first!");
+        if (!silent) alert("Please set and test your Google Apps Script Web App URL first!");
         return;
       }
 
+      if (isPullingLeads) return;
+      isPullingLeads = true;
+
       const btn = document.getElementById('pullAllBtn');
-      if (btn) {
+      if (btn && !silent) {
         btn.disabled = true;
         btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span><span>Pulling...</span>';
       }
 
       try {
-        const pullUrl = apiUrl + (apiUrl.includes('?') ? '&' : '?') + 'action=getData';
+        const pullUrl = apiUrl + (apiUrl.includes('?') ? '&' : '?') + 'action=getData&_t=' + Date.now();
         const res = await fetch(pullUrl);
         const result = await res.json();
 
         if (result && result.success && result.data) {
           let updatedCount = 0;
+          const modalOpen = !document.getElementById('outcomeModal').classList.contains('hidden');
+          const activeEditingLeadId = modalOpen ? parseInt(document.getElementById('modalLeadId').value) : null;
+
           Object.keys(result.data).forEach(cname => {
             if (CALLING_DATA[cname]) {
               result.data[cname].forEach(remLead => {
                 const locLead = CALLING_DATA[cname].find(l => l.name === remLead.name || l.mobile === remLead.mobile);
                 if (locLead) {
-                  if (remLead.callStatus && remLead.callStatus !== 'Pending') locLead.callStatus = remLead.callStatus;
-                  if (remLead.payStatus && remLead.payStatus !== 'Pending') locLead.payStatus = remLead.payStatus;
-                  if (remLead.amount) locLead.amount = remLead.amount;
-                  if (remLead.crNumber) locLead.crNumber = remLead.crNumber;
-                  if (remLead.expectedDate) locLead.expectedDate = remLead.expectedDate;
-                  if (remLead.remarks) locLead.remarks = remLead.remarks;
-                  if (remLead.attended !== undefined) locLead.attended = remLead.attended;
-                  updatedCount++;
+                  // Never overwrite the lead that is actively open in the outcome modal right now
+                  if (modalOpen && locLead.id === activeEditingLeadId) return;
+
+                  let changed = false;
+                  if (remLead.callStatus && remLead.callStatus !== locLead.callStatus) { locLead.callStatus = remLead.callStatus; changed = true; }
+                  if (remLead.payStatus && remLead.payStatus !== locLead.payStatus) { locLead.payStatus = remLead.payStatus; changed = true; }
+                  if (remLead.amount !== undefined && String(remLead.amount) !== String(locLead.amount)) { locLead.amount = remLead.amount; changed = true; }
+                  if (remLead.crNumber !== undefined && String(remLead.crNumber) !== String(locLead.crNumber || '')) { locLead.crNumber = remLead.crNumber; changed = true; }
+                  if (remLead.expectedDate !== undefined && String(remLead.expectedDate) !== String(locLead.expectedDate || '')) { locLead.expectedDate = remLead.expectedDate; changed = true; }
+                  if (remLead.remarks !== undefined && String(remLead.remarks) !== String(locLead.remarks || '')) { locLead.remarks = remLead.remarks; changed = true; }
+                  if (remLead.attended !== undefined && !!remLead.attended !== !!locLead.attended) { locLead.attended = !!remLead.attended; changed = true; }
+
+                  if (changed) updatedCount++;
                 }
               });
             }
           });
 
-          saveCallingData();
-          updateCallerHeader();
-          renderFilterButtons();
-          renderLeadCards();
-          renderCRDirectory();
-          renderAdminDashboard();
-          showToast(`Synced ${updatedCount} leads from Google Sheet! 📥`);
+          lastSyncTimestamp = new Date();
+
+          if (updatedCount > 0) {
+            saveCallingData();
+            updateCallerHeader();
+            renderFilterButtons();
+            renderLeadCards();
+            renderCRDirectory();
+            if (currentUser && currentUser.role === 'admin') {
+              renderAdminDashboard();
+              renderAdminMasterLeads();
+            }
+            if (!silent) showToast(`Synced ${updatedCount} updated leads from Google Sheet! 📥`);
+          } else if (!silent) {
+            showToast("All leads are already up-to-date with Google Sheet! 🟢");
+          }
+
           updateSyncStatusUI('synced');
         } else {
           throw new Error((result && result.error) || 'Failed to read data');
         }
       } catch (err) {
-        showToast("Pull failed: " + err.message);
+        if (!silent) showToast("Pull failed: " + err.message);
       } finally {
-        if (btn) {
+        isPullingLeads = false;
+        if (btn && !silent) {
           btn.disabled = false;
           btn.innerHTML = '<span class="material-symbols-outlined text-sm">cloud_download</span><span>Pull Leads</span>';
         }
@@ -4401,8 +4468,20 @@
       const icon = document.getElementById('syncStatusIcon');
       const label = document.getElementById('syncStatusLabel');
       const badge = document.getElementById('adminSheetBadge');
+      const modalLastSync = document.getElementById('modalLastSyncTime');
       const apiUrl = getGoogleSheetApiUrl();
       const queue = getSyncQueue();
+
+      const timeStr = lastSyncTimestamp ? lastSyncTimestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Ready';
+      if (modalLastSync) modalLastSync.textContent = 'Last synced: ' + timeStr;
+
+      if (!navigator.onLine) {
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-rose-500';
+        if (icon) { icon.className = 'material-symbols-outlined text-xs text-rose-400'; icon.textContent = 'wifi_off'; }
+        if (label) label.textContent = 'Offline';
+        if (badge) { badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 uppercase'; badge.textContent = 'Offline'; }
+        return;
+      }
 
       if (!apiUrl) {
         if (dot) dot.className = 'w-2 h-2 rounded-full bg-slate-500';
@@ -4416,22 +4495,22 @@
         if (dot) dot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
         if (icon) { icon.className = 'material-symbols-outlined text-xs text-amber-400 animate-spin'; icon.textContent = 'sync'; }
         if (label) label.textContent = 'Syncing...';
-        if (badge) { badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase'; badge.textContent = 'Syncing...'; }
+        if (badge) { badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase'; badge.textContent = 'Syncing to Sheet...'; }
       } else if (queue.length > 0 || status === 'queued') {
-        if (dot) dot.className = 'w-2 h-2 rounded-full bg-amber-400';
-        if (icon) { icon.className = 'material-symbols-outlined text-xs text-amber-400'; icon.textContent = 'cloud_queue'; }
-        if (label) label.textContent = `${queue.length} Pending`;
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse';
+        if (icon) { icon.className = 'material-symbols-outlined text-xs text-amber-400'; icon.textContent = 'cloud_upload'; }
+        if (label) label.textContent = `${queue.length} Queued`;
         if (badge) { badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase'; badge.textContent = `${queue.length} Queued`; }
       } else if (status === 'error') {
         if (dot) dot.className = 'w-2 h-2 rounded-full bg-rose-500';
-        if (icon) { icon.className = 'material-symbols-outlined text-xs text-rose-400'; icon.textContent = 'cloud_sync'; }
+        if (icon) { icon.className = 'material-symbols-outlined text-xs text-rose-400'; icon.textContent = 'sync_problem'; }
         if (label) label.textContent = 'Sync Error';
         if (badge) { badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 uppercase'; badge.textContent = 'Connection Error'; }
       } else {
-        if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
         if (icon) { icon.className = 'material-symbols-outlined text-xs text-emerald-400'; icon.textContent = 'cloud_done'; }
-        if (label) label.textContent = 'Sheet Synced';
-        if (badge) { badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase'; badge.textContent = 'Connected'; }
+        if (label) label.textContent = 'Always Synced ⚡';
+        if (badge) { badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase'; badge.textContent = 'Real-Time Auto-Sync Active'; }
       }
     }
 
@@ -4441,6 +4520,7 @@
     }
 
     function openSheetSyncModal() {
+      updateSyncStatusUI();
       document.getElementById('sheetSyncModal').classList.remove('hidden');
     }
 
@@ -4885,6 +4965,7 @@ function sendJsonResponse(obj) {
       // Default: show login screen
       document.getElementById('authScreen').classList.remove('hidden');
       document.getElementById('appShell').classList.add('hidden');
+      updateSyncStatusUI();
     }
 
     function startAuthenticatedSession() {
@@ -4938,6 +5019,8 @@ function sendJsonResponse(obj) {
 
       updateSyncStatusUI();
       flushSyncQueue();
+      pullLeadsFromGoogleSheet({ silent: true });
+      startContinuousAutoSync();
       const adminSheetInput = document.getElementById('adminSheetApiInput');
       if (adminSheetInput && !adminSheetInput.value) {
         adminSheetInput.value = getGoogleSheetApiUrl();
