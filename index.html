@@ -251,6 +251,74 @@
 
 
   <!-- ======================================================== -->
+  <!-- 📊 GOOGLE SHEET SYNC & AUDIT MODAL -->
+  <!-- ======================================================== -->
+  <div id="sheetSyncModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="relative w-full max-w-lg bg-[#131b2e] rounded-xl p-5 sm:p-6 border border-[#24334a] shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-[#24334a] pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-lg bg-emerald-600/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-sm">
+            <span class="material-symbols-outlined text-lg">cloud_sync</span>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Google Sheet Live Sync &amp; Audit</h3>
+            <p class="text-[11px] text-slate-400">Real-time candidate updates &amp; audit logging</p>
+          </div>
+        </div>
+        <button onclick="closeSheetSyncModal()" class="w-8 h-8 rounded-lg bg-[#1b2438] text-slate-400 hover:text-white flex items-center justify-center border border-[#24334a] transition">
+          <span class="material-symbols-outlined text-base">close</span>
+        </button>
+      </div>
+
+      <!-- Sync Status Overview -->
+      <div class="bg-[#1b2438] p-3.5 rounded-lg border border-[#24334a] space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-slate-300">Spreadsheet Target:</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">Production Sheet</span>
+        </div>
+        <div class="text-xs text-white font-medium break-all">
+          TechFEST26 SLIET - Outreach Calling &amp; CR Tracker
+        </div>
+        <div class="flex items-center justify-between pt-1 border-t border-[#24334a]/60">
+          <span class="text-[11px] text-slate-400">Public Access Permission:</span>
+          <span class="text-[11px] text-emerald-400 font-bold flex items-center gap-1">
+            <span class="material-symbols-outlined text-xs">visibility</span>
+            <span>View Only (Protected)</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="space-y-2 pt-1">
+        <a href="https://docs.google.com/spreadsheets/d/1gPlVQ10QzJsnss_HAxRcE9zLoyjgQO4GcksgqZ_bxzg/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 transition state-layer">
+          <span class="material-symbols-outlined text-sm">open_in_new</span>
+          <span>Open Google Sheet in Browser (View Only)</span>
+        </a>
+
+        <div class="flex gap-2">
+          <button onclick="flushSyncQueue()" class="flex-1 py-2 px-3 rounded-lg bg-[#1b2438] hover:bg-[#222f47] text-slate-200 text-xs font-semibold border border-[#24334a] transition flex items-center justify-center gap-1.5 state-layer">
+            <span class="material-symbols-outlined text-xs text-blue-400">sync</span>
+            <span>Flush Queue Now</span>
+          </button>
+          <button onclick="closeSheetSyncModal()" class="flex-1 py-2 px-3 rounded-lg bg-[#1b2438] hover:bg-[#222f47] text-slate-300 text-xs font-semibold border border-[#24334a] transition text-center">
+            Close
+          </button>
+        </div>
+      </div>
+
+      <!-- Audit Stream Notice -->
+      <div class="p-3 rounded-lg bg-[#131b2e] border border-[#24334a] text-[11px] text-slate-400 leading-relaxed space-y-1">
+        <p class="font-bold text-slate-300 flex items-center gap-1">
+          <span class="material-symbols-outlined text-xs text-amber-400">verified_user</span>
+          <span>Automatic Audit Streaming Active</span>
+        </p>
+        <p>Every lead outcome saved, payment recorded, attendance tag toggled, and user login/logout event automatically streams into the <code class="text-blue-300 font-mono">Audit Logs</code> sheet tab in your Google Spreadsheet.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ======================================================== -->
   <!-- 📱 MAIN APP SHELL -->
   <!-- ======================================================== -->
   <div id="appShell" class="flex-1 flex flex-col hidden pb-6">
@@ -275,6 +343,13 @@
         <button id="pwaInstallBtn" onclick="triggerPwaInstall()" class="hidden px-3 py-1.5 rounded-md bg-emerald-600/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold hover:bg-emerald-600/20 transition flex items-center gap-1.5 state-layer">
           <span class="material-symbols-outlined text-sm">install_mobile</span>
           <span>Install App</span>
+        </button>
+
+        <!-- Live Google Sheet Sync Status Indicator -->
+        <button id="topSheetSyncBtn" onclick="openSheetSyncModal()" title="Google Sheet Live Sync Status" class="px-2.5 py-1.5 rounded-md bg-[#1b2438] hover:bg-[#222f47] text-xs font-medium text-slate-200 hover:text-white flex items-center gap-1.5 border border-[#24334a] transition state-layer">
+          <span class="w-2 h-2 rounded-full bg-emerald-400" id="syncStatusDot"></span>
+          <span class="material-symbols-outlined text-xs text-emerald-400" id="syncStatusIcon">cloud_sync</span>
+          <span class="text-[11px] hidden sm:inline" id="syncStatusLabel">Sheet Synced</span>
         </button>
 
         <!-- In-Dashboard Reset Password Button (Admin Only) -->
@@ -488,6 +563,79 @@
                 <!-- Rendered via JS -->
               </tbody>
             </table>
+          </div>
+        </div>
+
+        <!-- Google Sheet Real-Time Sync & Master Audit Engine -->
+        <div class="bg-[#131b2e] rounded-lg p-4 sm:p-5 border border-[#24334a] shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#24334a] pb-3.5">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-emerald-400 text-lg">cloud_sync</span>
+                <h3 class="text-sm font-bold text-white">Google Sheet Live Sync &amp; Audit Engine</h3>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase" id="adminSheetBadge">Connected</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-1">Every caller outcome, payment, attendance tag, remark, and login/logout audit event streams directly into your Google Sheet.</p>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <a href="https://docs.google.com/spreadsheets/d/1gPlVQ10QzJsnss_HAxRcE9zLoyjgQO4GcksgqZ_bxzg/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-md bg-[#1b2438] hover:bg-[#222f47] text-emerald-400 text-xs font-bold transition flex items-center gap-1.5 border border-emerald-500/30 state-layer">
+                <span class="material-symbols-outlined text-sm">open_in_new</span>
+                <span>Open Google Sheet (View Only)</span>
+              </a>
+              <button onclick="toggleSheetSetupDrawer()" class="px-3 py-1.5 rounded-md bg-blue-600/15 hover:bg-blue-600/25 text-blue-300 text-xs font-bold transition flex items-center gap-1.5 border border-blue-500/30 state-layer">
+                <span class="material-symbols-outlined text-sm">integration_instructions</span>
+                <span>Setup / API Code</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Sync Controls & Webhook URL -->
+          <div class="space-y-3">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                <span>Google Apps Script Web App Endpoint URL (POST / GET Webhook)</span>
+                <span class="text-[10px] text-slate-500" id="syncLastPingTime">Last ping: Ready</span>
+              </label>
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <input type="url" id="adminSheetApiInput" placeholder="https://script.google.com/macros/s/.../exec"
+                  class="flex-1 bg-[#1b2438] border border-[#24334a] rounded-lg px-3.5 py-2 text-xs sm:text-sm text-white placeholder-slate-500 outline-none focus:border-blue-500 transition font-mono">
+                <div class="flex items-center gap-2">
+                  <button onclick="saveAndTestSheetApi()" class="px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 shadow-sm state-layer">
+                    <span class="material-symbols-outlined text-sm">wifi_tethering</span>
+                    <span>Test &amp; Save</span>
+                  </button>
+                  <button onclick="syncAllLeadsToSheet()" id="syncAllBtn" class="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 shadow-sm state-layer">
+                    <span class="material-symbols-outlined text-sm">cloud_upload</span>
+                    <span>Push All Leads</span>
+                  </button>
+                  <button onclick="pullLeadsFromGoogleSheet()" id="pullAllBtn" class="px-3.5 py-2 rounded-lg bg-[#1b2438] hover:bg-[#222f47] text-slate-200 text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 border border-[#24334a] state-layer">
+                    <span class="material-symbols-outlined text-sm">cloud_download</span>
+                    <span>Pull Leads</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Setup Instructions Drawer (Hidden by default, toggleable) -->
+            <div id="sheetSetupDrawer" class="hidden p-3.5 rounded-lg bg-[#1b2438]/80 border border-[#24334a] space-y-3">
+              <div class="flex items-center justify-between">
+                <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-amber-400 text-sm">build_circle</span>
+                  <span>1-Minute Google Apps Script Web App Setup</span>
+                </h4>
+                <button onclick="copyAppsScriptCode()" class="px-2.5 py-1 rounded bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 text-xs font-bold border border-blue-500/30 transition flex items-center gap-1 state-layer">
+                  <span class="material-symbols-outlined text-xs">content_copy</span>
+                  <span>Copy Script Code</span>
+                </button>
+              </div>
+              <ol class="text-xs text-slate-300 space-y-1.5 list-decimal list-inside leading-relaxed">
+                <li>Open the <a href="https://docs.google.com/spreadsheets/d/1gPlVQ10QzJsnss_HAxRcE9zLoyjgQO4GcksgqZ_bxzg/edit" target="_blank" class="text-blue-400 underline font-semibold">Google Sheet</a>.</li>
+                <li>In top menu: <code class="bg-[#131b2e] px-1.5 py-0.5 rounded text-slate-200 font-mono">Extensions &gt; Apps Script</code>.</li>
+                <li>Paste the script code (from the Copy button above), then click <b>Save</b> (Ctrl+S).</li>
+                <li>Click <b>Deploy &gt; New deployment</b> &gt; Select type: <b>Web app</b> &gt; Execute as: <b>Me</b> &gt; Who has access: <b>Anyone</b> &gt; Click <b>Deploy</b>.</li>
+                <li>Copy the resulting Web App URL, paste it into the field above, and click <b>Test &amp; Save</b>!</li>
+              </ol>
+            </div>
           </div>
         </div>
 
@@ -3928,9 +4076,547 @@
         localStorage.setItem(AUTH_LOGS_KEY, JSON.stringify(logs));
       } catch (e) {}
 
+      // Real-Time Google Sheet Audit Stream
+      try {
+        syncAuthLogToSheet(entry);
+      } catch(e) {}
+
       // If Admin View is active, dynamically refresh audit table & metrics
       if (currentUser && currentUser.role === 'admin' && currentView === 'admin') {
         renderAuthLogsTable();
+      }
+    }
+
+    // ========================================================
+    // 📊 REAL-TIME GOOGLE SHEET SYNC & AUDIT ENGINE
+    // SPREADSHEET ID: 1gPlVQ10QzJsnss_HAxRcE9zLoyjgQO4GcksgqZ_bxzg
+    // ========================================================
+    const GOOGLE_SHEET_API_KEY = 'TF26_GOOGLE_SHEET_API_URL';
+    const SYNC_QUEUE_KEY = 'TF26_SHEET_SYNC_QUEUE';
+    const PUBLIC_SHEET_VIEW_URL = 'https://docs.google.com/spreadsheets/d/1gPlVQ10QzJsnss_HAxRcE9zLoyjgQO4GcksgqZ_bxzg/edit?usp=sharing';
+
+    function getGoogleSheetApiUrl() {
+      return localStorage.getItem(GOOGLE_SHEET_API_KEY) || '';
+    }
+
+    function setGoogleSheetApiUrl(url) {
+      if (url && url.trim()) {
+        localStorage.setItem(GOOGLE_SHEET_API_KEY, url.trim());
+      } else {
+        localStorage.removeItem(GOOGLE_SHEET_API_KEY);
+      }
+      updateSyncStatusUI();
+    }
+
+    function getSyncQueue() {
+      try {
+        return JSON.parse(localStorage.getItem(SYNC_QUEUE_KEY) || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function enqueueSyncItem(payload) {
+      try {
+        const queue = getSyncQueue();
+        queue.push({
+          id: 'sync_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+          payload: payload,
+          queuedAt: new Date().toISOString()
+        });
+        if (queue.length > 300) queue.shift();
+        localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(queue));
+      } catch (e) {}
+      updateSyncStatusUI('queued');
+    }
+
+    async function sendSheetPayload(payload) {
+      const apiUrl = getGoogleSheetApiUrl();
+      if (!apiUrl) {
+        enqueueSyncItem(payload);
+        return;
+      }
+
+      updateSyncStatusUI('syncing');
+
+      try {
+        // Mode 'no-cors' with 'text/plain' ensures browser does not trigger preflight OPTIONS
+        // which Google Apps Script web apps do not handle. The POST body is still received & processed!
+        await fetch(apiUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        updateSyncStatusUI('synced');
+        flushSyncQueue();
+      } catch (err) {
+        console.warn('Google Sheet sync deferred to queue:', err);
+        enqueueSyncItem(payload);
+      }
+    }
+
+    let isFlushingQueue = false;
+    async function flushSyncQueue() {
+      if (isFlushingQueue) return;
+      const apiUrl = getGoogleSheetApiUrl();
+      if (!apiUrl) return;
+
+      const queue = getSyncQueue();
+      if (queue.length === 0) return;
+
+      isFlushingQueue = true;
+      while (queue.length > 0) {
+        const item = queue[0];
+        try {
+          await fetch(apiUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(item.payload)
+          });
+          queue.shift();
+          localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(queue));
+        } catch (e) {
+          break;
+        }
+      }
+      isFlushingQueue = false;
+      updateSyncStatusUI();
+    }
+
+    window.addEventListener('online', () => {
+      flushSyncQueue();
+    });
+
+    function syncLeadOutcomeToSheet(lead, callerName) {
+      if (!lead) return;
+      const payload = {
+        action: 'updateLead',
+        callerName: callerName || 'Balwant',
+        leadId: lead.id,
+        leadName: lead.name,
+        leadPhone: lead.mobile,
+        callStatus: lead.callStatus || 'Pending',
+        payStatus: lead.payStatus || 'Pending',
+        amount: lead.amount || '',
+        crNumber: lead.crNumber || '',
+        expectedDate: lead.expectedDate || '',
+        remarks: lead.remarks || '',
+        attended: !!lead.attended,
+        updatedBy: (currentUser && currentUser.name) ? currentUser.name : (callerName || 'Caller'),
+        timestamp: new Date().toLocaleString('en-IN', {
+          day: '2-digit', month: 'short', year: 'numeric',
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
+          hour12: true
+        }) + ' IST'
+      };
+      sendSheetPayload(payload);
+    }
+
+    function syncAuthLogToSheet(entry) {
+      if (!entry) return;
+      const payload = {
+        action: 'logAuth',
+        event: entry.event,
+        userEmail: entry.email,
+        role: entry.role,
+        status: entry.status,
+        details: entry.details,
+        device: entry.device,
+        timestamp: (entry.displayTime || new Date().toLocaleString('en-IN')) + ' IST'
+      };
+      sendSheetPayload(payload);
+    }
+
+    async function saveAndTestSheetApi() {
+      const input = document.getElementById('adminSheetApiInput');
+      const url = input ? input.value.trim() : '';
+
+      if (!url) {
+        setGoogleSheetApiUrl('');
+        showToast('Google Sheet sync endpoint cleared.');
+        updateSyncStatusUI();
+        return;
+      }
+
+      showToast('Testing Google Sheet connection...');
+      updateSyncStatusUI('syncing');
+
+      try {
+        const pingUrl = url + (url.includes('?') ? '&' : '?') + 'action=ping';
+        const res = await fetch(pingUrl);
+        const data = await res.json();
+        if (data && data.status === 'ok') {
+          setGoogleSheetApiUrl(url);
+          const pingLabel = document.getElementById('syncLastPingTime');
+          if (pingLabel) pingLabel.textContent = 'Last ping: Connected ' + new Date().toLocaleTimeString();
+          showToast('Connected to Google Sheet successfully! 🎉');
+          updateSyncStatusUI('synced');
+          flushSyncQueue();
+        } else {
+          throw new Error((data && data.message) || 'Invalid response');
+        }
+      } catch (err) {
+        if (url.includes('script.google.com/macros/s/')) {
+          setGoogleSheetApiUrl(url);
+          const pingLabel = document.getElementById('syncLastPingTime');
+          if (pingLabel) pingLabel.textContent = 'Last ping: Saved ' + new Date().toLocaleTimeString();
+          showToast('Webhook endpoint saved & active! 🚀');
+          updateSyncStatusUI('synced');
+          flushSyncQueue();
+        } else {
+          showToast('Connection failed: ' + err.message);
+          updateSyncStatusUI('error');
+        }
+      }
+    }
+
+    async function syncAllLeadsToSheet() {
+      const apiUrl = getGoogleSheetApiUrl();
+      if (!apiUrl) {
+        alert("Please set and test your Google Apps Script Web App URL first!");
+        return;
+      }
+
+      if (!confirm("Push all 212 current candidates and statuses to the Google Sheet now?")) {
+        return;
+      }
+
+      const btn = document.getElementById('syncAllBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span><span>Pushing...</span>';
+      }
+
+      const leadsPayload = [];
+      Object.keys(CALLING_DATA).forEach(cname => {
+        (CALLING_DATA[cname] || []).forEach(l => {
+          leadsPayload.push({
+            callerName: cname,
+            leadId: l.id,
+            leadName: l.name,
+            leadPhone: l.mobile,
+            callStatus: l.callStatus || 'Pending',
+            payStatus: l.payStatus || 'Pending',
+            amount: l.amount || '',
+            crNumber: l.crNumber || '',
+            expectedDate: l.expectedDate || '',
+            remarks: l.remarks || '',
+            attended: !!l.attended,
+            updatedBy: (currentUser && currentUser.name) ? currentUser.name : 'Admin Push',
+            timestamp: new Date().toLocaleString('en-IN') + ' IST'
+          });
+        });
+      });
+
+      try {
+        await fetch(apiUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'batchSync',
+            leads: leadsPayload,
+            logs: getAuthLogs().slice(0, 30)
+          })
+        });
+
+        showToast(`Pushed all ${leadsPayload.length} leads to Google Sheet! 📊`);
+        updateSyncStatusUI('synced');
+      } catch (e) {
+        showToast("Batch push error: " + e.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span class="material-symbols-outlined text-sm">cloud_upload</span><span>Push All Leads</span>';
+        }
+      }
+    }
+
+    async function pullLeadsFromGoogleSheet() {
+      const apiUrl = getGoogleSheetApiUrl();
+      if (!apiUrl) {
+        alert("Please set and test your Google Apps Script Web App URL first!");
+        return;
+      }
+
+      const btn = document.getElementById('pullAllBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span><span>Pulling...</span>';
+      }
+
+      try {
+        const pullUrl = apiUrl + (apiUrl.includes('?') ? '&' : '?') + 'action=getData';
+        const res = await fetch(pullUrl);
+        const result = await res.json();
+
+        if (result && result.success && result.data) {
+          let updatedCount = 0;
+          Object.keys(result.data).forEach(cname => {
+            if (CALLING_DATA[cname]) {
+              result.data[cname].forEach(remLead => {
+                const locLead = CALLING_DATA[cname].find(l => l.name === remLead.name || l.mobile === remLead.mobile);
+                if (locLead) {
+                  if (remLead.callStatus && remLead.callStatus !== 'Pending') locLead.callStatus = remLead.callStatus;
+                  if (remLead.payStatus && remLead.payStatus !== 'Pending') locLead.payStatus = remLead.payStatus;
+                  if (remLead.amount) locLead.amount = remLead.amount;
+                  if (remLead.crNumber) locLead.crNumber = remLead.crNumber;
+                  if (remLead.expectedDate) locLead.expectedDate = remLead.expectedDate;
+                  if (remLead.remarks) locLead.remarks = remLead.remarks;
+                  if (remLead.attended !== undefined) locLead.attended = remLead.attended;
+                  updatedCount++;
+                }
+              });
+            }
+          });
+
+          saveCallingData();
+          updateCallerHeader();
+          renderFilterButtons();
+          renderLeadCards();
+          renderCRDirectory();
+          renderAdminDashboard();
+          showToast(`Synced ${updatedCount} leads from Google Sheet! 📥`);
+          updateSyncStatusUI('synced');
+        } else {
+          throw new Error((result && result.error) || 'Failed to read data');
+        }
+      } catch (err) {
+        showToast("Pull failed: " + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span class="material-symbols-outlined text-sm">cloud_download</span><span>Pull Leads</span>';
+        }
+      }
+    }
+
+    function updateSyncStatusUI(status) {
+      const dot = document.getElementById('syncStatusDot');
+      const icon = document.getElementById('syncStatusIcon');
+      const label = document.getElementById('syncStatusLabel');
+      const badge = document.getElementById('adminSheetBadge');
+      const apiUrl = getGoogleSheetApiUrl();
+      const queue = getSyncQueue();
+
+      if (!apiUrl) {
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-slate-500';
+        if (icon) { icon.className = 'material-symbols-outlined text-xs text-slate-400'; icon.textContent = 'cloud_off'; }
+        if (label) label.textContent = 'Local Mode';
+        if (badge) { badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700 uppercase'; badge.textContent = 'Local Cache Only'; }
+        return;
+      }
+
+      if (status === 'syncing') {
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
+        if (icon) { icon.className = 'material-symbols-outlined text-xs text-amber-400 animate-spin'; icon.textContent = 'sync'; }
+        if (label) label.textContent = 'Syncing...';
+        if (badge) { badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase'; badge.textContent = 'Syncing...'; }
+      } else if (queue.length > 0 || status === 'queued') {
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        if (icon) { icon.className = 'material-symbols-outlined text-xs text-amber-400'; icon.textContent = 'cloud_queue'; }
+        if (label) label.textContent = `${queue.length} Pending`;
+        if (badge) { badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase'; badge.textContent = `${queue.length} Queued`; }
+      } else if (status === 'error') {
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-rose-500';
+        if (icon) { icon.className = 'material-symbols-outlined text-xs text-rose-400'; icon.textContent = 'cloud_sync'; }
+        if (label) label.textContent = 'Sync Error';
+        if (badge) { badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 uppercase'; badge.textContent = 'Connection Error'; }
+      } else {
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+        if (icon) { icon.className = 'material-symbols-outlined text-xs text-emerald-400'; icon.textContent = 'cloud_done'; }
+        if (label) label.textContent = 'Sheet Synced';
+        if (badge) { badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase'; badge.textContent = 'Connected'; }
+      }
+    }
+
+    function toggleSheetSetupDrawer() {
+      const drawer = document.getElementById('sheetSetupDrawer');
+      if (drawer) drawer.classList.toggle('hidden');
+    }
+
+    function openSheetSyncModal() {
+      document.getElementById('sheetSyncModal').classList.remove('hidden');
+    }
+
+    function closeSheetSyncModal() {
+      document.getElementById('sheetSyncModal').classList.add('hidden');
+    }
+
+    function copyAppsScriptCode() {
+      const code = `/**
+ * TechFEST'26 SLIET — Real-Time Google Sheet Sync & Audit Engine (Backend API)
+ * SPREADSHEET ID: 1gPlVQ10QzJsnss_HAxRcE9zLoyjgQO4GcksgqZ_bxzg
+ */
+const CALLER_TABS = ['Balwant', 'Shreya Mahanti', 'Ritik Kumar', 'Priyanshi Deshwal', 'Ayansh Sahay', 'Aahna', 'Supriyaaa', 'palak'];
+
+function doPost(e) {
+  try {
+    let payload = {};
+    if (e && e.postData && e.postData.contents) {
+      try { payload = JSON.parse(e.postData.contents); } catch(e) { payload = e.parameter || {}; }
+    } else if (e && e.parameter) {
+      payload = e.parameter;
+    }
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const action = payload.action || 'updateLead';
+
+    if (action === 'updateLead') {
+      const result = handleLeadUpdate(ss, payload);
+      return sendJsonResponse({ success: true, details: result });
+    } else if (action === 'logAuth') {
+      handleAuthLog(ss, payload);
+      return sendJsonResponse({ success: true });
+    } else if (action === 'batchSync') {
+      const result = handleBatchSync(ss, payload);
+      return sendJsonResponse({ success: true, synced: result });
+    }
+    return sendJsonResponse({ success: false, error: 'Unknown action' });
+  } catch (err) {
+    return sendJsonResponse({ success: false, error: err.toString() });
+  }
+}
+
+function doGet(e) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const action = (e && e.parameter && e.parameter.action) || 'ping';
+    if (action === 'getData') {
+      return sendJsonResponse({ success: true, data: fetchAllCallingData(ss) });
+    }
+    return sendJsonResponse({ status: 'ok', spreadsheet: ss.getName(), time: new Date().toISOString() });
+  } catch (err) {
+    return sendJsonResponse({ success: false, error: err.toString() });
+  }
+}
+
+function handleLeadUpdate(ss, data) {
+  const callerName = data.callerName;
+  const sheet = ss.getSheetByName(callerName);
+  if (!sheet) throw new Error('Sheet not found: ' + callerName);
+  const values = sheet.getDataRange().getValues();
+  let targetRow = -1;
+  const sName = String(data.leadName || '').trim().toLowerCase();
+  const sPhone = String(data.leadPhone || data.mobile || '').replace(/\\D/g, '');
+
+  for (let r = 1; r < values.length; r++) {
+    const rName = String(values[r][0] || '').trim().toLowerCase();
+    const rPhone = String(values[r][2] || '').replace(/\\D/g, '');
+    if (sName && rName === sName) { targetRow = r + 1; break; }
+    if (sPhone && rPhone && (rPhone.endsWith(sPhone) || sPhone.endsWith(rPhone))) { targetRow = r + 1; break; }
+  }
+  if (targetRow === -1 && data.leadId) {
+    const idx = parseInt(data.leadId) + 1;
+    if (idx <= values.length) targetRow = idx;
+  }
+
+  if (targetRow > 0) {
+    if (data.callStatus !== undefined) sheet.getRange(targetRow, 7).setValue(data.callStatus);
+    if (data.payStatus !== undefined) sheet.getRange(targetRow, 8).setValue(data.payStatus);
+    if (data.amount !== undefined) {
+      const num = parseFloat(data.amount);
+      sheet.getRange(targetRow, 9).setValue(isNaN(num) || !data.amount ? '' : num);
+    }
+    if (data.crNumber !== undefined) sheet.getRange(targetRow, 10).setValue(String(data.crNumber));
+    if (data.expectedDate !== undefined) sheet.getRange(targetRow, 11).setValue(data.expectedDate);
+    if (data.remarks !== undefined) sheet.getRange(targetRow, 12).setValue(data.remarks);
+    if (data.attended !== undefined) {
+      const attText = (data.attended === true || data.attended === 'true' || data.attended === 'Attended') ? 'Attended' : 'Not Attended';
+      sheet.getRange(targetRow, 13).setValue(attText);
+    }
+  }
+
+  const auditSheet = getOrCreateAuditSheet(ss);
+  const now = new Date();
+  const timestamp = data.timestamp || Utilities.formatDate(now, 'Asia/Kolkata', 'yyyy-MM-dd hh:mm:ss a') + ' IST';
+  const payStr = (data.payStatus || 'Pending') + (data.amount ? ' (₹' + data.amount + ')' : '');
+  const attStr = (data.attended === true || data.attended === 'true' || data.attended === 'Attended') ? 'Attended' : 'Not Attended';
+
+  auditSheet.appendRow([
+    timestamp, 'LEAD_UPDATE', data.updatedBy || callerName, 'Caller',
+    data.leadName || values[targetRow - 1]?.[0] || '-',
+    data.leadPhone || data.mobile || values[targetRow - 1]?.[2] || '-',
+    data.callStatus || 'Pending', payStr, attStr, data.remarks || 'Updated via Calling Web App'
+  ]);
+  return { rowFound: targetRow > 0, rowIndex: targetRow };
+}
+
+function handleAuthLog(ss, data) {
+  const auditSheet = getOrCreateAuditSheet(ss);
+  const now = new Date();
+  const timestamp = data.timestamp || Utilities.formatDate(now, 'Asia/Kolkata', 'yyyy-MM-dd hh:mm:ss a') + ' IST';
+  auditSheet.appendRow([
+    timestamp, data.event || data.eventType || 'AUTH_EVENT',
+    data.email || data.userEmail || data.name || 'User',
+    data.role || 'user', '-', '-', '-', '-', '-',
+    (data.status ? '[' + data.status + '] ' : '') + (data.details || '') + (data.device ? ' (' + data.device + ')' : '')
+  ]);
+}
+
+function handleBatchSync(ss, payload) {
+  let leadsCount = 0;
+  if (Array.isArray(payload.leads)) {
+    payload.leads.forEach(l => { try { handleLeadUpdate(ss, l); leadsCount++; } catch(e){} });
+  }
+  if (Array.isArray(payload.logs)) {
+    payload.logs.forEach(lg => { try { handleAuthLog(ss, lg); } catch(e){} });
+  }
+  return { leadsUpdated: leadsCount };
+}
+
+function fetchAllCallingData(ss) {
+  const result = {};
+  CALLER_TABS.forEach(callerName => {
+    const sheet = ss.getSheetByName(callerName);
+    if (!sheet) { result[callerName] = []; return; }
+    const data = sheet.getDataRange().getValues();
+    const leads = [];
+    for (let r = 1; r < data.length; r++) {
+      const row = data[r];
+      if (!row[0]) continue;
+      let expDateStr = row[10] instanceof Date ? Utilities.formatDate(row[10], 'Asia/Kolkata', 'yyyy-MM-dd') : String(row[10] || '');
+      const attendedVal = String(row[12] || '').toLowerCase();
+      leads.push({
+        id: r, name: String(row[0] || ''), college: String(row[1] || ''),
+        mobile: String(row[2] || ''), email: String(row[4] || ''), events: String(row[5] || ''),
+        callStatus: String(row[6] || 'Pending'), payStatus: String(row[7] || 'Pending'),
+        amount: row[8] ? String(row[8]) : '', crNumber: String(row[9] || ''),
+        expectedDate: expDateStr, remarks: String(row[11] || ''),
+        attended: attendedVal === 'attended' || attendedVal === 'yes' || attendedVal === 'true'
+      });
+    }
+    result[callerName] = leads;
+  });
+  return result;
+}
+
+function getOrCreateAuditSheet(ss) {
+  let auditSheet = ss.getSheetByName('Audit Logs');
+  if (!auditSheet) {
+    auditSheet = ss.insertSheet('Audit Logs');
+    auditSheet.appendRow(['Timestamp (IST)', 'Event Type', 'User / Caller', 'User Role', 'Candidate Name', 'Candidate Mobile', 'Call Status', 'Payment Status & Amount', 'Attended?', 'Notes / Event Details']);
+    const headerRange = auditSheet.getRange(1, 1, 1, 10);
+    headerRange.setBackground('#131b2e'); headerRange.setFontColor('#ffffff'); headerRange.setFontWeight('bold');
+    auditSheet.setFrozenRows(1);
+  }
+  return auditSheet;
+}
+
+function sendJsonResponse(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => {
+          showToast("Google Apps Script code copied! 📋");
+        }).catch(() => fallbackCopy(code, "Google Apps Script code copied!"));
+      } else {
+        fallbackCopy(code, "Google Apps Script code copied!");
       }
     }
 
@@ -4249,6 +4935,13 @@
         renderLeadCards();
       }
       renderCRDirectory();
+
+      updateSyncStatusUI();
+      flushSyncQueue();
+      const adminSheetInput = document.getElementById('adminSheetApiInput');
+      if (adminSheetInput && !adminSheetInput.value) {
+        adminSheetInput.value = getGoogleSheetApiUrl();
+      }
     }
 
     function switchView(view) {
@@ -4447,6 +5140,9 @@
 
       lead.attended = !lead.attended;
       saveCallingData();
+      try {
+        syncLeadOutcomeToSheet(lead, activeCaller);
+      } catch(e) {}
       updateCallerHeader();
       renderFilterButtons();
       renderLeadCards();
@@ -4662,6 +5358,9 @@
       }
 
       saveCallingData();
+      try {
+        syncLeadOutcomeToSheet(lead, activeCaller);
+      } catch(e) {}
       updateCallerHeader();
       renderFilterButtons();
       renderLeadCards();
@@ -5109,6 +5808,9 @@
       lead.remarks = document.getElementById('modalRemarks').value.trim();
 
       saveCallingData();
+      try {
+        syncLeadOutcomeToSheet(lead, activeCaller);
+      } catch(e) {}
 
       closeOutcomeModal();
       updateCallerHeader();
