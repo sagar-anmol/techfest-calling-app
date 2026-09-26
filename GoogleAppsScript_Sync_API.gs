@@ -51,6 +51,9 @@ function doPost(e) {
     if (action === 'updateLead') {
       const result = handleLeadUpdate(ss, payload);
       return sendJsonResponse({ success: true, message: 'Lead updated successfully', details: result });
+    } else if (action === 'addBatchLeads' || action === 'addLeads') {
+      const result = handleAddBatchLeads(ss, payload);
+      return sendJsonResponse({ success: true, message: 'Batch leads added successfully', details: result });
     } else if (action === 'logAuth') {
       handleAuthLog(ss, payload);
       return sendJsonResponse({ success: true, message: 'Authentication audit event logged successfully' });
@@ -223,6 +226,62 @@ function handleBatchSync(ss, payload) {
   }
 
   return { leadsUpdated: leadsCount, logsRecorded: logsCount };
+}
+
+/**
+ * Append a newly scraped batch of leads across caller sheets
+ */
+function handleAddBatchLeads(ss, payload) {
+  const newLeads = payload.leads || [];
+  if (!Array.isArray(newLeads) || newLeads.length === 0) {
+    return { added: 0 };
+  }
+
+  let addedCount = 0;
+  newLeads.forEach(item => {
+    const callerName = item.callerName;
+    if (!callerName) return;
+    const sheet = ss.getSheetByName(callerName);
+    if (!sheet) return;
+
+    const nextRow = sheet.getLastRow() + 1;
+    const callFormula = '=HYPERLINK("tel:"&C' + nextRow + ', "📞 Call")';
+    
+    sheet.appendRow([
+      item.name || '',
+      item.college || '',
+      item.mobile || '',
+      callFormula,
+      item.email || '',
+      item.events || '',
+      item.callStatus || 'Pending',
+      item.payStatus || 'Pending',
+      item.amount || '',
+      item.crNumber || '',
+      item.expectedDate || '',
+      item.remarks || '',
+      item.attended ? 'Attended' : 'Not Attended'
+    ]);
+    addedCount++;
+  });
+
+  const auditSheet = getOrCreateAuditSheet(ss);
+  const now = new Date();
+  const timestamp = Utilities.formatDate(now, 'Asia/Kolkata', 'yyyy-MM-dd hh:mm:ss a') + ' IST';
+  auditSheet.appendRow([
+    timestamp,
+    'BATCH_LEADS_ADDED',
+    payload.source || 'GitHub Actions Nightly Scraper',
+    'System',
+    '-',
+    '-',
+    '-',
+    '-',
+    '-',
+    'Appended ' + addedCount + ' newly scraped leads across caller tabs.'
+  ]);
+
+  return { added: addedCount };
 }
 
 /**

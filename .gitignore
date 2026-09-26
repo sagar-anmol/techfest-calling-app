@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.DS_Store
+clerk_users_import.csv
