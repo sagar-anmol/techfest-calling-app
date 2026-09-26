@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>TechFEST'26 SLIET — Outreach Calling &amp; CR Tracker</title>
+  <title>TechFEST'26 SLIET — Enterprise Outreach &amp; Calling Portal</title>
   
   <!-- PWA Manifest & Meta -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0f141c">
+  <meta name="theme-color" content="#0b0f19">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="TF26 Calling">
   <link rel="apple-touch-icon" href="icon-192.png">
 
-  <!-- Material 3 Fonts & Google Material Symbols -->
+  <!-- Inter & JetBrains Mono Fonts & Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   
   <!-- Tailwind CSS -->
@@ -27,34 +27,44 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
-            mono: ['"Roboto Mono"', 'monospace']
+            sans: ['"Inter"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
           },
           colors: {
+            corp: {
+              bg: '#0b0f19',
+              card: '#131b2e',
+              cardHover: '#18223a',
+              input: '#1b2438',
+              border: '#24334a',
+              borderLight: '#324462',
+              primary: '#2563eb',
+              primaryHover: '#1d4ed8'
+            },
             m3: {
-              primary: '#a8c7fa',
-              onPrimary: '#00315c',
-              primaryContainer: '#004a99',
-              onPrimaryContainer: '#d3e3fd',
-              secondary: '#bcc7db',
-              secondaryContainer: '#334661',
-              onSecondaryContainer: '#d3e3fd',
-              tertiary: '#d8b4fe',
-              tertiaryContainer: '#543b5b',
-              onTertiaryContainer: '#ffd6fc',
-              surface: '#0f141c',
-              surfaceDim: '#0a0d13',
-              surfaceBright: '#353c49',
-              surfaceContainerLowest: '#090d13',
-              surfaceContainerLow: '#151b24',
-              surfaceContainer: '#1a212d',
-              surfaceContainerHigh: '#242c3b',
-              surfaceContainerHighest: '#2f384a',
-              outline: '#8c9199',
-              outlineVariant: '#43474e',
-              error: '#f2b8b5',
-              errorContainer: '#8c1d18',
-              onErrorContainer: '#f9dedc'
+              primary: '#38bdf8',
+              onPrimary: '#082f49',
+              primaryContainer: '#2563eb',
+              onPrimaryContainer: '#dbeafe',
+              secondary: '#94a3b8',
+              secondaryContainer: '#1e293b',
+              onSecondaryContainer: '#cbd5e1',
+              tertiary: '#c084fc',
+              tertiaryContainer: '#38224d',
+              onTertiaryContainer: '#f3e8ff',
+              surface: '#0b0f19',
+              surfaceDim: '#080c14',
+              surfaceBright: '#1e293b',
+              surfaceContainerLowest: '#06090f',
+              surfaceContainerLow: '#0e1524',
+              surfaceContainer: '#131b2e',
+              surfaceContainerHigh: '#1b2438',
+              surfaceContainerHighest: '#222f47',
+              outline: '#64748b',
+              outlineVariant: '#24334a',
+              error: '#f87171',
+              errorContainer: '#7f1d1d',
+              onErrorContainer: '#fee2e2'
             }
           }
         }
@@ -74,43 +84,55 @@
     .state-layer {
       position: relative;
       overflow: hidden;
-      transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1), transform 0.15s ease;
+      transition: background-color 0.15s ease, transform 0.1s ease;
     }
     .state-layer:active {
-      transform: scale(0.98);
+      transform: scale(0.99);
+    }
+    /* Custom sleek corporate scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0f19;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #24334a;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3b82f6;
     }
   </style>
 </head>
 
-<body class="bg-m3-surface text-slate-100 min-h-screen flex flex-col font-sans selection:bg-m3-primary/30 selection:text-white">
+<body class="bg-[#0b0f19] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-blue-600/30 selection:text-white">
 
   <!-- ======================================================== -->
   <!-- 🔒 IDENTITY VERIFICATION & PORTAL LOGIN (Email + Password) -->
   <!-- ======================================================== -->
-  <div id="authScreen" class="fixed inset-0 z-50 bg-m3-surface flex flex-col items-center justify-center p-4 overflow-y-auto">
-    <!-- Ambient Glow -->
-    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-    <div class="relative w-full max-w-md bg-m3-surfaceContainer rounded-[2.5rem] p-6 sm:p-8 border border-white/10 shadow-2xl space-y-6 my-auto">
+  <div id="authScreen" class="fixed inset-0 z-50 bg-[#0b0f19] flex flex-col items-center justify-center p-4 overflow-y-auto">
+    <div class="relative w-full max-w-md bg-[#131b2e] rounded-lg p-6 sm:p-8 border border-[#24334a] shadow-xl space-y-6 my-auto">
       
       <!-- Brand & Security Header -->
       <div class="text-center space-y-2">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white mx-auto flex items-center justify-center shadow-lg shadow-blue-500/25">
-          <span class="material-symbols-outlined text-3xl">lock</span>
+        <div class="w-12 h-12 rounded-lg bg-blue-600/10 border border-blue-500/20 text-blue-400 mx-auto flex items-center justify-center shadow-sm">
+          <span class="material-symbols-outlined text-2xl">shield</span>
         </div>
         <div>
-          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-wider mb-1">
-            <span class="material-symbols-outlined text-[12px]">verified_user</span>
-            Portal Access
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-wider mb-1">
+            <span class="material-symbols-outlined text-[12px]">security</span>
+            Enterprise Portal
           </span>
-          <h1 class="text-xl font-extrabold text-white tracking-tight">TechFEST'26 SLIET</h1>
-          <p class="text-xs text-m3-secondary">Outreach Calling &amp; CR Management Portal</p>
+          <h1 class="text-lg font-bold text-white tracking-tight">TechFEST'26 SLIET</h1>
+          <p class="text-xs text-slate-400">Outreach Operations &amp; CR Management System</p>
         </div>
       </div>
 
       <!-- Error Banner (Dynamic) -->
-      <div id="authErrorCard" class="hidden p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/25 space-y-1 text-center">
-        <div class="flex items-center justify-center gap-1.5 text-rose-400 font-bold text-xs">
+      <div id="authErrorCard" class="hidden p-3 rounded-md bg-rose-500/10 border border-rose-500/25 space-y-1 text-center">
+        <div class="flex items-center justify-center gap-1.5 text-rose-400 font-semibold text-xs">
           <span class="material-symbols-outlined text-sm">error</span>
           <span id="authErrorTitle">Authentication Failed</span>
         </div>
@@ -118,8 +140,8 @@
       </div>
 
       <!-- Success Notification (Dynamic) -->
-      <div id="authSuccessCard" class="hidden p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 space-y-1 text-center">
-        <div class="flex items-center justify-center gap-1.5 text-emerald-400 font-bold text-xs">
+      <div id="authSuccessCard" class="hidden p-3 rounded-md bg-emerald-500/10 border border-emerald-500/25 space-y-1 text-center">
+        <div class="flex items-center justify-center gap-1.5 text-emerald-400 font-semibold text-xs">
           <span class="material-symbols-outlined text-sm">check_circle</span>
           <span id="authSuccessTitle">Success</span>
         </div>
@@ -129,60 +151,56 @@
       <!-- Email + Password Login Form -->
       <form onsubmit="handleEmailPasswordLogin(event)" class="space-y-4">
         <div>
-          <label for="loginEmail" class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1.5">
+          <label for="loginEmail" class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
             Account Email
           </label>
           <div class="relative">
-            <span class="material-symbols-outlined absolute left-3 top-2.5 text-m3-outline text-base">alternate_email</span>
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-500 text-base">alternate_email</span>
             <input 
               type="email" 
               id="loginEmail" 
-              placeholder="e.g. name@sliet.ac.in or gmail" 
+              placeholder="e.g. caller@sliet.ac.in or gmail" 
               required 
               autocomplete="email"
-              class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-white placeholder:text-m3-outline outline-none focus:border-m3-primary focus:ring-1 focus:ring-m3-primary transition">
+              class="w-full bg-[#1b2438] border border-[#24334a] rounded-md pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-500 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
           </div>
         </div>
 
         <div>
           <div class="flex items-center justify-between mb-1.5">
-            <label for="loginPassword" class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider">
+            <label for="loginPassword" class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
               Password
             </label>
-            <button type="button" onclick="openForgotPasswordModal()" class="text-[11px] text-m3-primary hover:underline font-semibold flex items-center gap-1">
-              <span class="material-symbols-outlined text-[13px]">lock_reset</span>
-              <span>Admin Reset</span>
-            </button>
           </div>
           <div class="relative">
-            <span class="material-symbols-outlined absolute left-3 top-2.5 text-m3-outline text-base">key</span>
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-500 text-base">key</span>
             <input 
               type="password" 
               id="loginPassword" 
-              placeholder="Enter your password" 
+              placeholder="Enter account password" 
               required 
               autocomplete="current-password"
-              class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-2xl pl-10 pr-10 py-2.5 text-xs text-white placeholder:text-m3-outline outline-none focus:border-m3-primary focus:ring-1 focus:ring-m3-primary transition">
-            <button type="button" onclick="togglePasswordVisibility('loginPassword', 'eyeIconLogin')" class="absolute right-3 top-2.5 text-m3-outline hover:text-white transition">
+              class="w-full bg-[#1b2438] border border-[#24334a] rounded-md pl-10 pr-10 py-2.5 text-xs text-white placeholder-slate-500 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+            <button type="button" onclick="togglePasswordVisibility('loginPassword', 'eyeIconLogin')" class="absolute right-3 top-2.5 text-slate-400 hover:text-white transition">
               <span class="material-symbols-outlined text-base" id="eyeIconLogin">visibility</span>
             </button>
           </div>
-          <p class="text-[10px] text-m3-outline mt-1.5 flex items-center gap-1">
+          <p class="text-[10px] text-slate-400 mt-1.5 flex items-center gap-1">
             <span class="material-symbols-outlined text-[12px] text-blue-400">info</span>
-            <span>Default caller password: <code class="text-blue-300 font-mono">pass@123</code></span>
+            <span>Default outreach caller password: <code class="text-blue-300 font-mono">pass@123</code></span>
           </p>
         </div>
 
-        <button type="submit" id="loginSubmitBtn" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 state-layer transition">
+        <button type="submit" id="loginSubmitBtn" class="w-full py-2.5 px-4 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm flex items-center justify-center gap-2 transition state-layer">
           <span class="material-symbols-outlined text-sm">login</span>
           <span>Sign In to Portal</span>
         </button>
       </form>
 
       <!-- Security Notice -->
-      <div class="pt-2 border-t border-white/5 text-center">
-        <p class="text-[10px] text-m3-outline">
-          Authorized team accounts only. Caller passwords are managed by administrators. Only admins can reset credentials.
+      <div class="pt-3 border-t border-[#24334a] text-center">
+        <p class="text-[11px] text-slate-400 leading-relaxed">
+          Authorized team access only. For account activation or credential assistance, contact your portal administrator.
         </p>
       </div>
 
@@ -191,82 +209,39 @@
 
 
   <!-- ======================================================== -->
-  <!-- 🔑 ADMIN PASSWORD RESET MODAL -->
-  <!-- ======================================================== -->
-  <div id="forgotPasswordModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="relative w-full max-w-sm bg-m3-surfaceContainer rounded-[2rem] p-6 border border-white/10 shadow-2xl space-y-4">
-      <div class="text-center space-y-1">
-        <div class="w-12 h-12 rounded-2xl bg-m3-primaryContainer text-m3-onPrimaryContainer mx-auto flex items-center justify-center shadow-md shadow-blue-500/20">
-          <span class="material-symbols-outlined text-2xl">lock_reset</span>
-        </div>
-        <h3 class="text-base font-bold text-white">Admin Password Reset</h3>
-        <p class="text-xs text-m3-secondary">Restricted to portal administrators only</p>
-      </div>
-
-      <div id="forgotErrorCard" class="hidden p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs text-center"></div>
-
-      <form onsubmit="handleForgotPasswordSubmit(event)" class="space-y-3">
-        <div>
-          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">Administrator Email</label>
-          <input type="email" id="forgotEmailInput" required placeholder="e.g. sagarkumarweebly@gmail.com" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
-          <p class="text-[10px] text-m3-outline mt-1">Outreach callers must contact an administrator for password resets.</p>
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">New Admin Password</label>
-          <input type="password" id="forgotNewPassword" required minlength="6" placeholder="Minimum 6 characters" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">Confirm New Password</label>
-          <input type="password" id="forgotConfirmPassword" required minlength="6" placeholder="Repeat new password" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
-        </div>
-
-        <div class="flex gap-2 pt-2">
-          <button type="button" onclick="closeForgotPasswordModal()" class="flex-1 py-2 rounded-xl bg-m3-surfaceContainerHigh hover:bg-white/10 text-white text-xs font-semibold state-layer transition">
-            Cancel
-          </button>
-          <button type="submit" class="flex-1 py-2 rounded-xl bg-m3-primary text-m3-onPrimary text-xs font-bold state-layer transition">
-            Reset Password
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-
-  <!-- ======================================================== -->
   <!-- 🔐 IN-DASHBOARD CHANGE PASSWORD MODAL -->
   <!-- ======================================================== -->
   <div id="changePasswordModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="relative w-full max-w-sm bg-m3-surfaceContainer rounded-[2rem] p-6 border border-white/10 shadow-2xl space-y-4">
+    <div class="relative w-full max-w-sm bg-[#131b2e] rounded-lg p-6 border border-[#24334a] shadow-2xl space-y-4">
       <div class="text-center space-y-1">
-        <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 mx-auto flex items-center justify-center shadow-md shadow-indigo-500/20">
-          <span class="material-symbols-outlined text-2xl">password</span>
+        <div class="w-10 h-10 rounded-md bg-blue-600/10 border border-blue-500/20 text-blue-400 mx-auto flex items-center justify-center shadow-sm">
+          <span class="material-symbols-outlined text-xl">password</span>
         </div>
-        <h3 class="text-base font-bold text-white">Change Account Password</h3>
-        <p class="text-xs text-m3-secondary">Update your portal password</p>
+        <h3 class="text-sm font-bold text-white">Change Account Password</h3>
+        <p class="text-xs text-slate-400">Update your administrator password</p>
       </div>
 
-      <div id="changeErrorCard" class="hidden p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs text-center"></div>
+      <div id="changeErrorCard" class="hidden p-2.5 rounded-md bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs text-center"></div>
 
       <form onsubmit="handleChangePasswordSubmit(event)" class="space-y-3">
         <div>
-          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">Current Password</label>
-          <input type="password" id="changeCurrentPassword" required placeholder="Enter current password" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
+          <label class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Current Password</label>
+          <input type="password" id="changeCurrentPassword" required placeholder="Enter current password" class="w-full bg-[#1b2438] border border-[#24334a] rounded-md px-3 py-2 text-xs text-white outline-none focus:border-blue-500">
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">New Password</label>
-          <input type="password" id="changeNewPassword" required minlength="6" placeholder="Min 6 characters" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
+          <label class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">New Password</label>
+          <input type="password" id="changeNewPassword" required minlength="6" placeholder="Minimum 6 characters" class="w-full bg-[#1b2438] border border-[#24334a] rounded-md px-3 py-2 text-xs text-white outline-none focus:border-blue-500">
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">Confirm New Password</label>
-          <input type="password" id="changeConfirmPassword" required minlength="6" placeholder="Repeat new password" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
+          <label class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Confirm New Password</label>
+          <input type="password" id="changeConfirmPassword" required minlength="6" placeholder="Repeat new password" class="w-full bg-[#1b2438] border border-[#24334a] rounded-md px-3 py-2 text-xs text-white outline-none focus:border-blue-500">
         </div>
 
         <div class="flex gap-2 pt-2">
-          <button type="button" onclick="closeChangePasswordModal()" class="flex-1 py-2 rounded-xl bg-m3-surfaceContainerHigh hover:bg-white/10 text-white text-xs font-semibold state-layer transition">
+          <button type="button" onclick="closeChangePasswordModal()" class="flex-1 py-2 rounded-md bg-[#1b2438] hover:bg-[#222f47] text-slate-300 text-xs font-semibold border border-[#24334a] transition">
             Cancel
           </button>
-          <button type="submit" class="flex-1 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold state-layer transition">
+          <button type="submit" class="flex-1 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition">
             Save Password
           </button>
         </div>
@@ -279,30 +254,30 @@
   <!-- 🔑 ADMIN SET CALLER PASSWORD MODAL -->
   <!-- ======================================================== -->
   <div id="adminSetPasswordModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="relative w-full max-w-sm bg-m3-surfaceContainer rounded-[2rem] p-6 border border-white/10 shadow-2xl space-y-4">
+    <div class="relative w-full max-w-sm bg-[#131b2e] rounded-lg p-6 border border-[#24334a] shadow-2xl space-y-4">
       <div class="text-center space-y-1">
-        <div class="w-12 h-12 rounded-2xl bg-m3-primaryContainer text-m3-onPrimaryContainer mx-auto flex items-center justify-center shadow-md shadow-blue-500/20">
-          <span class="material-symbols-outlined text-2xl">admin_panel_settings</span>
+        <div class="w-10 h-10 rounded-md bg-blue-600/10 border border-blue-500/20 text-blue-400 mx-auto flex items-center justify-center shadow-sm">
+          <span class="material-symbols-outlined text-xl">admin_panel_settings</span>
         </div>
-        <h3 class="text-base font-bold text-white">Set Caller Password</h3>
-        <p class="text-xs text-m3-secondary" id="adminSetCallerTargetLabel">Assign a custom password</p>
+        <h3 class="text-sm font-bold text-white">Set Caller Password</h3>
+        <p class="text-xs text-slate-400" id="adminSetCallerTargetLabel">Assign custom password</p>
       </div>
 
-      <div id="adminSetPassErrorCard" class="hidden p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs text-center"></div>
+      <div id="adminSetPassErrorCard" class="hidden p-2.5 rounded-md bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs text-center"></div>
 
       <form onsubmit="handleAdminSetPasswordSubmit(event)" class="space-y-3">
         <input type="hidden" id="adminSetCallerEmail">
         <div>
-          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">New Password for Caller</label>
-          <input type="password" id="adminSetCallerNewPass" required minlength="6" placeholder="Minimum 6 characters" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
-          <p class="text-[10px] text-m3-outline mt-1">Default caller password is <code class="text-blue-300">pass@123</code></p>
+          <label class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">New Password for Caller</label>
+          <input type="password" id="adminSetCallerNewPass" required minlength="6" placeholder="Minimum 6 characters" class="w-full bg-[#1b2438] border border-[#24334a] rounded-md px-3 py-2 text-xs text-white outline-none focus:border-blue-500">
+          <p class="text-[10px] text-slate-400 mt-1">Default caller password is <code class="text-blue-300 font-mono">pass@123</code></p>
         </div>
 
         <div class="flex gap-2 pt-2">
-          <button type="button" onclick="closeAdminSetPasswordModal()" class="flex-1 py-2 rounded-xl bg-m3-surfaceContainerHigh hover:bg-white/10 text-white text-xs font-semibold state-layer transition">
+          <button type="button" onclick="closeAdminSetPasswordModal()" class="flex-1 py-2 rounded-md bg-[#1b2438] hover:bg-[#222f47] text-slate-300 text-xs font-semibold border border-[#24334a] transition">
             Cancel
           </button>
-          <button type="submit" class="flex-1 py-2 rounded-xl bg-m3-primary text-m3-onPrimary text-xs font-bold state-layer transition">
+          <button type="submit" class="flex-1 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition">
             Save Password
           </button>
         </div>
@@ -316,105 +291,106 @@
   <!-- ======================================================== -->
   <div id="appShell" class="flex-1 flex flex-col hidden pb-6">
     
-    <!-- Top Bar with Install Button & User Info -->
-    <header class="sticky top-0 z-40 bg-m3-surfaceContainer/90 backdrop-blur-xl border-b border-white/5 px-4 py-2.5 flex items-center justify-between shadow-sm">
-      <div class="flex items-center space-x-2.5">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-          <span class="material-symbols-outlined text-lg material-symbols-filled">bolt</span>
+    <!-- Enterprise Top Bar -->
+    <header class="sticky top-0 z-40 bg-[#0d1523]/95 backdrop-blur-md border-b border-[#24334a] px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-sm">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 rounded-md bg-blue-600 flex items-center justify-center text-white shadow-sm font-bold text-xs">
+          TF
         </div>
         <div>
-          <h1 class="text-xs font-black tracking-tight text-white flex items-center gap-1.5 leading-tight">
-            <span>TechFEST'26</span>
-            <span class="px-1.5 py-0.2 rounded-full text-[9px] bg-m3-primary/10 text-m3-primary border border-m3-primary/20 font-bold" id="userRoleBadge">Caller</span>
-          </h1>
-          <p class="text-[11px] text-m3-secondary font-semibold" id="userIdentityLabel">Caller</p>
+          <div class="flex items-center gap-1.5 leading-tight">
+            <h1 class="text-xs font-bold text-white tracking-tight">TechFEST'26 SLIET</h1>
+            <span class="px-1.5 py-0.5 rounded text-[9px] bg-blue-500/10 text-blue-400 border border-blue-500/20 font-semibold" id="userRoleBadge">Caller</span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-medium" id="userIdentityLabel">Caller</p>
         </div>
       </div>
 
-      <div class="flex items-center space-x-1.5">
-        <!-- PWA Install Button (Always visible on mobile/desktop until installed) -->
-        <button id="pwaInstallBtn" onclick="triggerPwaInstall()" class="hidden px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-bold transition flex items-center gap-1 state-layer">
+      <div class="flex items-center space-x-2">
+        <!-- PWA Install Button -->
+        <button id="pwaInstallBtn" onclick="triggerPwaInstall()" class="hidden px-3 py-1.5 rounded-md bg-emerald-600/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold hover:bg-emerald-600/20 transition flex items-center gap-1.5 state-layer">
           <span class="material-symbols-outlined text-sm">install_mobile</span>
           <span>Install App</span>
         </button>
 
         <!-- In-Dashboard Reset Password Button (Admin Only) -->
-        <button id="topChangePassBtn" onclick="openChangePasswordModal()" title="Change Admin Password" class="hidden px-2.5 py-1.5 rounded-xl bg-m3-surfaceContainerHigh hover:bg-m3-surfaceContainerHighest text-xs font-semibold text-m3-secondary hover:text-white flex items-center gap-1 border border-white/5 transition state-layer">
-          <span class="material-symbols-outlined text-sm text-blue-400">lock_reset</span>
+        <button id="topChangePassBtn" onclick="openChangePasswordModal()" title="Change Admin Password" class="hidden px-2.5 py-1.5 rounded-md bg-[#1b2438] hover:bg-[#222f47] text-xs font-medium text-slate-200 hover:text-white flex items-center gap-1.5 border border-[#24334a] transition state-layer">
+          <span class="material-symbols-outlined text-sm text-blue-400">key</span>
           <span class="text-[11px] hidden sm:inline">Password</span>
         </button>
 
-        <button onclick="logout()" title="Sign Out" class="w-8 h-8 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary hover:text-rose-400 flex items-center justify-center transition border border-white/5 state-layer">
+        <!-- Sign Out Button -->
+        <button onclick="logout()" title="Sign Out" class="w-8 h-8 rounded-md bg-[#1b2438] text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 flex items-center justify-center transition border border-[#24334a] state-layer">
           <span class="material-symbols-outlined text-base">logout</span>
         </button>
       </div>
     </header>
 
     <!-- Navigation Switcher -->
-    <div class="max-w-4xl w-full mx-auto px-4 mt-3">
-      <div class="bg-m3-surfaceContainerLow p-1 rounded-2xl flex border border-white/5">
-        <button onclick="switchView('queue')" id="navQueue" class="flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-m3-primaryContainer text-white">
+    <div class="max-w-5xl w-full mx-auto px-4 mt-3">
+      <div class="bg-[#131b2e] p-1 rounded-lg flex border border-[#24334a] gap-1">
+        <button onclick="switchView('queue')" id="navQueue" class="flex-1 py-2 rounded-md text-xs font-semibold transition flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm">
           <span class="material-symbols-outlined text-sm">call</span>
           <span>Queue</span>
         </button>
-        <button onclick="switchView('crList')" id="navCR" class="flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white">
+        <button onclick="switchView('crList')" id="navCR" class="flex-1 py-2 rounded-md text-xs font-semibold transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white hover:bg-[#1b2438]">
           <span class="material-symbols-outlined text-sm">contact_phone</span>
-          <span>CR Numbers</span>
+          <span>CR Directory</span>
         </button>
-        <button onclick="switchView('admin')" id="navAdmin" class="flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white hidden">
-          <span class="material-symbols-outlined text-sm">analytics</span>
-          <span>Admin</span>
+        <button onclick="switchView('admin')" id="navAdmin" class="flex-1 py-2 rounded-md text-xs font-semibold transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white hover:bg-[#1b2438] hidden">
+          <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
+          <span>Admin Console</span>
         </button>
       </div>
     </div>
 
     <!-- MAIN VIEWS -->
-    <main class="max-w-4xl w-full mx-auto px-4 py-3 flex-1 space-y-4">
+    <main class="max-w-5xl w-full mx-auto px-4 py-3 flex-1 space-y-4">
       
       <!-- ==================== VIEW 1: QUEUE ==================== -->
       <div id="viewQueue" class="space-y-3.5">
         
-        <!-- Caller Card -->
-        <div class="bg-m3-surfaceContainer rounded-3xl p-4 sm:p-5 border border-white/5 shadow-md space-y-3">
+        <!-- Caller Summary Banner -->
+        <div class="bg-[#131b2e] rounded-lg p-4 sm:p-5 border border-[#24334a] shadow-sm space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div class="flex items-center space-x-3">
-              <div class="w-11 h-11 rounded-2xl bg-m3-primary/10 text-m3-primary border border-m3-primary/20 flex items-center justify-center text-base font-black" id="callerInitials">
+              <div class="w-10 h-10 rounded-md bg-blue-600/10 text-blue-400 border border-blue-500/20 flex items-center justify-center text-sm font-bold" id="callerInitials">
                 AS
               </div>
               <div>
-                <span class="text-[10px] font-extrabold text-m3-secondary uppercase tracking-wider block">Assigned Queue</span>
-                <h2 class="text-sm font-extrabold text-white" id="activeCallerName">Ayansh Sahay</h2>
+                <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Assigned Call Queue</span>
+                <h2 class="text-sm font-bold text-white" id="activeCallerName">Ayansh Sahay</h2>
               </div>
             </div>
 
-            <div class="grid grid-cols-4 gap-1.5 text-center">
-              <div class="bg-m3-surfaceContainerLow px-2 py-1.5 rounded-xl border border-white/5">
-                <span class="text-[9px] text-m3-secondary block">Total</span>
-                <span class="text-xs font-extrabold text-white" id="statTotal">0</span>
+            <div class="grid grid-cols-4 gap-2 text-center">
+              <div class="bg-[#1b2438] px-2.5 py-1.5 rounded-md border border-[#24334a]">
+                <span class="text-[10px] text-slate-400 block font-medium">Total</span>
+                <span class="text-xs font-bold text-white" id="statTotal">0</span>
               </div>
-              <div class="bg-m3-surfaceContainerLow px-2 py-1.5 rounded-xl border border-white/5">
-                <span class="text-[9px] text-m3-secondary block">Done</span>
-                <span class="text-xs font-extrabold text-emerald-400" id="statDone">0</span>
+              <div class="bg-[#1b2438] px-2.5 py-1.5 rounded-md border border-[#24334a]">
+                <span class="text-[10px] text-slate-400 block font-medium">Done</span>
+                <span class="text-xs font-bold text-emerald-400" id="statDone">0</span>
               </div>
-              <div class="bg-m3-surfaceContainerLow px-2 py-1.5 rounded-xl border border-white/5">
-                <span class="text-[9px] text-m3-secondary block">Pending</span>
-                <span class="text-xs font-extrabold text-amber-400" id="statPending">0</span>
+              <div class="bg-[#1b2438] px-2.5 py-1.5 rounded-md border border-[#24334a]">
+                <span class="text-[10px] text-slate-400 block font-medium">Pending</span>
+                <span class="text-xs font-bold text-amber-400" id="statPending">0</span>
               </div>
-              <div class="bg-m3-surfaceContainerLow px-2 py-1.5 rounded-xl border border-white/5">
-                <span class="text-[9px] text-m3-secondary block">Paid (₹)</span>
-                <span class="text-xs font-extrabold text-emerald-300" id="statPaid">₹0</span>
+              <div class="bg-[#1b2438] px-2.5 py-1.5 rounded-md border border-[#24334a]">
+                <span class="text-[10px] text-slate-400 block font-medium">Paid (₹)</span>
+                <span class="text-xs font-bold text-emerald-300" id="statPaid">₹0</span>
               </div>
             </div>
           </div>
 
           <!-- Progress Bar -->
-          <div class="space-y-1">
-            <div class="flex justify-between text-[10px] font-bold text-m3-secondary">
-              <span>Task Completion</span>
-              <span id="queuePercentLabel">0%</span>
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-[11px] font-medium text-slate-400">
+              <span>Task Completion Progress</span>
+              <span id="queuePercentLabel" class="text-white font-semibold">0%</span>
             </div>
-            <div class="w-full bg-m3-surfaceContainerLow rounded-full h-2.5 p-0.5 border border-white/5 overflow-hidden">
-              <div id="queueProgressBar" class="bg-gradient-to-r from-blue-500 to-emerald-400 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+            <div class="w-full bg-[#1b2438] rounded-full h-2 border border-[#24334a] overflow-hidden">
+              <div id="queueProgressBar" class="bg-gradient-to-r from-blue-600 to-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
             </div>
           </div>
         </div>
@@ -422,17 +398,17 @@
         <!-- Filter Chips & Search -->
         <div class="space-y-2">
           <div class="relative">
-            <span class="material-symbols-outlined absolute left-3.5 top-3 text-m3-outline text-base">search</span>
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-500 text-base">search</span>
             <input type="text" id="searchInput" oninput="renderLeadCards()" placeholder="Search candidate, college, or phone..."
-              class="w-full bg-m3-surfaceContainer rounded-full pl-10 pr-4 py-2.5 text-xs text-white placeholder-m3-outline border border-white/5 focus:outline-none focus:border-m3-primary transition">
+              class="w-full bg-[#131b2e] rounded-md pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 border border-[#24334a] focus:outline-none focus:border-blue-500 transition">
           </div>
 
           <div class="flex overflow-x-auto gap-1.5 py-0.5 scrollbar-none text-xs">
-            <button onclick="setFilter('all')" id="filterChip_all" class="px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap bg-m3-primary text-m3-onPrimary transition">All</button>
-            <button onclick="setFilter('Pending')" id="filterChip_Pending" class="px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition border border-white/5">Pending</button>
-            <button onclick="setFilter('Interested')" id="filterChip_Interested" class="px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition border border-white/5">Interested</button>
-            <button onclick="setFilter('Paid / Confirmed')" id="filterChip_Paid / Confirmed" class="px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition border border-white/5">Paid</button>
-            <button onclick="setFilter('Call Back')" id="filterChip_Call Back" class="px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition border border-white/5">Call Back</button>
+            <button onclick="setFilter('all')" id="filterChip_all" class="px-3.5 py-1.5 rounded-md font-semibold whitespace-nowrap bg-blue-600 text-white shadow-sm transition">All</button>
+            <button onclick="setFilter('Pending')" id="filterChip_Pending" class="px-3.5 py-1.5 rounded-md font-semibold whitespace-nowrap bg-[#131b2e] text-slate-400 hover:text-white transition border border-[#24334a]">Pending</button>
+            <button onclick="setFilter('Interested')" id="filterChip_Interested" class="px-3.5 py-1.5 rounded-md font-semibold whitespace-nowrap bg-[#131b2e] text-slate-400 hover:text-white transition border border-[#24334a]">Interested</button>
+            <button onclick="setFilter('Paid / Confirmed')" id="filterChip_Paid / Confirmed" class="px-3.5 py-1.5 rounded-md font-semibold whitespace-nowrap bg-[#131b2e] text-slate-400 hover:text-white transition border border-[#24334a]">Paid</button>
+            <button onclick="setFilter('Call Back')" id="filterChip_Call Back" class="px-3.5 py-1.5 rounded-md font-semibold whitespace-nowrap bg-[#131b2e] text-slate-400 hover:text-white transition border border-[#24334a]">Call Back</button>
           </div>
         </div>
 
@@ -445,15 +421,15 @@
 
       <!-- ==================== VIEW 2: CR NUMBERS ==================== -->
       <div id="viewCR" class="space-y-3 hidden">
-        <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md flex items-center justify-between">
+        <div class="bg-[#131b2e] rounded-lg p-4 border border-[#24334a] shadow-sm flex items-center justify-between">
           <div>
-            <h2 class="text-xs font-black text-white flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-m3-tertiary text-base">groups</span>
+            <h2 class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-purple-400 text-base">groups</span>
               <span>Class Representative (CR) Contacts</span>
             </h2>
-            <p class="text-[11px] text-m3-secondary">Numbers gathered for bulk student outreach</p>
+            <p class="text-[11px] text-slate-400">Student coordinator numbers gathered for bulk outreach</p>
           </div>
-          <button onclick="exportCRCSV()" class="px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh text-white hover:bg-m3-primary hover:text-m3-onPrimary text-xs font-bold transition flex items-center gap-1 border border-white/5">
+          <button onclick="exportCRCSV()" class="px-3.5 py-1.5 rounded-md bg-[#1b2438] hover:bg-[#222f47] text-slate-200 text-xs font-semibold transition flex items-center gap-1.5 border border-[#24334a]">
             <span class="material-symbols-outlined text-xs">download</span>
             <span>Export CSV</span>
           </button>
@@ -467,18 +443,18 @@
       <!-- ==================== VIEW 3: ADMIN ==================== -->
       <div id="viewAdmin" class="space-y-4 hidden">
         
-        <!-- WhatsApp Quick Invite Links Generator -->
-        <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md space-y-2.5">
+        <!-- WhatsApp Quick Direct Links Generator -->
+        <div class="bg-[#131b2e] rounded-lg p-4 border border-[#24334a] shadow-sm space-y-3">
           <div class="flex items-center justify-between">
-            <h3 class="text-xs font-extrabold text-white flex items-center gap-1.5">
+            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
               <span class="material-symbols-outlined text-emerald-400 text-base">send_to_mobile</span>
-              <span>1-Click Caller WhatsApp Invite Links</span>
+              <span>1-Click Caller Direct Access Links</span>
             </h3>
-            <button onclick="copyAllWhatsAppLinks()" class="px-2.5 py-1 rounded-full bg-m3-primary/10 text-m3-primary border border-m3-primary/20 text-[11px] font-bold hover:bg-m3-primary/20 transition">
+            <button onclick="copyAllWhatsAppLinks()" class="px-3 py-1 rounded-md bg-blue-600/10 text-blue-400 border border-blue-500/20 text-[11px] font-semibold hover:bg-blue-600/20 transition">
               Copy All Links
             </button>
           </div>
-          <p class="text-[11px] text-m3-secondary">Share these links with your callers on WhatsApp. Tapping their personalized link instantly logs them in without any passwords!</p>
+          <p class="text-[11px] text-slate-400">Share these personalized links with your callers on WhatsApp for quick, direct team sign-in.</p>
           
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1" id="callerLinksGrid">
             <!-- Rendered by JS -->
@@ -486,43 +462,43 @@
         </div>
 
         <!-- KPI Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          <div class="bg-m3-surfaceContainer rounded-2xl p-3 border border-white/5">
-            <span class="text-[9px] font-extrabold text-m3-secondary uppercase">Total Leads</span>
-            <p class="text-xl font-black text-white mt-0.5" id="adminTotalLeads">212</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="bg-[#131b2e] rounded-lg p-3.5 border border-[#24334a] shadow-sm">
+            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Leads</span>
+            <p class="text-xl font-bold text-white mt-1" id="adminTotalLeads">212</p>
           </div>
-          <div class="bg-m3-surfaceContainer rounded-2xl p-3 border border-white/5">
-            <span class="text-[9px] font-extrabold text-m3-secondary uppercase">Calls Done</span>
-            <p class="text-xl font-black text-m3-primary mt-0.5" id="adminCompletedCalls">0</p>
+          <div class="bg-[#131b2e] rounded-lg p-3.5 border border-[#24334a] shadow-sm">
+            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Calls Completed</span>
+            <p class="text-xl font-bold text-blue-400 mt-1" id="adminCompletedCalls">0</p>
           </div>
-          <div class="bg-m3-surfaceContainer rounded-2xl p-3 border border-white/5">
-            <span class="text-[9px] font-extrabold text-m3-secondary uppercase">Paid (₹)</span>
-            <p class="text-xl font-black text-emerald-400 mt-0.5" id="adminTotalPaid">₹0</p>
+          <div class="bg-[#131b2e] rounded-lg p-3.5 border border-[#24334a] shadow-sm">
+            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Revenue Paid (₹)</span>
+            <p class="text-xl font-bold text-emerald-400 mt-1" id="adminTotalPaid">₹0</p>
           </div>
-          <div class="bg-m3-surfaceContainer rounded-2xl p-3 border border-white/5">
-            <span class="text-[9px] font-extrabold text-m3-secondary uppercase">Pipeline (₹)</span>
-            <p class="text-xl font-black text-amber-400 mt-0.5" id="adminTotalExpected">₹0</p>
+          <div class="bg-[#131b2e] rounded-lg p-3.5 border border-[#24334a] shadow-sm">
+            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Pipeline Expected (₹)</span>
+            <p class="text-xl font-bold text-amber-400 mt-1" id="adminTotalExpected">₹0</p>
           </div>
         </div>
 
         <!-- Leaderboard -->
-        <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md space-y-3">
-          <h3 class="text-xs font-extrabold text-white flex items-center gap-1.5">
+        <div class="bg-[#131b2e] rounded-lg p-4 border border-[#24334a] shadow-sm space-y-3">
+          <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
             <span class="material-symbols-outlined text-amber-400 text-sm">leaderboard</span>
             <span>Caller Performance Leaderboard</span>
           </h3>
 
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
+            <table class="w-full text-left text-xs border-collapse">
               <thead>
-                <tr class="border-b border-white/5 text-m3-secondary font-bold">
-                  <th class="py-2 px-2.5">Caller</th>
-                  <th class="py-2 px-2 text-center">Assigned</th>
-                  <th class="py-2 px-2 text-center">Done</th>
-                  <th class="py-2 px-2 text-center">Pending</th>
-                  <th class="py-2 px-2">Progress</th>
-                  <th class="py-2 px-2 text-center">Paid (₹)</th>
-                  <th class="py-2 px-2 text-center">CRs</th>
+                <tr class="border-b border-[#24334a] text-slate-400 font-semibold bg-[#1b2438]/50">
+                  <th class="py-2.5 px-3">Caller</th>
+                  <th class="py-2.5 px-2 text-center">Assigned</th>
+                  <th class="py-2.5 px-2 text-center">Done</th>
+                  <th class="py-2.5 px-2 text-center">Pending</th>
+                  <th class="py-2.5 px-2">Progress</th>
+                  <th class="py-2.5 px-2 text-center">Paid (₹)</th>
+                  <th class="py-2.5 px-2 text-center">CRs</th>
                 </tr>
               </thead>
               <tbody id="leaderboardBody">
@@ -533,24 +509,24 @@
         </div>
 
         <!-- Team Credentials & Password Management (Admin Only) -->
-        <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md space-y-3">
+        <div class="bg-[#131b2e] rounded-lg p-4 border border-[#24334a] shadow-sm space-y-3">
           <div class="flex items-center justify-between">
-            <h3 class="text-xs font-extrabold text-white flex items-center gap-1.5">
+            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
               <span class="material-symbols-outlined text-blue-400 text-sm">manage_accounts</span>
-              <span>Caller Password &amp; Credentials Management</span>
+              <span>Caller Credentials Management</span>
             </h3>
-            <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/20 font-bold">Admin Only</span>
+            <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20 font-semibold">Admin Restricted</span>
           </div>
-          <p class="text-[11px] text-m3-secondary">Only administrators can reset caller credentials. Callers cannot reset their own passwords. Reset any caller to default (<code class="text-blue-300 font-mono">pass@123</code>) or assign a custom password.</p>
+          <p class="text-[11px] text-slate-400">Caller accounts cannot self-reset credentials. Administrators manage caller passwords here: 1-click reset to default (<code class="text-blue-300 font-mono">pass@123</code>) or assign a custom password.</p>
           
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
+            <table class="w-full text-left text-xs border-collapse">
               <thead>
-                <tr class="border-b border-white/5 text-m3-secondary font-bold">
-                  <th class="py-2 px-2.5">Caller Name</th>
-                  <th class="py-2 px-2">Outreach Email</th>
-                  <th class="py-2 px-2 text-center">Status</th>
-                  <th class="py-2 px-2 text-right">Actions</th>
+                <tr class="border-b border-[#24334a] text-slate-400 font-semibold bg-[#1b2438]/50">
+                  <th class="py-2.5 px-3">Caller Name</th>
+                  <th class="py-2.5 px-2">Outreach Email</th>
+                  <th class="py-2.5 px-2 text-center">Status</th>
+                  <th class="py-2.5 px-2 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody id="teamCredentialsBody">
@@ -561,73 +537,73 @@
         </div>
 
         <!-- Portal Access & Login / Logout Audit Logs -->
-        <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md space-y-3.5">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-3">
+        <div class="bg-[#131b2e] rounded-lg p-4 border border-[#24334a] shadow-sm space-y-3.5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#24334a] pb-3">
             <div>
-              <h3 class="text-xs font-extrabold text-white flex items-center gap-1.5">
+              <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-emerald-400 text-sm">history_toggle_off</span>
-                <span>User &amp; Admin Login / Logout Audit Logs</span>
+                <span>User &amp; Admin Authentication Audit Logs</span>
               </h3>
-              <p class="text-[11px] text-m3-secondary mt-0.5">Real-time audit log of all user logins, logouts, and credential changes</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">Real-time enterprise audit log of all logins, logouts, and credential changes</p>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="exportAuthLogsCSV()" class="px-2.5 py-1.5 rounded-xl bg-m3-surfaceContainerHigh hover:bg-m3-surfaceContainerHighest text-white text-[11px] font-bold flex items-center gap-1 border border-white/5 transition state-layer">
+              <button onclick="exportAuthLogsCSV()" class="px-3 py-1.5 rounded-md bg-[#1b2438] hover:bg-[#222f47] text-white text-[11px] font-semibold flex items-center gap-1.5 border border-[#24334a] transition state-layer">
                 <span class="material-symbols-outlined text-xs">download</span>
                 <span>Export CSV</span>
               </button>
-              <button onclick="clearAuthLogs()" class="px-2.5 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-[11px] font-bold flex items-center gap-1 border border-rose-500/20 transition state-layer">
+              <button onclick="clearAuthLogs()" class="px-3 py-1.5 rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-[11px] font-semibold flex items-center gap-1.5 border border-rose-500/20 transition state-layer">
                 <span class="material-symbols-outlined text-xs">delete_sweep</span>
-                <span>Clear</span>
+                <span>Clear Logs</span>
               </button>
             </div>
           </div>
 
           <!-- Log Metrics Chips -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-            <div class="bg-m3-surfaceContainerLow p-2 rounded-xl border border-white/5">
-              <span class="text-[9px] font-bold text-m3-secondary uppercase block">Total Logins</span>
-              <span class="text-sm font-black text-emerald-400" id="auditMetricLogins">0</span>
+            <div class="bg-[#1b2438] p-2.5 rounded-md border border-[#24334a]">
+              <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Total Logins</span>
+              <span class="text-sm font-bold text-emerald-400" id="auditMetricLogins">0</span>
             </div>
-            <div class="bg-m3-surfaceContainerLow p-2 rounded-xl border border-white/5">
-              <span class="text-[9px] font-bold text-m3-secondary uppercase block">Total Logouts</span>
-              <span class="text-sm font-black text-amber-400" id="auditMetricLogouts">0</span>
+            <div class="bg-[#1b2438] p-2.5 rounded-md border border-[#24334a]">
+              <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Total Logouts</span>
+              <span class="text-sm font-bold text-amber-400" id="auditMetricLogouts">0</span>
             </div>
-            <div class="bg-m3-surfaceContainerLow p-2 rounded-xl border border-white/5">
-              <span class="text-[9px] font-bold text-m3-secondary uppercase block">Admin Events</span>
-              <span class="text-sm font-black text-purple-400" id="auditMetricAdmin">0</span>
+            <div class="bg-[#1b2438] p-2.5 rounded-md border border-[#24334a]">
+              <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Admin Events</span>
+              <span class="text-sm font-bold text-purple-400" id="auditMetricAdmin">0</span>
             </div>
-            <div class="bg-m3-surfaceContainerLow p-2 rounded-xl border border-white/5">
-              <span class="text-[9px] font-bold text-m3-secondary uppercase block">Failed / Denied</span>
-              <span class="text-sm font-black text-rose-400" id="auditMetricFailed">0</span>
+            <div class="bg-[#1b2438] p-2.5 rounded-md border border-[#24334a]">
+              <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Failed / Denied</span>
+              <span class="text-sm font-bold text-rose-400" id="auditMetricFailed">0</span>
             </div>
           </div>
 
           <!-- Filter & Search Bar -->
           <div class="flex flex-col sm:flex-row gap-2 pt-1">
             <div class="flex-1 relative">
-              <span class="material-symbols-outlined absolute left-2.5 top-2 text-m3-outline text-sm">search</span>
-              <input type="text" id="auditSearchInput" oninput="renderAuthLogsTable()" placeholder="Search logs by name, email, action..." class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-m3-outline outline-none focus:border-m3-primary">
+              <span class="material-symbols-outlined absolute left-2.5 top-2 text-slate-500 text-sm">search</span>
+              <input type="text" id="auditSearchInput" oninput="renderAuthLogsTable()" placeholder="Search logs by name, email, action..." class="w-full bg-[#1b2438] border border-[#24334a] rounded-md pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-blue-500">
             </div>
             <div class="flex flex-wrap gap-1" id="auditFilterPills">
-              <button onclick="setAuditFilter('all')" id="auditFilter_all" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-primary text-m3-onPrimary">All</button>
-              <button onclick="setAuditFilter('LOGIN')" id="auditFilter_LOGIN" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white">Logins</button>
-              <button onclick="setAuditFilter('LOGOUT')" id="auditFilter_LOGOUT" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white">Logouts</button>
-              <button onclick="setAuditFilter('admin')" id="auditFilter_admin" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white">Admin Only</button>
-              <button onclick="setAuditFilter('caller')" id="auditFilter_caller" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white">Callers</button>
-              <button onclick="setAuditFilter('FAILED')" id="auditFilter_FAILED" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white">Failed / Denied</button>
+              <button onclick="setAuditFilter('all')" id="auditFilter_all" class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-blue-600 text-white shadow-sm">All</button>
+              <button onclick="setAuditFilter('LOGIN')" id="auditFilter_LOGIN" class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-[#1b2438] text-slate-400 hover:text-white border border-[#24334a]">Logins</button>
+              <button onclick="setAuditFilter('LOGOUT')" id="auditFilter_LOGOUT" class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-[#1b2438] text-slate-400 hover:text-white border border-[#24334a]">Logouts</button>
+              <button onclick="setAuditFilter('admin')" id="auditFilter_admin" class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-[#1b2438] text-slate-400 hover:text-white border border-[#24334a]">Admin Only</button>
+              <button onclick="setAuditFilter('caller')" id="auditFilter_caller" class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-[#1b2438] text-slate-400 hover:text-white border border-[#24334a]">Callers</button>
+              <button onclick="setAuditFilter('FAILED')" id="auditFilter_FAILED" class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-[#1b2438] text-slate-400 hover:text-white border border-[#24334a]">Failed / Denied</button>
             </div>
           </div>
 
           <!-- Audit Log Table -->
-          <div class="overflow-x-auto max-h-96 overflow-y-auto rounded-xl border border-white/5">
-            <table class="w-full text-left text-xs">
-              <thead class="sticky top-0 bg-m3-surfaceContainerHigh z-10">
-                <tr class="border-b border-white/10 text-m3-secondary font-bold">
-                  <th class="py-2 px-2.5">Time</th>
-                  <th class="py-2 px-2">User / Email</th>
-                  <th class="py-2 px-2 text-center">Event</th>
-                  <th class="py-2 px-2 text-center">Status</th>
-                  <th class="py-2 px-2">Activity Details</th>
+          <div class="overflow-x-auto max-h-96 overflow-y-auto rounded-md border border-[#24334a]">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="sticky top-0 bg-[#1b2438] z-10">
+                <tr class="border-b border-[#24334a] text-slate-400 font-semibold">
+                  <th class="py-2.5 px-3">Time</th>
+                  <th class="py-2.5 px-2">User / Email</th>
+                  <th class="py-2.5 px-2 text-center">Event</th>
+                  <th class="py-2.5 px-2 text-center">Status</th>
+                  <th class="py-2.5 px-2">Activity Details</th>
                 </tr>
               </thead>
               <tbody id="auditLogsBody">
@@ -644,18 +620,18 @@
   </div>
 
   <!-- Outcome Modal / Bottom Sheet -->
-  <div id="outcomeModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
-    <div class="w-full sm:max-w-lg bg-m3-surfaceContainerLow sm:bg-m3-surfaceContainer rounded-t-[2.5rem] sm:rounded-3xl border-t sm:border border-white/10 p-5 sm:p-6 space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl">
+  <div id="outcomeModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="w-full sm:max-w-lg bg-[#131b2e] rounded-t-xl sm:rounded-lg border border-[#24334a] p-5 sm:p-6 space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl">
       
-      <div class="w-12 h-1.5 rounded-full bg-m3-outlineVariant/60 mx-auto -mt-2 mb-2 sm:hidden"></div>
+      <div class="w-12 h-1 rounded-full bg-slate-700 mx-auto -mt-2 mb-2 sm:hidden"></div>
 
-      <div class="flex items-start justify-between border-b border-white/5 pb-2.5">
+      <div class="flex items-start justify-between border-b border-[#24334a] pb-3">
         <div>
-          <span class="text-[9px] font-bold text-m3-primary uppercase tracking-wider block">Log Outcome</span>
-          <h3 class="text-sm font-extrabold text-white" id="modalStudentName">Candidate Name</h3>
-          <p class="text-xs text-m3-secondary" id="modalCollegeName">College Name</p>
+          <span class="text-[10px] font-bold text-blue-400 uppercase tracking-wider block">Log Outcome</span>
+          <h3 class="text-sm font-bold text-white" id="modalStudentName">Candidate Name</h3>
+          <p class="text-xs text-slate-400" id="modalCollegeName">College Name</p>
         </div>
-        <button onclick="closeOutcomeModal()" class="w-7 h-7 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white flex items-center justify-center transition">
+        <button onclick="closeOutcomeModal()" class="w-7 h-7 rounded-md bg-[#1b2438] hover:bg-[#222f47] text-slate-400 hover:text-white flex items-center justify-center transition border border-[#24334a]">
           <span class="material-symbols-outlined text-base">close</span>
         </button>
       </div>
@@ -664,49 +640,49 @@
 
       <div class="space-y-3.5 text-xs">
         <div>
-          <label class="block font-bold text-m3-secondary mb-1.5">CALL STATUS</label>
+          <label class="block font-semibold text-slate-300 uppercase tracking-wider text-[11px] mb-1.5">CALL STATUS</label>
           <div class="flex flex-wrap gap-1.5" id="callStatusChips"></div>
           <input type="hidden" id="modalCallStatusVal" value="Pending">
         </div>
 
         <div>
-          <label class="block font-bold text-m3-secondary mb-1.5">PAYMENT STATUS</label>
+          <label class="block font-semibold text-slate-300 uppercase tracking-wider text-[11px] mb-1.5">PAYMENT STATUS</label>
           <div class="flex flex-wrap gap-1.5" id="payStatusChips"></div>
           <input type="hidden" id="modalPayStatusVal" value="Pending">
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div>
-            <label class="block font-bold text-m3-secondary mb-1">PAYMENT AMOUNT (₹)</label>
+            <label class="block font-semibold text-slate-300 uppercase tracking-wider text-[11px] mb-1">PAYMENT AMOUNT (₹)</label>
             <div class="relative">
-              <span class="absolute left-3 top-2.5 text-m3-outline font-bold">₹</span>
-              <input type="number" id="modalAmount" placeholder="500" class="w-full bg-m3-surfaceContainerHigh border border-white/5 rounded-xl pl-7 pr-3 py-2 text-white font-mono outline-none focus:border-m3-primary">
+              <span class="absolute left-3 top-2 text-slate-500 font-bold">₹</span>
+              <input type="number" id="modalAmount" placeholder="500" class="w-full bg-[#1b2438] border border-[#24334a] rounded-md pl-7 pr-3 py-2 text-white font-mono outline-none focus:border-blue-500">
             </div>
           </div>
 
           <div>
-            <label class="block font-bold text-m3-tertiary mb-1 flex items-center gap-1">
+            <label class="block font-semibold text-purple-400 uppercase tracking-wider text-[11px] mb-1 flex items-center gap-1">
               <span class="material-symbols-outlined text-xs">badge</span>
               <span>CR PHONE NUMBER</span>
             </label>
-            <input type="tel" id="modalCrNumber" placeholder="+91XXXXXXXXXX" class="w-full bg-m3-surfaceContainerHigh border border-m3-tertiary/40 rounded-xl px-3 py-2 text-white font-mono outline-none focus:border-m3-tertiary">
+            <input type="tel" id="modalCrNumber" placeholder="+91XXXXXXXXXX" class="w-full bg-[#1b2438] border border-purple-500/30 rounded-md px-3 py-2 text-white font-mono outline-none focus:border-purple-400">
           </div>
         </div>
 
         <div>
-          <label class="block font-bold text-m3-secondary mb-1">EXPECTED PAYMENT DATE</label>
-          <input type="date" id="modalExpDate" class="w-full bg-m3-surfaceContainerHigh border border-white/5 rounded-xl px-3 py-2 text-white outline-none focus:border-m3-primary">
+          <label class="block font-semibold text-slate-300 uppercase tracking-wider text-[11px] mb-1">EXPECTED PAYMENT DATE</label>
+          <input type="date" id="modalExpDate" class="w-full bg-[#1b2438] border border-[#24334a] rounded-md px-3 py-2 text-white outline-none focus:border-blue-500">
         </div>
 
         <div>
-          <label class="block font-bold text-m3-secondary mb-1">CALLER REMARKS</label>
-          <textarea id="modalRemarks" rows="2" placeholder="Participant interest, questions, team size, etc." class="w-full bg-m3-surfaceContainerHigh border border-white/5 rounded-xl p-2.5 text-white outline-none focus:border-m3-primary"></textarea>
+          <label class="block font-semibold text-slate-300 uppercase tracking-wider text-[11px] mb-1">CALLER REMARKS</label>
+          <textarea id="modalRemarks" rows="2" placeholder="Participant interest, questions, team size, etc." class="w-full bg-[#1b2438] border border-[#24334a] rounded-md p-2.5 text-white outline-none focus:border-blue-500"></textarea>
         </div>
       </div>
 
-      <div class="pt-2 border-t border-white/5 flex gap-2">
-        <button onclick="closeOutcomeModal()" class="flex-1 py-2.5 rounded-full bg-m3-surfaceContainerHigh text-m3-secondary font-bold text-xs hover:text-white transition">Cancel</button>
-        <button onclick="saveModalOutcome()" class="flex-1 py-2.5 rounded-full bg-m3-primary text-m3-onPrimary font-extrabold text-xs shadow-md state-layer flex items-center justify-center gap-1">
+      <div class="pt-3 border-t border-[#24334a] flex gap-2">
+        <button onclick="closeOutcomeModal()" class="flex-1 py-2 rounded-md bg-[#1b2438] hover:bg-[#222f47] text-slate-300 font-semibold text-xs border border-[#24334a] transition">Cancel</button>
+        <button onclick="saveModalOutcome()" class="flex-1 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm flex items-center justify-center gap-1.5 transition">
           <span class="material-symbols-outlined text-sm">check</span>
           <span>Save Outcome</span>
         </button>
@@ -3957,8 +3933,8 @@
 
       if (inputHash !== expectedHash) {
         const errMsg = account.role === 'admin'
-          ? "Incorrect administrator password. Click 'Admin Reset' if you need to reset."
-          : "Incorrect password. Default caller password is 'pass@123'. If you need a reset, please contact an administrator.";
+          ? "Incorrect administrator password. Please check your credentials."
+          : "Incorrect password. Default caller password is 'pass@123'. If you need assistance, please contact an administrator.";
         showAuthError("Incorrect Password", errMsg);
 
         logAuthEvent({
@@ -4004,105 +3980,6 @@
         input.type = 'password';
         icon.textContent = 'visibility';
       }
-    }
-
-    // ========================================================
-    // 🔑 ADMIN PASSWORD RESET ONLY
-    // ========================================================
-    function openForgotPasswordModal() {
-      dismissAuthAlerts();
-      const modal = document.getElementById('forgotPasswordModal');
-      const prefill = document.getElementById('loginEmail') ? document.getElementById('loginEmail').value.trim() : '';
-      if (prefill) {
-        document.getElementById('forgotEmailInput').value = prefill;
-      }
-      document.getElementById('forgotErrorCard').classList.add('hidden');
-      document.getElementById('forgotNewPassword').value = '';
-      document.getElementById('forgotConfirmPassword').value = '';
-      modal.classList.remove('hidden');
-    }
-
-    function closeForgotPasswordModal() {
-      document.getElementById('forgotPasswordModal').classList.add('hidden');
-    }
-
-    async function handleForgotPasswordSubmit(e) {
-      e.preventDefault();
-      const errCard = document.getElementById('forgotErrorCard');
-      const email = document.getElementById('forgotEmailInput').value.trim().toLowerCase();
-      const newPass = document.getElementById('forgotNewPassword').value;
-      const confirmPass = document.getElementById('forgotConfirmPassword').value;
-
-      const account = REGISTERED_ACCOUNTS[email];
-      if (!account) {
-        errCard.textContent = `Email "${email}" is not registered in the outreach roster.`;
-        errCard.classList.remove('hidden');
-        logAuthEvent({
-          event: 'FAILED_LOGIN',
-          email: email,
-          name: 'Unregistered Visitor',
-          role: 'unregistered',
-          status: 'BLOCKED',
-          details: 'Password reset attempted for unregistered email'
-        });
-        return;
-      }
-
-      // STRICT ADMIN PERMISSION CHECK: Only admins can reset their password!
-      if (account.role !== 'admin') {
-        errCard.innerHTML = `
-          <div class="text-left space-y-1">
-            <div class="font-bold text-rose-300 flex items-center gap-1">
-              <span class="material-symbols-outlined text-sm">lock</span>
-              <span>Access Restricted: Admin Only</span>
-            </div>
-            <div class="text-[11px] text-m3-secondary">
-              Only administrators are authorized to reset passwords. Outreach callers must use default credentials (<code class="text-blue-300 font-mono">pass@123</code>) or contact an administrator to reset.
-            </div>
-          </div>
-        `;
-        errCard.classList.remove('hidden');
-
-        logAuthEvent({
-          event: 'PASSWORD_RESET_BLOCKED',
-          email: email,
-          name: account.name,
-          role: account.role,
-          status: 'BLOCKED',
-          details: `Caller (${account.name}) attempted unauthorized self-password reset`
-        });
-        return;
-      }
-
-      if (newPass.length < 6) {
-        errCard.textContent = "New password must be at least 6 characters.";
-        errCard.classList.remove('hidden');
-        return;
-      }
-
-      if (newPass !== confirmPass) {
-        errCard.textContent = "Passwords do not match.";
-        errCard.classList.remove('hidden');
-        return;
-      }
-
-      // Save new admin password
-      const newHash = await hashPassword(newPass);
-      setAccountPasswordHash(email, newHash);
-
-      logAuthEvent({
-        event: 'PASSWORD_RESET',
-        email: email,
-        name: account.name,
-        role: account.role,
-        status: 'SUCCESS',
-        details: `Administrator (${account.name}) self-reset password via reset screen`
-      });
-
-      closeForgotPasswordModal();
-      document.getElementById('loginEmail').value = email;
-      document.getElementById('loginPassword').value = '';
-      showAuthSuccess("Password Reset Successful", `Administrator password updated for ${email}. Please sign in with your new password.`);
     }
 
     // ========================================================
@@ -4311,10 +4188,10 @@
       container.innerHTML = TEAM_ROSTER.map(m => {
         const link = `${baseUrl}?email=${encodeURIComponent(m.email)}`;
         return `
-          <button onclick="copySingleLink('${link}', '${m.name}')" class="p-2 rounded-xl bg-m3-surfaceContainerHigh hover:bg-m3-primary/10 border border-white/5 text-left transition state-layer">
-            <span class="text-xs font-bold text-white block truncate">${m.name}</span>
-            <span class="text-[10px] text-emerald-400 font-semibold block flex items-center gap-1">
-              <span class="material-symbols-outlined text-[11px]">content_copy</span> Copy Link
+          <button onclick="copySingleLink('${link}', '${m.name}')" class="p-2.5 rounded-md bg-[#1b2438] hover:bg-[#222f47] border border-[#24334a] text-left transition state-layer">
+            <span class="text-xs font-semibold text-white block truncate">${m.name}</span>
+            <span class="text-[10px] text-emerald-400 font-medium block flex items-center gap-1 mt-0.5">
+              <span class="material-symbols-outlined text-[12px]">content_copy</span> Copy Link
             </span>
           </button>
         `;
@@ -4348,10 +4225,10 @@
         if (el && btn) {
           if (v === view) {
             el.classList.remove('hidden');
-            btn.className = 'flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-m3-primaryContainer text-white';
+            btn.className = 'flex-1 py-2 rounded-md text-xs font-semibold transition flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm';
           } else {
             el.classList.add('hidden');
-            btn.className = 'flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-m3-secondary hover:text-white';
+            btn.className = 'flex-1 py-2 rounded-md text-xs font-semibold transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white hover:bg-[#1b2438]';
           }
         }
       });
@@ -4391,9 +4268,9 @@
         const btn = document.getElementById('filterChip_' + f);
         if (btn) {
           if (f === filter) {
-            btn.className = 'px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap bg-m3-primary text-m3-onPrimary transition';
+            btn.className = 'px-3.5 py-1.5 rounded-md font-semibold whitespace-nowrap bg-blue-600 text-white shadow-sm transition';
           } else {
-            btn.className = 'px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white transition border border-white/5';
+            btn.className = 'px-3.5 py-1.5 rounded-md font-semibold whitespace-nowrap bg-[#131b2e] text-slate-400 hover:text-white transition border border-[#24334a]';
           }
         }
       });
@@ -4417,34 +4294,34 @@
 
       if (filtered.length === 0) {
         container.innerHTML = `
-          <div class="bg-m3-surfaceContainer rounded-3xl p-8 text-center text-m3-secondary border border-white/5">
-            <span class="material-symbols-outlined text-3xl mb-1 text-m3-outline">inbox</span>
-            <p class="text-xs font-semibold">No candidates match your filter.</p>
+          <div class="bg-[#131b2e] rounded-lg p-8 text-center text-slate-400 border border-[#24334a]">
+            <span class="material-symbols-outlined text-3xl mb-1 text-slate-500">inbox</span>
+            <p class="text-xs font-medium">No candidates match your current filter.</p>
           </div>
         `;
         return;
       }
 
       container.innerHTML = filtered.map(lead => {
-        let statusBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary border border-white/5">Pending</span>';
-        if (lead.callStatus === 'Interested') statusBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">Interested</span>';
-        else if (lead.callStatus === 'Paid / Confirmed') statusBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Paid</span>';
-        else if (lead.callStatus === 'Call Back') statusBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">Call Back</span>';
-        else if (lead.callStatus === 'Not Reachable') statusBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">Not Reachable</span>';
+        let statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#1b2438] text-slate-400 border border-[#24334a]">Pending</span>';
+        if (lead.callStatus === 'Interested') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">Interested</span>';
+        else if (lead.callStatus === 'Paid / Confirmed') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Paid</span>';
+        else if (lead.callStatus === 'Call Back') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">Call Back</span>';
+        else if (lead.callStatus === 'Not Reachable') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">Not Reachable</span>';
 
         return `
-          <div class="bg-m3-surfaceContainer rounded-3xl p-3.5 sm:p-4 border border-white/5 shadow-sm space-y-2.5 transition hover:border-m3-outlineVariant/50">
+          <div class="bg-[#131b2e] rounded-lg p-4 border border-[#24334a] hover:border-slate-600 shadow-sm space-y-3 transition">
             <div class="flex items-start justify-between gap-2">
               <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-1.5">
-                  <h3 class="text-xs font-extrabold text-white truncate">${lead.name}</h3>
+                <div class="flex items-center gap-2">
+                  <h3 class="text-xs font-bold text-white truncate">${lead.name}</h3>
                   ${statusBadge}
                 </div>
-                <p class="text-[11px] text-m3-secondary mt-0.5 flex items-center gap-1 truncate">
-                  <span class="material-symbols-outlined text-[13px] text-m3-outline">school</span>
+                <p class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1 truncate">
+                  <span class="material-symbols-outlined text-[13px] text-slate-500">school</span>
                   <span>${lead.college}</span>
                 </p>
-                <p class="text-[10px] text-m3-outline mt-0.5 line-clamp-1 flex items-center gap-1">
+                <p class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 flex items-center gap-1">
                   <span class="material-symbols-outlined text-[13px] text-amber-400/80">emoji_events</span>
                   <span>${lead.events}</span>
                 </p>
@@ -4452,33 +4329,33 @@
             </div>
 
             ${lead.crNumber ? `
-              <div class="px-2.5 py-1 rounded-xl bg-m3-tertiary/10 border border-m3-tertiary/20 text-m3-tertiary text-[11px] flex items-center justify-between font-medium">
+              <div class="px-3 py-1.5 rounded-md bg-purple-500/10 border border-purple-500/20 text-purple-300 text-[11px] flex items-center justify-between font-medium">
                 <span class="flex items-center gap-1">
                   <span class="material-symbols-outlined text-xs">badge</span>
                   <b>CR Phone:</b> ${lead.crNumber}
                 </span>
-                ${lead.expectedDate ? `<span class="text-m3-secondary text-[10px]">Due: ${lead.expectedDate}</span>` : ''}
+                ${lead.expectedDate ? `<span class="text-slate-400 text-[10px]">Due: ${lead.expectedDate}</span>` : ''}
               </div>
             ` : ''}
 
             ${lead.remarks ? `
-              <p class="text-[10px] text-m3-secondary italic bg-m3-surfaceContainerLow p-2 rounded-xl border border-white/5">
+              <p class="text-[11px] text-slate-300 italic bg-[#1b2438] p-2.5 rounded-md border border-[#24334a]">
                 "${lead.remarks}"
               </p>
             ` : ''}
 
-            <div class="pt-2 border-t border-white/5 flex items-center justify-between gap-1.5">
-              <div class="flex items-center gap-1">
-                <a href="tel:${lead.mobile}" class="px-3 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center gap-1 shadow-sm state-layer">
+            <div class="pt-2 border-t border-[#24334a] flex items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5">
+                <a href="tel:${lead.mobile}" class="px-3 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1 shadow-sm state-layer">
                   <span class="material-symbols-outlined text-sm">call</span>
                   <span>Call</span>
                 </a>
-                <a href="https://wa.me/${lead.mobile.replace(/[^0-9]/g, '')}" target="_blank" class="w-8 h-8 rounded-full bg-m3-surfaceContainerHigh text-emerald-400 hover:bg-emerald-500/20 flex items-center justify-center border border-white/5 transition state-layer">
+                <a href="https://wa.me/${lead.mobile.replace(/[^0-9]/g, '')}" target="_blank" class="w-8 h-8 rounded-md bg-[#1b2438] hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-[#24334a] transition state-layer">
                   <span class="material-symbols-outlined text-sm">chat</span>
                 </a>
               </div>
 
-              <button onclick="openOutcomeModal(${lead.id})" class="px-3 py-1.5 rounded-full bg-m3-primary/10 hover:bg-m3-primary/20 text-m3-primary border border-m3-primary/20 font-bold text-xs flex items-center gap-1 transition state-layer">
+              <button onclick="openOutcomeModal(${lead.id})" class="px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs flex items-center gap-1 transition shadow-sm state-layer">
                 <span class="material-symbols-outlined text-sm">edit_note</span>
                 <span>Update</span>
               </button>
@@ -4508,7 +4385,7 @@
         const isSelected = (lead.callStatus || 'Pending') === opt;
         return `
           <button type="button" onclick="selectCallStatusChip('${opt}')" id="csChip_${opt}"
-            class="px-2.5 py-1 rounded-full text-xs font-bold transition ${isSelected ? 'bg-m3-primary text-m3-onPrimary' : 'bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5'}">
+            class="px-2.5 py-1 rounded-md text-xs font-semibold transition ${isSelected ? 'bg-blue-600 text-white shadow-sm' : 'bg-[#1b2438] text-slate-300 hover:text-white border border-[#24334a]'}">
             ${opt}
           </button>
         `;
@@ -4520,7 +4397,7 @@
         const isSelected = (lead.payStatus || 'Pending') === opt;
         return `
           <button type="button" onclick="selectPayStatusChip('${opt}')" id="psChip_${opt}"
-            class="px-2.5 py-1 rounded-full text-xs font-bold transition ${isSelected ? 'bg-m3-tertiary text-m3-onPrimary' : 'bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5'}">
+            class="px-2.5 py-1 rounded-md text-xs font-semibold transition ${isSelected ? 'bg-purple-600 text-white shadow-sm' : 'bg-[#1b2438] text-slate-300 hover:text-white border border-[#24334a]'}">
             ${opt}
           </button>
         `;
@@ -4535,9 +4412,9 @@
         const btn = document.getElementById('csChip_' + o);
         if (btn) {
           if (o === opt) {
-            btn.className = 'px-2.5 py-1 rounded-full text-xs font-bold transition bg-m3-primary text-m3-onPrimary';
+            btn.className = 'px-2.5 py-1 rounded-md text-xs font-semibold transition bg-blue-600 text-white shadow-sm';
           } else {
-            btn.className = 'px-2.5 py-1 rounded-full text-xs font-bold transition bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5';
+            btn.className = 'px-2.5 py-1 rounded-md text-xs font-semibold transition bg-[#1b2438] text-slate-300 hover:text-white border border-[#24334a]';
           }
         }
       });
@@ -4549,9 +4426,9 @@
         const btn = document.getElementById('psChip_' + o);
         if (btn) {
           if (o === opt) {
-            btn.className = 'px-2.5 py-1 rounded-full text-xs font-bold transition bg-m3-tertiary text-m3-onPrimary';
+            btn.className = 'px-2.5 py-1 rounded-md text-xs font-semibold transition bg-purple-600 text-white shadow-sm';
           } else {
-            btn.className = 'px-2.5 py-1 rounded-full text-xs font-bold transition bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white border border-white/5';
+            btn.className = 'px-2.5 py-1 rounded-md text-xs font-semibold transition bg-[#1b2438] text-slate-300 hover:text-white border border-[#24334a]';
           }
         }
       });
@@ -4601,37 +4478,37 @@
 
       if (crList.length === 0) {
         container.innerHTML = `
-          <div class="bg-m3-surfaceContainer rounded-3xl p-8 text-center text-m3-secondary border border-white/5">
-            <span class="material-symbols-outlined text-3xl mb-1 text-m3-outline">contact_phone</span>
-            <p class="text-xs font-semibold">No Class Representative (CR) numbers logged yet.</p>
+          <div class="bg-[#131b2e] rounded-lg p-8 text-center text-slate-400 border border-[#24334a]">
+            <span class="material-symbols-outlined text-3xl mb-1 text-slate-500">contact_phone</span>
+            <p class="text-xs font-medium">No Class Representative (CR) contacts logged yet.</p>
           </div>
         `;
         return;
       }
 
       container.innerHTML = crList.map(item => `
-        <div class="bg-m3-surfaceContainer rounded-3xl p-3.5 sm:p-4 border border-white/5 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+        <div class="bg-[#131b2e] rounded-lg p-4 border border-[#24334a] shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div class="space-y-0.5">
             <div class="flex items-center gap-1.5">
-              <span class="text-xs font-bold text-m3-primary">${item.lead.name}</span>
-              <span class="text-[9px] text-m3-outline">via ${item.caller}</span>
+              <span class="text-xs font-bold text-blue-400">${item.lead.name}</span>
+              <span class="text-[10px] text-slate-400">via ${item.caller}</span>
             </div>
             <p class="text-xs text-white font-bold flex items-center gap-1">
-              <span class="material-symbols-outlined text-sm text-m3-tertiary">badge</span>
+              <span class="material-symbols-outlined text-sm text-purple-400">badge</span>
               <span>CR Phone: ${item.lead.crNumber}</span>
             </p>
-            <p class="text-[10px] text-m3-secondary flex items-center gap-1">
-              <span class="material-symbols-outlined text-[11px] text-m3-outline">school</span>
+            <p class="text-[11px] text-slate-400 flex items-center gap-1">
+              <span class="material-symbols-outlined text-[12px] text-slate-500">school</span>
               <span>${item.lead.college}</span>
             </p>
           </div>
 
-          <div class="flex items-center gap-1.5">
-            <a href="tel:${item.lead.crNumber}" class="px-3.5 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center gap-1 state-layer">
+          <div class="flex items-center gap-2">
+            <a href="tel:${item.lead.crNumber}" class="px-3.5 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1.5 state-layer shadow-sm">
               <span class="material-symbols-outlined text-sm">call</span>
               <span>Call CR</span>
             </a>
-            <a href="https://wa.me/${item.lead.crNumber.replace(/[^0-9]/g, '')}" target="_blank" class="w-8 h-8 rounded-full bg-m3-surfaceContainerHigh text-emerald-400 hover:bg-emerald-500/20 flex items-center justify-center border border-white/5 transition state-layer">
+            <a href="https://wa.me/${item.lead.crNumber.replace(/[^0-9]/g, '')}" target="_blank" class="w-8 h-8 rounded-md bg-[#1b2438] text-emerald-400 hover:bg-emerald-500/20 flex items-center justify-center border border-[#24334a] transition state-layer">
               <span class="material-symbols-outlined text-sm">chat</span>
             </a>
           </div>
@@ -4686,19 +4563,19 @@
 
       const tb = document.getElementById('leaderboardBody');
       tb.innerHTML = leaderboardData.map(row => `
-        <tr class="border-b border-white/5 hover:bg-white/[0.02]">
-          <td class="py-2.5 px-2.5 font-bold text-white">${row.name}</td>
-          <td class="py-2.5 px-2 text-center text-m3-secondary">${row.total}</td>
-          <td class="py-2.5 px-2 text-center text-emerald-400 font-bold">${row.called}</td>
-          <td class="py-2.5 px-2 text-center text-amber-400 font-semibold">${row.pending}</td>
+        <tr class="border-b border-[#24334a] hover:bg-[#1b2438]/50 transition">
+          <td class="py-2.5 px-3 font-semibold text-white">${row.name}</td>
+          <td class="py-2.5 px-2 text-center text-slate-400 font-mono">${row.total}</td>
+          <td class="py-2.5 px-2 text-center text-emerald-400 font-bold font-mono">${row.called}</td>
+          <td class="py-2.5 px-2 text-center text-amber-400 font-semibold font-mono">${row.pending}</td>
           <td class="py-2.5 px-2">
-            <div class="w-full bg-m3-surfaceContainerLow rounded-full h-2 overflow-hidden flex items-center border border-white/5">
-              <div class="bg-gradient-to-r from-blue-500 to-emerald-400 h-2 rounded-full" style="width: ${row.pct}%"></div>
+            <div class="w-full bg-[#1b2438] rounded-full h-2 overflow-hidden flex items-center border border-[#24334a]">
+              <div class="bg-gradient-to-r from-blue-600 to-emerald-500 h-2 rounded-full transition-all duration-300" style="width: ${row.pct}%"></div>
             </div>
-            <span class="text-[9px] text-m3-outline mt-0.5 block">${row.pct}%</span>
+            <span class="text-[10px] text-slate-500 mt-0.5 block font-mono">${row.pct}%</span>
           </td>
-          <td class="py-2.5 px-2 text-center text-emerald-300 font-bold">₹${row.paidAmt.toLocaleString('en-IN')}</td>
-          <td class="py-2.5 px-2 text-center text-m3-tertiary font-bold">${row.crCount}</td>
+          <td class="py-2.5 px-2 text-center text-emerald-300 font-bold font-mono">₹${row.paidAmt.toLocaleString('en-IN')}</td>
+          <td class="py-2.5 px-2 text-center text-purple-400 font-bold font-mono">${row.crCount}</td>
         </tr>
       `).join('');
     }
@@ -4733,29 +4610,29 @@
         const stored = JSON.parse(localStorage.getItem('TF26_ACCOUNT_PASSWORDS') || '{}');
         const hasCustomPass = !!stored[caller.email.toLowerCase()];
         return `
-          <tr class="border-b border-white/5 hover:bg-white/[0.02]">
-            <td class="py-2.5 px-2.5 font-bold text-white flex items-center gap-1.5">
-              <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-[10px] flex items-center justify-center">
+          <tr class="border-b border-[#24334a] hover:bg-[#1b2438]/50 transition">
+            <td class="py-2.5 px-3 font-semibold text-white flex items-center gap-2">
+              <span class="w-6 h-6 rounded-md bg-blue-600/10 text-blue-400 font-bold text-[10px] flex items-center justify-center border border-blue-500/20">
                 ${caller.name.slice(0, 2).toUpperCase()}
               </span>
               <span>${caller.name}</span>
             </td>
-            <td class="py-2.5 px-2 text-m3-secondary text-[11px] font-mono">${caller.email}</td>
+            <td class="py-2.5 px-2 text-slate-400 text-[11px] font-mono">${caller.email}</td>
             <td class="py-2.5 px-2 text-center">
               ${hasCustomPass 
-                ? '<span class="px-2 py-0.5 rounded-full text-[10px] bg-purple-500/10 text-purple-300 border border-purple-500/20 font-semibold">Custom</span>'
-                : '<span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">Default (pass@123)</span>'
+                ? '<span class="px-2 py-0.5 rounded text-[10px] bg-purple-500/10 text-purple-300 border border-purple-500/20 font-semibold">Custom</span>'
+                : '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">Default (pass@123)</span>'
               }
             </td>
             <td class="py-2.5 px-2 text-right">
               <div class="flex items-center justify-end gap-1.5">
-                <button onclick="adminQuickResetPassword('${caller.email}', '${caller.name}')" title="Reset to pass@123" class="px-2 py-1 rounded-lg bg-m3-surfaceContainerHigh hover:bg-amber-500/20 hover:text-amber-300 text-m3-secondary text-[10px] font-bold border border-white/5 transition flex items-center gap-1">
+                <button onclick="adminQuickResetPassword('${caller.email}', '${caller.name}')" title="Reset to pass@123" class="px-2.5 py-1 rounded-md bg-[#1b2438] hover:bg-amber-500/20 hover:text-amber-300 text-slate-300 text-[11px] font-semibold border border-[#24334a] transition flex items-center gap-1 state-layer">
                   <span class="material-symbols-outlined text-xs">restart_alt</span> Reset Default
                 </button>
-                <button onclick="openAdminSetPasswordModal('${caller.email}', '${caller.name}')" title="Set Custom Password" class="px-2 py-1 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-[10px] font-bold border border-blue-500/20 transition flex items-center gap-1">
+                <button onclick="openAdminSetPasswordModal('${caller.email}', '${caller.name}')" title="Set Custom Password" class="px-2.5 py-1 rounded-md bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 text-[11px] font-semibold border border-blue-500/20 transition flex items-center gap-1 state-layer">
                   <span class="material-symbols-outlined text-xs">key</span> Set Password
                 </button>
-                <button onclick="copyCallerCredentials('${caller.email}', '${caller.name}')" title="Copy Credentials" class="p-1 rounded-lg bg-m3-surfaceContainerHigh hover:bg-white/10 text-m3-secondary text-[11px] border border-white/5 transition">
+                <button onclick="copyCallerCredentials('${caller.email}', '${caller.name}')" title="Copy Credentials" class="p-1.5 rounded-md bg-[#1b2438] hover:bg-[#222f47] text-slate-400 hover:text-white text-xs border border-[#24334a] transition state-layer">
                   <span class="material-symbols-outlined text-xs">content_copy</span>
                 </button>
               </div>
@@ -4854,9 +4731,9 @@
         const btn = document.getElementById('auditFilter_' + f);
         if (btn) {
           if (f === filter) {
-            btn.className = "px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-primary text-m3-onPrimary";
+            btn.className = "px-2.5 py-1 rounded-md text-[10px] font-semibold bg-blue-600 text-white shadow-sm";
           } else {
-            btn.className = "px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white";
+            btn.className = "px-2.5 py-1 rounded-md text-[10px] font-semibold bg-[#1b2438] text-slate-400 hover:text-white border border-[#24334a]";
           }
         }
       });
@@ -4911,8 +4788,8 @@
       if (filtered.length === 0) {
         tb.innerHTML = `
           <tr>
-            <td colspan="5" class="py-8 text-center text-m3-secondary text-xs">
-              <span class="material-symbols-outlined text-2xl text-m3-outline block mb-1">manage_search</span>
+            <td colspan="5" class="py-8 text-center text-slate-400 text-xs">
+              <span class="material-symbols-outlined text-2xl text-slate-500 block mb-1">manage_search</span>
               No audit log entries matching your selection.
             </td>
           </tr>
@@ -4923,46 +4800,46 @@
       tb.innerHTML = filtered.map(log => {
         let eventBadge = '';
         if (log.event === 'LOGIN') {
-          eventBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>LOGIN</span>';
+          eventBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>LOGIN</span>';
         } else if (log.event === 'LOGOUT') {
-          eventBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>LOGOUT</span>';
+          eventBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>LOGOUT</span>';
         } else if (log.event === 'PASSWORD_RESET') {
-          eventBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 font-bold"><span class="material-symbols-outlined text-[10px]">key</span>RESET</span>';
+          eventBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 font-semibold"><span class="material-symbols-outlined text-[10px]">key</span>RESET</span>';
         } else if (log.event === 'PASSWORD_RESET_BLOCKED') {
-          eventBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold"><span class="material-symbols-outlined text-[10px]">block</span>BLOCKED</span>';
+          eventBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-rose-500/10 text-rose-400 border border-rose-500/20 font-semibold"><span class="material-symbols-outlined text-[10px]">block</span>BLOCKED</span>';
         } else {
-          eventBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold">${log.event}</span>`;
+          eventBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-rose-500/10 text-rose-400 border border-rose-500/20 font-semibold">${log.event}</span>`;
         }
 
         let statusBadge = '';
         if (log.status === 'SUCCESS') {
-          statusBadge = '<span class="text-emerald-400 text-[11px] font-bold flex items-center justify-center gap-0.5"><span class="material-symbols-outlined text-xs">check_circle</span>OK</span>';
+          statusBadge = '<span class="text-emerald-400 text-[11px] font-semibold flex items-center justify-center gap-0.5"><span class="material-symbols-outlined text-xs">check_circle</span>OK</span>';
         } else if (log.status === 'BLOCKED') {
-          statusBadge = '<span class="text-rose-400 text-[11px] font-bold flex items-center justify-center gap-0.5"><span class="material-symbols-outlined text-xs">block</span>BLOCKED</span>';
+          statusBadge = '<span class="text-rose-400 text-[11px] font-semibold flex items-center justify-center gap-0.5"><span class="material-symbols-outlined text-xs">block</span>BLOCKED</span>';
         } else {
-          statusBadge = '<span class="text-rose-400 text-[11px] font-bold flex items-center justify-center gap-0.5"><span class="material-symbols-outlined text-xs">cancel</span>FAILED</span>';
+          statusBadge = '<span class="text-rose-400 text-[11px] font-semibold flex items-center justify-center gap-0.5"><span class="material-symbols-outlined text-xs">cancel</span>FAILED</span>';
         }
 
         const roleBadge = log.role === 'admin'
-          ? '<span class="px-1.5 py-0.2 rounded text-[9px] bg-purple-500/10 text-purple-300 font-bold border border-purple-500/20 ml-1">Admin</span>'
-          : '<span class="px-1.5 py-0.2 rounded text-[9px] bg-blue-500/10 text-blue-300 font-bold border border-blue-500/20 ml-1">Caller</span>';
+          ? '<span class="px-1.5 py-0.5 rounded text-[9px] bg-purple-500/10 text-purple-300 font-semibold border border-purple-500/20 ml-1">Admin</span>'
+          : '<span class="px-1.5 py-0.5 rounded text-[9px] bg-blue-500/10 text-blue-300 font-semibold border border-blue-500/20 ml-1">Caller</span>';
 
         return `
-          <tr class="border-b border-white/5 hover:bg-white/[0.02] text-xs">
-            <td class="py-2.5 px-2.5 whitespace-nowrap text-m3-secondary font-mono text-[11px]">
+          <tr class="border-b border-[#24334a] hover:bg-[#1b2438]/50 text-xs transition">
+            <td class="py-2.5 px-3 whitespace-nowrap text-slate-400 font-mono text-[11px]">
               ${log.displayTime}
-              <span class="block text-[9px] text-m3-outline">${log.device || ''}</span>
+              <span class="block text-[10px] text-slate-500 font-sans">${log.device || ''}</span>
             </td>
             <td class="py-2.5 px-2">
-              <div class="font-bold text-white flex items-center">
+              <div class="font-semibold text-white flex items-center">
                 <span>${log.name}</span>
                 ${roleBadge}
               </div>
-              <div class="text-[10px] text-m3-secondary font-mono truncate max-w-[160px] sm:max-w-xs">${log.email}</div>
+              <div class="text-[10px] text-slate-400 font-mono truncate max-w-[160px] sm:max-w-xs">${log.email}</div>
             </td>
             <td class="py-2.5 px-2 text-center whitespace-nowrap">${eventBadge}</td>
             <td class="py-2.5 px-2 text-center whitespace-nowrap">${statusBadge}</td>
-            <td class="py-2.5 px-2 text-m3-secondary text-[11px]">
+            <td class="py-2.5 px-2 text-slate-300 text-[11px]">
               ${log.details}
             </td>
           </tr>
