@@ -251,42 +251,6 @@
 
 
   <!-- ======================================================== -->
-  <!-- 🔑 ADMIN SET CALLER PASSWORD MODAL -->
-  <!-- ======================================================== -->
-  <div id="adminSetPasswordModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="relative w-full max-w-sm bg-[#131b2e] rounded-lg p-6 border border-[#24334a] shadow-2xl space-y-4">
-      <div class="text-center space-y-1">
-        <div class="w-10 h-10 rounded-md bg-blue-600/10 border border-blue-500/20 text-blue-400 mx-auto flex items-center justify-center shadow-sm">
-          <span class="material-symbols-outlined text-xl">admin_panel_settings</span>
-        </div>
-        <h3 class="text-sm font-bold text-white">Set Caller Password</h3>
-        <p class="text-xs text-slate-400" id="adminSetCallerTargetLabel">Assign custom password</p>
-      </div>
-
-      <div id="adminSetPassErrorCard" class="hidden p-2.5 rounded-md bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs text-center"></div>
-
-      <form onsubmit="handleAdminSetPasswordSubmit(event)" class="space-y-3">
-        <input type="hidden" id="adminSetCallerEmail">
-        <div>
-          <label class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">New Password for Caller</label>
-          <input type="password" id="adminSetCallerNewPass" required minlength="6" placeholder="Minimum 6 characters" class="w-full bg-[#1b2438] border border-[#24334a] rounded-md px-3 py-2 text-xs text-white outline-none focus:border-blue-500">
-          <p class="text-[10px] text-slate-400 mt-1">Default caller password is <code class="text-blue-300 font-mono">pass@123</code></p>
-        </div>
-
-        <div class="flex gap-2 pt-2">
-          <button type="button" onclick="closeAdminSetPasswordModal()" class="flex-1 py-2 rounded-md bg-[#1b2438] hover:bg-[#222f47] text-slate-300 text-xs font-semibold border border-[#24334a] transition">
-            Cancel
-          </button>
-          <button type="submit" class="flex-1 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition">
-            Save Password
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-
-  <!-- ======================================================== -->
   <!-- 📱 MAIN APP SHELL -->
   <!-- ======================================================== -->
   <div id="appShell" class="flex-1 flex flex-col hidden pb-6">
@@ -329,17 +293,20 @@
     <!-- Navigation Switcher -->
     <div class="max-w-5xl w-full mx-auto px-4 mt-3">
       <div class="bg-[#131b2e] p-1 rounded-lg flex border border-[#24334a] gap-1">
-        <button onclick="switchView('queue')" id="navQueue" class="flex-1 py-2 rounded-md text-xs font-semibold transition flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm">
-          <span class="material-symbols-outlined text-sm">call</span>
-          <span>Queue</span>
+        <!-- Caller Personal Queue (Hidden from Admins) -->
+        <button onclick="switchView('queue')" id="navQueue" class="flex-1 py-2 sm:py-2.5 rounded-md text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm">
+          <span class="material-symbols-outlined text-base">call</span>
+          <span>Calling Queue</span>
         </button>
-        <button onclick="switchView('crList')" id="navCR" class="flex-1 py-2 rounded-md text-xs font-semibold transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white hover:bg-[#1b2438]">
-          <span class="material-symbols-outlined text-sm">contact_phone</span>
+        <!-- Admin Console (Hidden from Callers) -->
+        <button onclick="switchView('admin')" id="navAdmin" class="flex-1 py-2 sm:py-2.5 rounded-md text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm hidden">
+          <span class="material-symbols-outlined text-base">admin_panel_settings</span>
+          <span>Admin Overview</span>
+        </button>
+        <!-- Shared CR Directory -->
+        <button onclick="switchView('crList')" id="navCR" class="flex-1 py-2 sm:py-2.5 rounded-md text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white hover:bg-[#1b2438]">
+          <span class="material-symbols-outlined text-base">contact_phone</span>
           <span>CR Directory</span>
-        </button>
-        <button onclick="switchView('admin')" id="navAdmin" class="flex-1 py-2 rounded-md text-xs font-semibold transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white hover:bg-[#1b2438] hidden">
-          <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
-          <span>Admin Console</span>
         </button>
       </div>
     </div>
@@ -496,23 +463,7 @@
           </div>
         </div>
 
-        <!-- WhatsApp Quick Direct Links Generator -->
-        <div class="bg-[#131b2e] rounded-lg p-4 border border-[#24334a] shadow-sm space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-emerald-400 text-base">send_to_mobile</span>
-              <span>1-Click Caller Direct Access Links</span>
-            </h3>
-            <button onclick="copyAllWhatsAppLinks()" class="px-3 py-1 rounded-md bg-blue-600/10 text-blue-400 border border-blue-500/20 text-[11px] font-semibold hover:bg-blue-600/20 transition">
-              Copy All Links
-            </button>
-          </div>
-          <p class="text-[11px] text-slate-400">Share these personalized links with your callers on WhatsApp for quick, direct team sign-in.</p>
-          
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1" id="callerLinksGrid">
-            <!-- Rendered by JS -->
-          </div>
-        </div>
+
 
         <!-- KPI Grid -->
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
@@ -566,33 +517,7 @@
           </div>
         </div>
 
-        <!-- Team Credentials & Password Management (Admin Only) -->
-        <div class="bg-[#131b2e] rounded-lg p-4 border border-[#24334a] shadow-sm space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-blue-400 text-sm">manage_accounts</span>
-              <span>Caller Credentials Management</span>
-            </h3>
-            <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20 font-semibold">Admin Restricted</span>
-          </div>
-          <p class="text-[11px] text-slate-400">Caller accounts cannot self-reset credentials. Administrators manage caller passwords here: 1-click reset to default (<code class="text-blue-300 font-mono">pass@123</code>) or assign a custom password.</p>
-          
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr class="border-b border-[#24334a] text-slate-400 font-semibold bg-[#1b2438]/50">
-                  <th class="py-2.5 px-3">Caller Name</th>
-                  <th class="py-2.5 px-2">Outreach Email</th>
-                  <th class="py-2.5 px-2 text-center">Status</th>
-                  <th class="py-2.5 px-2 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="teamCredentialsBody">
-                <!-- Rendered via JS -->
-              </tbody>
-            </table>
-          </div>
-        </div>
+
 
         <!-- Portal Access & Login / Logout Audit Logs -->
         <div class="bg-[#131b2e] rounded-lg p-4 border border-[#24334a] shadow-sm space-y-3.5">
@@ -4239,64 +4164,38 @@
       }
 
       const navAdmin = document.getElementById('navAdmin');
+      const navQueue = document.getElementById('navQueue');
+
       if (!isCaller) {
-        navAdmin.classList.remove('hidden');
+        // Admin user: strictly executive oversight. Personal calling queue is hidden so admin cannot see/use caller accounts
+        if (navQueue) navQueue.classList.add('hidden');
+        if (navAdmin) navAdmin.classList.remove('hidden');
         switchView('admin');
-        renderAdminLinksGrid();
-      } else {
-        navAdmin.classList.add('hidden');
-        switchView('queue');
-      }
-
-      updateCallerHeader();
-      renderFilterButtons();
-      renderLeadCards();
-      renderCRDirectory();
-      renderAdminDashboard();
-      if (!isCaller) {
-        renderTeamCredentialsTable();
+        renderAdminDashboard();
         renderAuthLogsTable();
+      } else {
+        // Caller user: show personal queue, hide admin console
+        if (navQueue) navQueue.classList.remove('hidden');
+        if (navAdmin) navAdmin.classList.add('hidden');
+        switchView('queue');
+        updateCallerHeader();
+        renderFilterButtons();
+        renderLeadCards();
       }
-    }
-
-    function renderAdminLinksGrid() {
-      const baseUrl = window.location.origin + window.location.pathname;
-      const container = document.getElementById('callerLinksGrid');
-      if (!container) return;
-      
-      container.innerHTML = TEAM_ROSTER.map(m => {
-        const link = `${baseUrl}?email=${encodeURIComponent(m.email)}`;
-        return `
-          <button onclick="copySingleLink('${link}', '${m.name}')" class="p-2.5 rounded-md bg-[#1b2438] hover:bg-[#222f47] border border-[#24334a] text-left transition state-layer">
-            <span class="text-xs font-semibold text-white block truncate">${m.name}</span>
-            <span class="text-[10px] text-emerald-400 font-medium block flex items-center gap-1 mt-0.5">
-              <span class="material-symbols-outlined text-[12px]">content_copy</span> Copy Link
-            </span>
-          </button>
-        `;
-      }).join('');
-    }
-
-    function copySingleLink(link, name) {
-      navigator.clipboard.writeText(link);
-      alert(`Copied verified invite link for ${name}!`);
-    }
-
-    function copyAllWhatsAppLinks() {
-      const baseUrl = window.location.origin + window.location.pathname;
-      let text = "🔒 TechFEST'26 Outreach Calling Portal (Verified Team Access):\n\n";
-      TEAM_ROSTER.forEach(m => {
-        text += `• ${m.name} (${m.email}): ${baseUrl}?email=${encodeURIComponent(m.email)}\n`;
-      });
-      text += `\n👑 Admin Portal: ${baseUrl}`;
-      navigator.clipboard.writeText(text);
-      alert("All caller verified links copied to clipboard!");
+      renderCRDirectory();
     }
 
     function switchView(view) {
+      // Strict role-based boundary enforcement:
+      // Callers cannot view the admin dashboard
       if (view === 'admin' && currentUser && currentUser.role === 'caller') {
         view = 'queue';
       }
+      // Admins cannot view or use caller queues
+      if (view === 'queue' && currentUser && currentUser.role === 'admin') {
+        view = 'admin';
+      }
+
       currentView = view;
       ['queue', 'crList', 'admin'].forEach(v => {
         const el = document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1));
@@ -4304,17 +4203,16 @@
         if (el && btn) {
           if (v === view) {
             el.classList.remove('hidden');
-            btn.className = 'flex-1 py-2 rounded-md text-xs font-semibold transition flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm';
+            btn.className = 'flex-1 py-2 sm:py-2.5 rounded-md text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow-sm';
           } else {
             el.classList.add('hidden');
-            btn.className = 'flex-1 py-2 rounded-md text-xs font-semibold transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white hover:bg-[#1b2438]';
+            btn.className = 'flex-1 py-2 sm:py-2.5 rounded-md text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white hover:bg-[#1b2438]';
           }
         }
       });
       if (view === 'crList') renderCRDirectory();
       if (view === 'admin') {
         renderAdminDashboard();
-        renderTeamCredentialsTable();
         renderAuthLogsTable();
       }
     }
@@ -5300,127 +5198,6 @@
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    }
-
-    // ========================================================
-    // 🔑 ADMIN CALLER CREDENTIALS MANAGEMENT
-    // ========================================================
-    function renderTeamCredentialsTable() {
-      const tb = document.getElementById('teamCredentialsBody');
-      if (!tb) return;
-
-      tb.innerHTML = TEAM_ROSTER.map(caller => {
-        const stored = JSON.parse(localStorage.getItem('TF26_ACCOUNT_PASSWORDS') || '{}');
-        const hasCustomPass = !!stored[caller.email.toLowerCase()];
-        return `
-          <tr class="border-b border-[#24334a] hover:bg-[#1b2438]/50 transition">
-            <td class="py-2.5 px-3 font-semibold text-white flex items-center gap-2">
-              <span class="w-6 h-6 rounded-md bg-blue-600/10 text-blue-400 font-bold text-[10px] flex items-center justify-center border border-blue-500/20">
-                ${caller.name.slice(0, 2).toUpperCase()}
-              </span>
-              <span>${caller.name}</span>
-            </td>
-            <td class="py-2.5 px-2 text-slate-400 text-[11px] font-mono">${caller.email}</td>
-            <td class="py-2.5 px-2 text-center">
-              ${hasCustomPass 
-                ? '<span class="px-2 py-0.5 rounded text-[10px] bg-purple-500/10 text-purple-300 border border-purple-500/20 font-semibold">Custom</span>'
-                : '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">Default (pass@123)</span>'
-              }
-            </td>
-            <td class="py-2.5 px-2 text-right">
-              <div class="flex items-center justify-end gap-1.5">
-                <button onclick="adminQuickResetPassword('${caller.email}', '${caller.name}')" title="Reset to pass@123" class="px-2.5 py-1 rounded-md bg-[#1b2438] hover:bg-amber-500/20 hover:text-amber-300 text-slate-300 text-[11px] font-semibold border border-[#24334a] transition flex items-center gap-1 state-layer">
-                  <span class="material-symbols-outlined text-xs">restart_alt</span> Reset Default
-                </button>
-                <button onclick="openAdminSetPasswordModal('${caller.email}', '${caller.name}')" title="Set Custom Password" class="px-2.5 py-1 rounded-md bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 text-[11px] font-semibold border border-blue-500/20 transition flex items-center gap-1 state-layer">
-                  <span class="material-symbols-outlined text-xs">key</span> Set Password
-                </button>
-                <button onclick="copyCallerCredentials('${caller.email}', '${caller.name}')" title="Copy Credentials" class="p-1.5 rounded-md bg-[#1b2438] hover:bg-[#222f47] text-slate-400 hover:text-white text-xs border border-[#24334a] transition state-layer">
-                  <span class="material-symbols-outlined text-xs">content_copy</span>
-                </button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    async function adminQuickResetPassword(email, name) {
-      if (!confirm(`Are you sure you want to reset the password for "${name}" (${email}) back to default "pass@123"?`)) {
-        return;
-      }
-      try {
-        const stored = JSON.parse(localStorage.getItem('TF26_ACCOUNT_PASSWORDS') || '{}');
-        delete stored[email.toLowerCase()];
-        localStorage.setItem('TF26_ACCOUNT_PASSWORDS', JSON.stringify(stored));
-
-        logAuthEvent({
-          event: 'PASSWORD_RESET',
-          email: email,
-          name: name,
-          role: 'caller',
-          status: 'SUCCESS',
-          details: `Admin (${currentUser.name}) reset caller password to default (pass@123)`
-        });
-
-        renderTeamCredentialsTable();
-        alert(`✅ Password for ${name} has been reset to "pass@123"!`);
-      } catch (e) {
-        alert("Failed to reset password: " + e.message);
-      }
-    }
-
-    function openAdminSetPasswordModal(email, name) {
-      document.getElementById('adminSetCallerEmail').value = email;
-      document.getElementById('adminSetCallerTargetLabel').textContent = `Set custom password for ${name} (${email})`;
-      document.getElementById('adminSetCallerNewPass').value = '';
-      document.getElementById('adminSetPassErrorCard').classList.add('hidden');
-      document.getElementById('adminSetPasswordModal').classList.remove('hidden');
-    }
-
-    function closeAdminSetPasswordModal() {
-      document.getElementById('adminSetPasswordModal').classList.add('hidden');
-    }
-
-    async function handleAdminSetPasswordSubmit(e) {
-      e.preventDefault();
-      const email = document.getElementById('adminSetCallerEmail').value.toLowerCase().trim();
-      const newPass = document.getElementById('adminSetCallerNewPass').value;
-      const errCard = document.getElementById('adminSetPassErrorCard');
-
-      if (newPass.length < 6) {
-        errCard.textContent = "Password must be at least 6 characters.";
-        errCard.classList.remove('hidden');
-        return;
-      }
-
-      const hash = await hashPassword(newPass);
-      setAccountPasswordHash(email, hash);
-
-      const callerName = REGISTERED_ACCOUNTS[email] ? REGISTERED_ACCOUNTS[email].name : email;
-      logAuthEvent({
-        event: 'PASSWORD_RESET',
-        email: email,
-        name: callerName,
-        role: 'caller',
-        status: 'SUCCESS',
-        details: `Admin (${currentUser.name}) assigned custom password to caller`
-      });
-
-      closeAdminSetPasswordModal();
-      renderTeamCredentialsTable();
-      alert(`✅ New custom password saved for ${callerName}!`);
-    }
-
-    function copyCallerCredentials(email, name) {
-      const baseUrl = window.location.origin + window.location.pathname;
-      const stored = JSON.parse(localStorage.getItem('TF26_ACCOUNT_PASSWORDS') || '{}');
-      const isCustom = !!stored[email.toLowerCase()];
-      const passText = isCustom ? "(Custom password set by admin)" : "pass@123";
-
-      const text = `🔒 TechFEST'26 SLIET Calling Portal\nCaller: ${name}\nPortal: ${baseUrl}?email=${encodeURIComponent(email)}\nEmail: ${email}\nPassword: ${passText}`;
-      navigator.clipboard.writeText(text);
-      alert(`Copied login credentials for ${name} to clipboard!`);
     }
 
     // ========================================================
