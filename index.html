@@ -149,8 +149,9 @@
             <label for="loginPassword" class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider">
               Password
             </label>
-            <button type="button" onclick="openForgotPasswordModal()" class="text-[11px] text-m3-primary hover:underline font-semibold">
-              Forgot Password?
+            <button type="button" onclick="openForgotPasswordModal()" class="text-[11px] text-m3-primary hover:underline font-semibold flex items-center gap-1">
+              <span class="material-symbols-outlined text-[13px]">lock_reset</span>
+              <span>Admin Reset</span>
             </button>
           </div>
           <div class="relative">
@@ -181,7 +182,7 @@
       <!-- Security Notice -->
       <div class="pt-2 border-t border-white/5 text-center">
         <p class="text-[10px] text-m3-outline">
-          Authorized team accounts only. You can reset or change your password anytime inside the dashboard.
+          Authorized team accounts only. Caller passwords are managed by administrators. Only admins can reset credentials.
         </p>
       </div>
 
@@ -190,7 +191,7 @@
 
 
   <!-- ======================================================== -->
-  <!-- 🔑 FORGOT PASSWORD MODAL -->
+  <!-- 🔑 ADMIN PASSWORD RESET MODAL -->
   <!-- ======================================================== -->
   <div id="forgotPasswordModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="relative w-full max-w-sm bg-m3-surfaceContainer rounded-[2rem] p-6 border border-white/10 shadow-2xl space-y-4">
@@ -198,19 +199,20 @@
         <div class="w-12 h-12 rounded-2xl bg-m3-primaryContainer text-m3-onPrimaryContainer mx-auto flex items-center justify-center shadow-md shadow-blue-500/20">
           <span class="material-symbols-outlined text-2xl">lock_reset</span>
         </div>
-        <h3 class="text-base font-bold text-white">Reset Account Password</h3>
-        <p class="text-xs text-m3-secondary">Enter your registered outreach email</p>
+        <h3 class="text-base font-bold text-white">Admin Password Reset</h3>
+        <p class="text-xs text-m3-secondary">Restricted to portal administrators only</p>
       </div>
 
       <div id="forgotErrorCard" class="hidden p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs text-center"></div>
 
       <form onsubmit="handleForgotPasswordSubmit(event)" class="space-y-3">
         <div>
-          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">Registered Account Email</label>
-          <input type="email" id="forgotEmailInput" required placeholder="e.g. ayanshsahay1096@gmail.com" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
+          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">Administrator Email</label>
+          <input type="email" id="forgotEmailInput" required placeholder="e.g. sagarkumarweebly@gmail.com" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
+          <p class="text-[10px] text-m3-outline mt-1">Outreach callers must contact an administrator for password resets.</p>
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">New Password</label>
+          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">New Admin Password</label>
           <input type="password" id="forgotNewPassword" required minlength="6" placeholder="Minimum 6 characters" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
         </div>
         <div>
@@ -274,6 +276,42 @@
 
 
   <!-- ======================================================== -->
+  <!-- 🔑 ADMIN SET CALLER PASSWORD MODAL -->
+  <!-- ======================================================== -->
+  <div id="adminSetPasswordModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="relative w-full max-w-sm bg-m3-surfaceContainer rounded-[2rem] p-6 border border-white/10 shadow-2xl space-y-4">
+      <div class="text-center space-y-1">
+        <div class="w-12 h-12 rounded-2xl bg-m3-primaryContainer text-m3-onPrimaryContainer mx-auto flex items-center justify-center shadow-md shadow-blue-500/20">
+          <span class="material-symbols-outlined text-2xl">admin_panel_settings</span>
+        </div>
+        <h3 class="text-base font-bold text-white">Set Caller Password</h3>
+        <p class="text-xs text-m3-secondary" id="adminSetCallerTargetLabel">Assign a custom password</p>
+      </div>
+
+      <div id="adminSetPassErrorCard" class="hidden p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs text-center"></div>
+
+      <form onsubmit="handleAdminSetPasswordSubmit(event)" class="space-y-3">
+        <input type="hidden" id="adminSetCallerEmail">
+        <div>
+          <label class="block text-[11px] font-bold text-m3-secondary uppercase tracking-wider mb-1">New Password for Caller</label>
+          <input type="password" id="adminSetCallerNewPass" required minlength="6" placeholder="Minimum 6 characters" class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-m3-primary">
+          <p class="text-[10px] text-m3-outline mt-1">Default caller password is <code class="text-blue-300">pass@123</code></p>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeAdminSetPasswordModal()" class="flex-1 py-2 rounded-xl bg-m3-surfaceContainerHigh hover:bg-white/10 text-white text-xs font-semibold state-layer transition">
+            Cancel
+          </button>
+          <button type="submit" class="flex-1 py-2 rounded-xl bg-m3-primary text-m3-onPrimary text-xs font-bold state-layer transition">
+            Save Password
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ======================================================== -->
   <!-- 📱 MAIN APP SHELL -->
   <!-- ======================================================== -->
   <div id="appShell" class="flex-1 flex flex-col hidden pb-6">
@@ -300,8 +338,8 @@
           <span>Install App</span>
         </button>
 
-        <!-- In-Dashboard Reset Password Button -->
-        <button onclick="openChangePasswordModal()" title="Change Password" class="px-2.5 py-1.5 rounded-xl bg-m3-surfaceContainerHigh hover:bg-m3-surfaceContainerHighest text-xs font-semibold text-m3-secondary hover:text-white flex items-center gap-1 border border-white/5 transition state-layer">
+        <!-- In-Dashboard Reset Password Button (Admin Only) -->
+        <button id="topChangePassBtn" onclick="openChangePasswordModal()" title="Change Admin Password" class="hidden px-2.5 py-1.5 rounded-xl bg-m3-surfaceContainerHigh hover:bg-m3-surfaceContainerHighest text-xs font-semibold text-m3-secondary hover:text-white flex items-center gap-1 border border-white/5 transition state-layer">
           <span class="material-symbols-outlined text-sm text-blue-400">lock_reset</span>
           <span class="text-[11px] hidden sm:inline">Password</span>
         </button>
@@ -488,6 +526,111 @@
                 </tr>
               </thead>
               <tbody id="leaderboardBody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Team Credentials & Password Management (Admin Only) -->
+        <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-extrabold text-white flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-blue-400 text-sm">manage_accounts</span>
+              <span>Caller Password &amp; Credentials Management</span>
+            </h3>
+            <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/20 font-bold">Admin Only</span>
+          </div>
+          <p class="text-[11px] text-m3-secondary">Only administrators can reset caller credentials. Callers cannot reset their own passwords. Reset any caller to default (<code class="text-blue-300 font-mono">pass@123</code>) or assign a custom password.</p>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="border-b border-white/5 text-m3-secondary font-bold">
+                  <th class="py-2 px-2.5">Caller Name</th>
+                  <th class="py-2 px-2">Outreach Email</th>
+                  <th class="py-2 px-2 text-center">Status</th>
+                  <th class="py-2 px-2 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="teamCredentialsBody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Portal Access & Login / Logout Audit Logs -->
+        <div class="bg-m3-surfaceContainer rounded-3xl p-4 border border-white/5 shadow-md space-y-3.5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-3">
+            <div>
+              <h3 class="text-xs font-extrabold text-white flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-emerald-400 text-sm">history_toggle_off</span>
+                <span>User &amp; Admin Login / Logout Audit Logs</span>
+              </h3>
+              <p class="text-[11px] text-m3-secondary mt-0.5">Real-time audit log of all user logins, logouts, and credential changes</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="exportAuthLogsCSV()" class="px-2.5 py-1.5 rounded-xl bg-m3-surfaceContainerHigh hover:bg-m3-surfaceContainerHighest text-white text-[11px] font-bold flex items-center gap-1 border border-white/5 transition state-layer">
+                <span class="material-symbols-outlined text-xs">download</span>
+                <span>Export CSV</span>
+              </button>
+              <button onclick="clearAuthLogs()" class="px-2.5 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-[11px] font-bold flex items-center gap-1 border border-rose-500/20 transition state-layer">
+                <span class="material-symbols-outlined text-xs">delete_sweep</span>
+                <span>Clear</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Log Metrics Chips -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+            <div class="bg-m3-surfaceContainerLow p-2 rounded-xl border border-white/5">
+              <span class="text-[9px] font-bold text-m3-secondary uppercase block">Total Logins</span>
+              <span class="text-sm font-black text-emerald-400" id="auditMetricLogins">0</span>
+            </div>
+            <div class="bg-m3-surfaceContainerLow p-2 rounded-xl border border-white/5">
+              <span class="text-[9px] font-bold text-m3-secondary uppercase block">Total Logouts</span>
+              <span class="text-sm font-black text-amber-400" id="auditMetricLogouts">0</span>
+            </div>
+            <div class="bg-m3-surfaceContainerLow p-2 rounded-xl border border-white/5">
+              <span class="text-[9px] font-bold text-m3-secondary uppercase block">Admin Events</span>
+              <span class="text-sm font-black text-purple-400" id="auditMetricAdmin">0</span>
+            </div>
+            <div class="bg-m3-surfaceContainerLow p-2 rounded-xl border border-white/5">
+              <span class="text-[9px] font-bold text-m3-secondary uppercase block">Failed / Denied</span>
+              <span class="text-sm font-black text-rose-400" id="auditMetricFailed">0</span>
+            </div>
+          </div>
+
+          <!-- Filter & Search Bar -->
+          <div class="flex flex-col sm:flex-row gap-2 pt-1">
+            <div class="flex-1 relative">
+              <span class="material-symbols-outlined absolute left-2.5 top-2 text-m3-outline text-sm">search</span>
+              <input type="text" id="auditSearchInput" oninput="renderAuthLogsTable()" placeholder="Search logs by name, email, action..." class="w-full bg-m3-surfaceContainerHigh border border-white/10 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-m3-outline outline-none focus:border-m3-primary">
+            </div>
+            <div class="flex flex-wrap gap-1" id="auditFilterPills">
+              <button onclick="setAuditFilter('all')" id="auditFilter_all" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-primary text-m3-onPrimary">All</button>
+              <button onclick="setAuditFilter('LOGIN')" id="auditFilter_LOGIN" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white">Logins</button>
+              <button onclick="setAuditFilter('LOGOUT')" id="auditFilter_LOGOUT" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white">Logouts</button>
+              <button onclick="setAuditFilter('admin')" id="auditFilter_admin" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white">Admin Only</button>
+              <button onclick="setAuditFilter('caller')" id="auditFilter_caller" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white">Callers</button>
+              <button onclick="setAuditFilter('FAILED')" id="auditFilter_FAILED" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white">Failed / Denied</button>
+            </div>
+          </div>
+
+          <!-- Audit Log Table -->
+          <div class="overflow-x-auto max-h-96 overflow-y-auto rounded-xl border border-white/5">
+            <table class="w-full text-left text-xs">
+              <thead class="sticky top-0 bg-m3-surfaceContainerHigh z-10">
+                <tr class="border-b border-white/10 text-m3-secondary font-bold">
+                  <th class="py-2 px-2.5">Time</th>
+                  <th class="py-2 px-2">User / Email</th>
+                  <th class="py-2 px-2 text-center">Event</th>
+                  <th class="py-2 px-2 text-center">Status</th>
+                  <th class="py-2 px-2">Activity Details</th>
+                </tr>
+              </thead>
+              <tbody id="auditLogsBody">
                 <!-- Rendered via JS -->
               </tbody>
             </table>
@@ -3698,6 +3841,59 @@
       }
     };
 
+    // ========================================================
+    // 🛡️ AUDIT LOGS (LOGIN, LOGOUT & CREDENTIAL EVENTS)
+    // ========================================================
+    const AUTH_LOGS_KEY = 'TF26_AUTH_AUDIT_LOGS';
+
+    function getAuthLogs() {
+      try {
+        const stored = localStorage.getItem(AUTH_LOGS_KEY);
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
+      return [];
+    }
+
+    function logAuthEvent({ event, email, name, role, status, details }) {
+      const logs = getAuthLogs();
+      const now = new Date();
+      
+      const formattedTime = now.toLocaleString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
+
+      const entry = {
+        id: 'log_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+        timestamp: now.toISOString(),
+        displayTime: formattedTime,
+        event: event, // 'LOGIN', 'LOGOUT', 'PASSWORD_RESET', 'PASSWORD_RESET_BLOCKED', 'FAILED_LOGIN'
+        email: email || 'unknown',
+        name: name || (REGISTERED_ACCOUNTS[email] ? REGISTERED_ACCOUNTS[email].name : 'Unknown User'),
+        role: role || (REGISTERED_ACCOUNTS[email] ? REGISTERED_ACCOUNTS[email].role : 'unknown'),
+        status: status || 'SUCCESS', // 'SUCCESS', 'FAILED', 'BLOCKED'
+        details: details || '',
+        device: /Mobi|Android|iPhone/i.test(navigator.userAgent) ? '📱 Mobile' : '💻 Desktop'
+      };
+
+      logs.unshift(entry);
+      if (logs.length > 500) logs.pop();
+
+      try {
+        localStorage.setItem(AUTH_LOGS_KEY, JSON.stringify(logs));
+      } catch (e) {}
+
+      // If Admin View is active, dynamically refresh audit table & metrics
+      if (currentUser && currentUser.role === 'admin' && currentView === 'admin') {
+        renderAuthLogsTable();
+      }
+    }
+
     async function hashPassword(plainText) {
       const encoder = new TextEncoder();
       const data = encoder.encode(plainText + SALT);
@@ -3744,6 +3940,14 @@
       const account = REGISTERED_ACCOUNTS[email];
       if (!account) {
         showAuthError("Access Denied: Unregistered Account", `The email "${email}" is not registered on the TechFEST'26 outreach roster. Please contact the administrator.`);
+        logAuthEvent({
+          event: 'FAILED_LOGIN',
+          email: email,
+          name: 'Unregistered Visitor',
+          role: 'unregistered',
+          status: 'BLOCKED',
+          details: 'Sign-in blocked: Email not on authorized roster'
+        });
         return;
       }
 
@@ -3752,7 +3956,19 @@
       const expectedHash = getAccountPasswordHash(email);
 
       if (inputHash !== expectedHash) {
-        showAuthError("Incorrect Password", "The password you entered is incorrect. Default caller password is 'pass@123', or click 'Forgot Password?' to reset.");
+        const errMsg = account.role === 'admin'
+          ? "Incorrect administrator password. Click 'Admin Reset' if you need to reset."
+          : "Incorrect password. Default caller password is 'pass@123'. If you need a reset, please contact an administrator.";
+        showAuthError("Incorrect Password", errMsg);
+
+        logAuthEvent({
+          event: 'FAILED_LOGIN',
+          email: email,
+          name: account.name,
+          role: account.role,
+          status: 'FAILED',
+          details: 'Sign-in failed: Incorrect password entered'
+        });
         return;
       }
 
@@ -3763,6 +3979,15 @@
         role: account.role,
         verified: true
       };
+
+      logAuthEvent({
+        event: 'LOGIN',
+        email: email,
+        name: account.name,
+        role: account.role,
+        status: 'SUCCESS',
+        details: `Signed in successfully as ${account.role === 'admin' ? '👑 Administrator' : '📞 Outreach Caller'}`
+      });
 
       sessionStorage.setItem('TF26_VERIFIED_SESSION', JSON.stringify(currentUser));
       startAuthenticatedSession();
@@ -3782,7 +4007,7 @@
     }
 
     // ========================================================
-    // 🔑 FORGOT PASSWORD & PASSWORD RESET
+    // 🔑 ADMIN PASSWORD RESET ONLY
     // ========================================================
     function openForgotPasswordModal() {
       dismissAuthAlerts();
@@ -3808,9 +4033,44 @@
       const newPass = document.getElementById('forgotNewPassword').value;
       const confirmPass = document.getElementById('forgotConfirmPassword').value;
 
-      if (!REGISTERED_ACCOUNTS[email]) {
+      const account = REGISTERED_ACCOUNTS[email];
+      if (!account) {
         errCard.textContent = `Email "${email}" is not registered in the outreach roster.`;
         errCard.classList.remove('hidden');
+        logAuthEvent({
+          event: 'FAILED_LOGIN',
+          email: email,
+          name: 'Unregistered Visitor',
+          role: 'unregistered',
+          status: 'BLOCKED',
+          details: 'Password reset attempted for unregistered email'
+        });
+        return;
+      }
+
+      // STRICT ADMIN PERMISSION CHECK: Only admins can reset their password!
+      if (account.role !== 'admin') {
+        errCard.innerHTML = `
+          <div class="text-left space-y-1">
+            <div class="font-bold text-rose-300 flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">lock</span>
+              <span>Access Restricted: Admin Only</span>
+            </div>
+            <div class="text-[11px] text-m3-secondary">
+              Only administrators are authorized to reset passwords. Outreach callers must use default credentials (<code class="text-blue-300 font-mono">pass@123</code>) or contact an administrator to reset.
+            </div>
+          </div>
+        `;
+        errCard.classList.remove('hidden');
+
+        logAuthEvent({
+          event: 'PASSWORD_RESET_BLOCKED',
+          email: email,
+          name: account.name,
+          role: account.role,
+          status: 'BLOCKED',
+          details: `Caller (${account.name}) attempted unauthorized self-password reset`
+        });
         return;
       }
 
@@ -3826,20 +4086,33 @@
         return;
       }
 
-      // Save new password
+      // Save new admin password
       const newHash = await hashPassword(newPass);
       setAccountPasswordHash(email, newHash);
+
+      logAuthEvent({
+        event: 'PASSWORD_RESET',
+        email: email,
+        name: account.name,
+        role: account.role,
+        status: 'SUCCESS',
+        details: `Administrator (${account.name}) self-reset password via reset screen`
+      });
 
       closeForgotPasswordModal();
       document.getElementById('loginEmail').value = email;
       document.getElementById('loginPassword').value = '';
-      showAuthSuccess("Password Reset Successful", `Password updated for ${email}. Please sign in with your new password.`);
+      showAuthSuccess("Password Reset Successful", `Administrator password updated for ${email}. Please sign in with your new password.`);
     }
 
     // ========================================================
-    // 🔐 IN-DASHBOARD CHANGE PASSWORD
+    // 🔐 IN-DASHBOARD CHANGE PASSWORD (ADMIN ONLY)
     // ========================================================
     function openChangePasswordModal() {
+      if (!currentUser || currentUser.role !== 'admin') {
+        alert("Only administrators are authorized to change passwords.");
+        return;
+      }
       const modal = document.getElementById('changePasswordModal');
       document.getElementById('changeErrorCard').classList.add('hidden');
       document.getElementById('changeCurrentPassword').value = '';
@@ -3861,11 +4134,17 @@
 
       if (!currentUser || !currentUser.email) return;
 
+      if (currentUser.role !== 'admin') {
+        errCard.textContent = "Access Restricted: Only administrators can change or reset passwords.";
+        errCard.classList.remove('hidden');
+        return;
+      }
+
       const currHash = await hashPassword(currentPass);
       const expectedHash = getAccountPasswordHash(currentUser.email);
 
       if (currHash !== expectedHash) {
-        errCard.textContent = "Current password is incorrect.";
+        errCard.textContent = "Current administrator password is incorrect.";
         errCard.classList.remove('hidden');
         return;
       }
@@ -3885,8 +4164,17 @@
       const newHash = await hashPassword(newPass);
       setAccountPasswordHash(currentUser.email, newHash);
 
+      logAuthEvent({
+        event: 'PASSWORD_RESET',
+        email: currentUser.email,
+        name: currentUser.name,
+        role: currentUser.role,
+        status: 'SUCCESS',
+        details: `Administrator (${currentUser.name}) updated password from dashboard`
+      });
+
       closeChangePasswordModal();
-      alert("✅ Password changed successfully!");
+      alert("✅ Administrator password changed successfully!");
     }
 
     function showAuthError(title, msg) {
@@ -3921,6 +4209,16 @@
     }
 
     async function logout() {
+      if (currentUser) {
+        logAuthEvent({
+          event: 'LOGOUT',
+          email: currentUser.email,
+          name: currentUser.name,
+          role: currentUser.role,
+          status: 'SUCCESS',
+          details: `${currentUser.role === 'admin' ? '👑 Administrator' : '📞 Outreach Caller'} logged out of session`
+        });
+      }
       sessionStorage.removeItem('TF26_VERIFIED_SESSION');
       localStorage.removeItem('TF26_SESSION_USER');
       currentUser = null;
@@ -3967,6 +4265,16 @@
       document.getElementById('userRoleBadge').textContent = isCaller ? 'Caller' : 'Admin';
       document.getElementById('userIdentityLabel').textContent = currentUser.name;
 
+      // Restrict in-dashboard password change to Admin only
+      const topChangePassBtn = document.getElementById('topChangePassBtn');
+      if (topChangePassBtn) {
+        if (!isCaller) {
+          topChangePassBtn.classList.remove('hidden');
+        } else {
+          topChangePassBtn.classList.add('hidden');
+        }
+      }
+
       if (window.Clerk && window.Clerk.user) {
         const cContainer = document.getElementById('clerkUserBtnContainer');
         if (cContainer) {
@@ -3989,6 +4297,10 @@
       renderLeadCards();
       renderCRDirectory();
       renderAdminDashboard();
+      if (!isCaller) {
+        renderTeamCredentialsTable();
+        renderAuthLogsTable();
+      }
     }
 
     function renderAdminLinksGrid() {
@@ -4026,6 +4338,9 @@
     }
 
     function switchView(view) {
+      if (view === 'admin' && currentUser && currentUser.role === 'caller') {
+        view = 'queue';
+      }
       currentView = view;
       ['queue', 'crList', 'admin'].forEach(v => {
         const el = document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1));
@@ -4041,7 +4356,11 @@
         }
       });
       if (view === 'crList') renderCRDirectory();
-      if (view === 'admin') renderAdminDashboard();
+      if (view === 'admin') {
+        renderAdminDashboard();
+        renderTeamCredentialsTable();
+        renderAuthLogsTable();
+      }
     }
 
     function updateCallerHeader() {
@@ -4401,6 +4720,301 @@
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    }
+
+    // ========================================================
+    // 🔑 ADMIN CALLER CREDENTIALS MANAGEMENT
+    // ========================================================
+    function renderTeamCredentialsTable() {
+      const tb = document.getElementById('teamCredentialsBody');
+      if (!tb) return;
+
+      tb.innerHTML = TEAM_ROSTER.map(caller => {
+        const stored = JSON.parse(localStorage.getItem('TF26_ACCOUNT_PASSWORDS') || '{}');
+        const hasCustomPass = !!stored[caller.email.toLowerCase()];
+        return `
+          <tr class="border-b border-white/5 hover:bg-white/[0.02]">
+            <td class="py-2.5 px-2.5 font-bold text-white flex items-center gap-1.5">
+              <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-[10px] flex items-center justify-center">
+                ${caller.name.slice(0, 2).toUpperCase()}
+              </span>
+              <span>${caller.name}</span>
+            </td>
+            <td class="py-2.5 px-2 text-m3-secondary text-[11px] font-mono">${caller.email}</td>
+            <td class="py-2.5 px-2 text-center">
+              ${hasCustomPass 
+                ? '<span class="px-2 py-0.5 rounded-full text-[10px] bg-purple-500/10 text-purple-300 border border-purple-500/20 font-semibold">Custom</span>'
+                : '<span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">Default (pass@123)</span>'
+              }
+            </td>
+            <td class="py-2.5 px-2 text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                <button onclick="adminQuickResetPassword('${caller.email}', '${caller.name}')" title="Reset to pass@123" class="px-2 py-1 rounded-lg bg-m3-surfaceContainerHigh hover:bg-amber-500/20 hover:text-amber-300 text-m3-secondary text-[10px] font-bold border border-white/5 transition flex items-center gap-1">
+                  <span class="material-symbols-outlined text-xs">restart_alt</span> Reset Default
+                </button>
+                <button onclick="openAdminSetPasswordModal('${caller.email}', '${caller.name}')" title="Set Custom Password" class="px-2 py-1 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-[10px] font-bold border border-blue-500/20 transition flex items-center gap-1">
+                  <span class="material-symbols-outlined text-xs">key</span> Set Password
+                </button>
+                <button onclick="copyCallerCredentials('${caller.email}', '${caller.name}')" title="Copy Credentials" class="p-1 rounded-lg bg-m3-surfaceContainerHigh hover:bg-white/10 text-m3-secondary text-[11px] border border-white/5 transition">
+                  <span class="material-symbols-outlined text-xs">content_copy</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function adminQuickResetPassword(email, name) {
+      if (!confirm(`Are you sure you want to reset the password for "${name}" (${email}) back to default "pass@123"?`)) {
+        return;
+      }
+      try {
+        const stored = JSON.parse(localStorage.getItem('TF26_ACCOUNT_PASSWORDS') || '{}');
+        delete stored[email.toLowerCase()];
+        localStorage.setItem('TF26_ACCOUNT_PASSWORDS', JSON.stringify(stored));
+
+        logAuthEvent({
+          event: 'PASSWORD_RESET',
+          email: email,
+          name: name,
+          role: 'caller',
+          status: 'SUCCESS',
+          details: `Admin (${currentUser.name}) reset caller password to default (pass@123)`
+        });
+
+        renderTeamCredentialsTable();
+        alert(`✅ Password for ${name} has been reset to "pass@123"!`);
+      } catch (e) {
+        alert("Failed to reset password: " + e.message);
+      }
+    }
+
+    function openAdminSetPasswordModal(email, name) {
+      document.getElementById('adminSetCallerEmail').value = email;
+      document.getElementById('adminSetCallerTargetLabel').textContent = `Set custom password for ${name} (${email})`;
+      document.getElementById('adminSetCallerNewPass').value = '';
+      document.getElementById('adminSetPassErrorCard').classList.add('hidden');
+      document.getElementById('adminSetPasswordModal').classList.remove('hidden');
+    }
+
+    function closeAdminSetPasswordModal() {
+      document.getElementById('adminSetPasswordModal').classList.add('hidden');
+    }
+
+    async function handleAdminSetPasswordSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('adminSetCallerEmail').value.toLowerCase().trim();
+      const newPass = document.getElementById('adminSetCallerNewPass').value;
+      const errCard = document.getElementById('adminSetPassErrorCard');
+
+      if (newPass.length < 6) {
+        errCard.textContent = "Password must be at least 6 characters.";
+        errCard.classList.remove('hidden');
+        return;
+      }
+
+      const hash = await hashPassword(newPass);
+      setAccountPasswordHash(email, hash);
+
+      const callerName = REGISTERED_ACCOUNTS[email] ? REGISTERED_ACCOUNTS[email].name : email;
+      logAuthEvent({
+        event: 'PASSWORD_RESET',
+        email: email,
+        name: callerName,
+        role: 'caller',
+        status: 'SUCCESS',
+        details: `Admin (${currentUser.name}) assigned custom password to caller`
+      });
+
+      closeAdminSetPasswordModal();
+      renderTeamCredentialsTable();
+      alert(`✅ New custom password saved for ${callerName}!`);
+    }
+
+    function copyCallerCredentials(email, name) {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const stored = JSON.parse(localStorage.getItem('TF26_ACCOUNT_PASSWORDS') || '{}');
+      const isCustom = !!stored[email.toLowerCase()];
+      const passText = isCustom ? "(Custom password set by admin)" : "pass@123";
+
+      const text = `🔒 TechFEST'26 SLIET Calling Portal\nCaller: ${name}\nPortal: ${baseUrl}?email=${encodeURIComponent(email)}\nEmail: ${email}\nPassword: ${passText}`;
+      navigator.clipboard.writeText(text);
+      alert(`Copied login credentials for ${name} to clipboard!`);
+    }
+
+    // ========================================================
+    // 🛡️ AUDIT LOGS DISPLAY & EXPORT (ADMIN VIEW)
+    // ========================================================
+    let currentAuditFilter = 'all';
+
+    function setAuditFilter(filter) {
+      currentAuditFilter = filter;
+      ['all', 'LOGIN', 'LOGOUT', 'admin', 'caller', 'FAILED'].forEach(f => {
+        const btn = document.getElementById('auditFilter_' + f);
+        if (btn) {
+          if (f === filter) {
+            btn.className = "px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-primary text-m3-onPrimary";
+          } else {
+            btn.className = "px-2.5 py-1 rounded-lg text-[10px] font-bold bg-m3-surfaceContainerHigh text-m3-secondary hover:text-white";
+          }
+        }
+      });
+      renderAuthLogsTable();
+    }
+
+    function renderAuthLogsTable() {
+      const tb = document.getElementById('auditLogsBody');
+      if (!tb) return;
+
+      const logs = getAuthLogs();
+      const search = (document.getElementById('auditSearchInput')?.value || '').toLowerCase().trim();
+
+      // Update Metric Badges
+      let loginsCount = 0;
+      let logoutsCount = 0;
+      let adminCount = 0;
+      let failedCount = 0;
+
+      logs.forEach(l => {
+        if (l.event === 'LOGIN') loginsCount++;
+        if (l.event === 'LOGOUT') logoutsCount++;
+        if (l.role === 'admin') adminCount++;
+        if (l.status === 'FAILED' || l.status === 'BLOCKED') failedCount++;
+      });
+
+      const mLogins = document.getElementById('auditMetricLogins');
+      if (mLogins) mLogins.textContent = loginsCount;
+      const mLogouts = document.getElementById('auditMetricLogouts');
+      if (mLogouts) mLogouts.textContent = logoutsCount;
+      const mAdmin = document.getElementById('auditMetricAdmin');
+      if (mAdmin) mAdmin.textContent = adminCount;
+      const mFailed = document.getElementById('auditMetricFailed');
+      if (mFailed) mFailed.textContent = failedCount;
+
+      // Filter logs
+      const filtered = logs.filter(l => {
+        if (currentAuditFilter === 'LOGIN' && l.event !== 'LOGIN') return false;
+        if (currentAuditFilter === 'LOGOUT' && l.event !== 'LOGOUT') return false;
+        if (currentAuditFilter === 'admin' && l.role !== 'admin') return false;
+        if (currentAuditFilter === 'caller' && l.role !== 'caller') return false;
+        if (currentAuditFilter === 'FAILED' && l.status !== 'FAILED' && l.status !== 'BLOCKED') return false;
+
+        if (search) {
+          const matchStr = `${l.name} ${l.email} ${l.event} ${l.details} ${l.status}`.toLowerCase();
+          if (!matchStr.includes(search)) return false;
+        }
+
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tb.innerHTML = `
+          <tr>
+            <td colspan="5" class="py-8 text-center text-m3-secondary text-xs">
+              <span class="material-symbols-outlined text-2xl text-m3-outline block mb-1">manage_search</span>
+              No audit log entries matching your selection.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tb.innerHTML = filtered.map(log => {
+        let eventBadge = '';
+        if (log.event === 'LOGIN') {
+          eventBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>LOGIN</span>';
+        } else if (log.event === 'LOGOUT') {
+          eventBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>LOGOUT</span>';
+        } else if (log.event === 'PASSWORD_RESET') {
+          eventBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 font-bold"><span class="material-symbols-outlined text-[10px]">key</span>RESET</span>';
+        } else if (log.event === 'PASSWORD_RESET_BLOCKED') {
+          eventBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold"><span class="material-symbols-outlined text-[10px]">block</span>BLOCKED</span>';
+        } else {
+          eventBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold">${log.event}</span>`;
+        }
+
+        let statusBadge = '';
+        if (log.status === 'SUCCESS') {
+          statusBadge = '<span class="text-emerald-400 text-[11px] font-bold flex items-center justify-center gap-0.5"><span class="material-symbols-outlined text-xs">check_circle</span>OK</span>';
+        } else if (log.status === 'BLOCKED') {
+          statusBadge = '<span class="text-rose-400 text-[11px] font-bold flex items-center justify-center gap-0.5"><span class="material-symbols-outlined text-xs">block</span>BLOCKED</span>';
+        } else {
+          statusBadge = '<span class="text-rose-400 text-[11px] font-bold flex items-center justify-center gap-0.5"><span class="material-symbols-outlined text-xs">cancel</span>FAILED</span>';
+        }
+
+        const roleBadge = log.role === 'admin'
+          ? '<span class="px-1.5 py-0.2 rounded text-[9px] bg-purple-500/10 text-purple-300 font-bold border border-purple-500/20 ml-1">Admin</span>'
+          : '<span class="px-1.5 py-0.2 rounded text-[9px] bg-blue-500/10 text-blue-300 font-bold border border-blue-500/20 ml-1">Caller</span>';
+
+        return `
+          <tr class="border-b border-white/5 hover:bg-white/[0.02] text-xs">
+            <td class="py-2.5 px-2.5 whitespace-nowrap text-m3-secondary font-mono text-[11px]">
+              ${log.displayTime}
+              <span class="block text-[9px] text-m3-outline">${log.device || ''}</span>
+            </td>
+            <td class="py-2.5 px-2">
+              <div class="font-bold text-white flex items-center">
+                <span>${log.name}</span>
+                ${roleBadge}
+              </div>
+              <div class="text-[10px] text-m3-secondary font-mono truncate max-w-[160px] sm:max-w-xs">${log.email}</div>
+            </td>
+            <td class="py-2.5 px-2 text-center whitespace-nowrap">${eventBadge}</td>
+            <td class="py-2.5 px-2 text-center whitespace-nowrap">${statusBadge}</td>
+            <td class="py-2.5 px-2 text-m3-secondary text-[11px]">
+              ${log.details}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function exportAuthLogsCSV() {
+      const logs = getAuthLogs();
+      if (logs.length === 0) {
+        alert("No audit logs available to export.");
+        return;
+      }
+      const rows = [["Log ID", "Timestamp ISO", "Local Time", "Event", "Status", "User Name", "Email", "Role", "Device", "Details"]];
+      logs.forEach(l => {
+        rows.push([
+          l.id,
+          l.timestamp,
+          l.displayTime,
+          l.event,
+          l.status,
+          l.name,
+          l.email,
+          l.role,
+          l.device,
+          l.details
+        ]);
+      });
+
+      let csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.map(f => '"' + (f || '').toString().replace(/"/g, '""') + '"').join(",")).join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `techfest_login_logout_audit_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function clearAuthLogs() {
+      if (confirm("Are you sure you want to clear all user & admin login/logout audit logs? This action cannot be undone.")) {
+        localStorage.removeItem(AUTH_LOGS_KEY);
+        logAuthEvent({
+          event: 'LOGS_CLEARED',
+          email: currentUser ? currentUser.email : 'admin',
+          name: currentUser ? currentUser.name : 'Administrator',
+          role: 'admin',
+          status: 'SUCCESS',
+          details: 'Audit logs cleared by Administrator'
+        });
+        renderAuthLogsTable();
+      }
     }
 
     window.onload = init;
