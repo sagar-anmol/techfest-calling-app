@@ -354,40 +354,40 @@
         <div class="bg-[#131b2e] rounded-lg p-4 sm:p-5 border border-[#24334a] shadow-sm space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 rounded-md bg-blue-600/10 text-blue-400 border border-blue-500/20 flex items-center justify-center text-sm font-bold" id="callerInitials">
+              <div class="w-12 h-12 rounded-lg bg-blue-600/15 text-blue-400 border border-blue-500/30 flex items-center justify-center text-base font-black shadow-inner" id="callerInitials">
                 AS
               </div>
               <div>
-                <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Assigned Call Queue</span>
-                <h2 class="text-sm font-bold text-white" id="activeCallerName">Ayansh Sahay</h2>
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Assigned Call Queue</span>
+                <h2 class="text-base sm:text-lg font-black text-white tracking-tight" id="activeCallerName">Ayansh Sahay</h2>
               </div>
             </div>
 
             <div class="grid grid-cols-4 gap-2 text-center">
-              <div class="bg-[#1b2438] px-2.5 py-1.5 rounded-md border border-[#24334a]">
-                <span class="text-[10px] text-slate-400 block font-medium">Total</span>
-                <span class="text-xs font-bold text-white" id="statTotal">0</span>
+              <div class="bg-[#1b2438] px-3 py-2 rounded-lg border border-[#24334a]">
+                <span class="text-xs text-slate-400 block font-bold uppercase tracking-wider">Total</span>
+                <span class="text-sm sm:text-base font-black text-white" id="statTotal">0</span>
               </div>
-              <div class="bg-[#1b2438] px-2.5 py-1.5 rounded-md border border-[#24334a]">
-                <span class="text-[10px] text-slate-400 block font-medium">Done</span>
-                <span class="text-xs font-bold text-emerald-400" id="statDone">0</span>
+              <div class="bg-[#1b2438] px-3 py-2 rounded-lg border border-[#24334a]">
+                <span class="text-xs text-slate-400 block font-bold uppercase tracking-wider">Done</span>
+                <span class="text-sm sm:text-base font-black text-emerald-400" id="statDone">0</span>
               </div>
-              <div class="bg-[#1b2438] px-2.5 py-1.5 rounded-md border border-[#24334a]">
-                <span class="text-[10px] text-slate-400 block font-medium">Pending</span>
-                <span class="text-xs font-bold text-amber-400" id="statPending">0</span>
+              <div class="bg-[#1b2438] px-3 py-2 rounded-lg border border-[#24334a]">
+                <span class="text-xs text-slate-400 block font-bold uppercase tracking-wider">Pending</span>
+                <span class="text-sm sm:text-base font-black text-amber-400" id="statPending">0</span>
               </div>
-              <div class="bg-[#1b2438] px-2.5 py-1.5 rounded-md border border-[#24334a]">
-                <span class="text-[10px] text-slate-400 block font-medium">Paid (₹)</span>
-                <span class="text-xs font-bold text-emerald-300" id="statPaid">₹0</span>
+              <div class="bg-[#1b2438] px-3 py-2 rounded-lg border border-[#24334a]">
+                <span class="text-xs text-slate-400 block font-bold uppercase tracking-wider">Paid (₹)</span>
+                <span class="text-sm sm:text-base font-black text-emerald-300" id="statPaid">₹0</span>
               </div>
             </div>
           </div>
 
           <!-- Progress Bar -->
           <div class="space-y-1.5">
-            <div class="flex justify-between text-[11px] font-medium text-slate-400">
+            <div class="flex justify-between text-xs sm:text-sm font-semibold text-slate-300">
               <span>Task Completion Progress</span>
-              <span id="queuePercentLabel" class="text-white font-semibold">0%</span>
+              <span id="queuePercentLabel" class="text-white font-bold">0%</span>
             </div>
             <div class="w-full bg-[#1b2438] rounded-full h-2 border border-[#24334a] overflow-hidden">
               <div id="queueProgressBar" class="bg-gradient-to-r from-blue-600 to-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
@@ -395,25 +395,50 @@
           </div>
         </div>
 
-        <!-- Filter Chips & Search -->
-        <div class="space-y-2">
-          <div class="relative">
-            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-500 text-base">search</span>
-            <input type="text" id="searchInput" oninput="renderLeadCards()" placeholder="Search candidate, college, or phone..."
-              class="w-full bg-[#131b2e] rounded-md pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 border border-[#24334a] focus:outline-none focus:border-blue-500 transition">
+        <!-- Search, View Switcher & Filter Toolbar -->
+        <div class="space-y-3">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+            <!-- Search Bar (Bigger font, clear button) -->
+            <div class="relative flex-1">
+              <span class="material-symbols-outlined absolute left-3.5 top-3 text-slate-400 text-lg">search</span>
+              <input type="text" id="searchInput" oninput="handleSearchInput()" placeholder="Search candidate name, college, or phone..."
+                class="w-full bg-[#131b2e] rounded-lg pl-11 pr-10 py-2.5 text-sm text-white placeholder-slate-400 border border-[#24334a] focus:outline-none focus:border-blue-500 transition shadow-inner">
+              <button id="searchClearBtn" onclick="clearSearch()" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-white transition p-1">
+                <span class="material-symbols-outlined text-base">close</span>
+              </button>
+            </div>
+
+            <!-- View Mode Switcher: 1 Card / Page vs List View -->
+            <div class="inline-flex bg-[#131b2e] p-1 rounded-lg border border-[#24334a] shadow-sm self-center sm:self-auto w-full sm:w-auto">
+              <button onclick="setViewMode('single')" id="viewModeSingleBtn" class="flex-1 sm:flex-none px-4 py-2 rounded-md text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition">
+                <span class="material-symbols-outlined text-base">style</span>
+                <span>1 Card / Page</span>
+              </button>
+              <button onclick="setViewMode('list')" id="viewModeListBtn" class="flex-1 sm:flex-none px-4 py-2 rounded-md text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition">
+                <span class="material-symbols-outlined text-base">view_list</span>
+                <span>List View</span>
+              </button>
+            </div>
           </div>
 
-          <div class="flex overflow-x-auto gap-1.5 py-0.5 scrollbar-none text-xs">
-            <button onclick="setFilter('all')" id="filterChip_all" class="px-3.5 py-1.5 rounded-md font-semibold whitespace-nowrap bg-blue-600 text-white shadow-sm transition">All</button>
-            <button onclick="setFilter('Pending')" id="filterChip_Pending" class="px-3.5 py-1.5 rounded-md font-semibold whitespace-nowrap bg-[#131b2e] text-slate-400 hover:text-white transition border border-[#24334a]">Pending</button>
-            <button onclick="setFilter('Interested')" id="filterChip_Interested" class="px-3.5 py-1.5 rounded-md font-semibold whitespace-nowrap bg-[#131b2e] text-slate-400 hover:text-white transition border border-[#24334a]">Interested</button>
-            <button onclick="setFilter('Paid / Confirmed')" id="filterChip_Paid / Confirmed" class="px-3.5 py-1.5 rounded-md font-semibold whitespace-nowrap bg-[#131b2e] text-slate-400 hover:text-white transition border border-[#24334a]">Paid</button>
-            <button onclick="setFilter('Call Back')" id="filterChip_Call Back" class="px-3.5 py-1.5 rounded-md font-semibold whitespace-nowrap bg-[#131b2e] text-slate-400 hover:text-white transition border border-[#24334a]">Call Back</button>
+          <!-- Quick Filter Buttons (Large, high touch target, dynamic count badges) -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-xs text-slate-400 font-bold px-0.5">
+              <span class="flex items-center gap-1 uppercase tracking-wider">
+                <span class="material-symbols-outlined text-sm text-blue-400">filter_alt</span>
+                <span>Filter By Status:</span>
+              </span>
+              <span id="filterActiveLabel" class="text-blue-300 font-semibold">Showing All</span>
+            </div>
+
+            <div class="flex overflow-x-auto gap-2 py-1 scrollbar-none" id="filterButtonsRow">
+              <!-- Dynamically populated with live count badges -->
+            </div>
           </div>
         </div>
 
-        <!-- Leads List -->
-        <div id="leadsList" class="space-y-2.5">
+        <!-- Leads Container (Renders 1 Card / Page or Full List View) -->
+        <div id="leadsList" class="space-y-3">
           <!-- Rendered via JS -->
         </div>
 
@@ -443,6 +468,30 @@
       <!-- ==================== VIEW 3: ADMIN ==================== -->
       <div id="viewAdmin" class="space-y-4 hidden">
         
+                <!-- Data Management & Reset to Clean State -->
+        <div class="bg-[#131b2e] rounded-lg p-4 sm:p-5 border border-[#24334a] shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-amber-400 text-lg">cleaning_services</span>
+              <span>Data Hygiene &amp; Clean Reset</span>
+            </h3>
+            <span class="text-xs bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded border border-amber-500/20 font-bold">Admin Utility</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Ensure all 212 outreach candidates remain in a pristine, completely clean state (all status set to Pending / Unpaid with empty amounts and remarks).
+          </p>
+          <div class="flex flex-wrap gap-2.5 pt-1">
+            <button onclick="resetCallingDataToClean()" class="px-4 py-2.5 rounded-lg bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 text-xs sm:text-sm font-bold transition flex items-center gap-2 state-layer">
+              <span class="material-symbols-outlined text-base">restart_alt</span>
+              <span>Reset All Leads to Clean State</span>
+            </button>
+            <button onclick="clearAuthLogs()" class="px-4 py-2.5 rounded-lg bg-[#1b2438] hover:bg-rose-500/20 text-slate-300 hover:text-rose-300 border border-[#24334a] text-xs sm:text-sm font-bold transition flex items-center gap-2 state-layer">
+              <span class="material-symbols-outlined text-base">delete_sweep</span>
+              <span>Clear Audit Logs</span>
+            </button>
+          </div>
+        </div>
+
         <!-- WhatsApp Quick Direct Links Generator -->
         <div class="bg-[#131b2e] rounded-lg p-4 border border-[#24334a] shadow-sm space-y-3">
           <div class="flex items-center justify-between">
@@ -619,71 +668,71 @@
 
   </div>
 
-  <!-- Outcome Modal / Bottom Sheet -->
-  <div id="outcomeModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
-    <div class="w-full sm:max-w-lg bg-[#131b2e] rounded-t-xl sm:rounded-lg border border-[#24334a] p-5 sm:p-6 space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl">
+  <!-- Outcome Modal / Bottom Sheet (Bigger fonts, spacious touch inputs) -->
+  <div id="outcomeModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="w-full sm:max-w-lg bg-[#131b2e] rounded-t-2xl sm:rounded-xl border border-[#24334a] p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
       
       <div class="w-12 h-1 rounded-full bg-slate-700 mx-auto -mt-2 mb-2 sm:hidden"></div>
 
       <div class="flex items-start justify-between border-b border-[#24334a] pb-3">
         <div>
-          <span class="text-[10px] font-bold text-blue-400 uppercase tracking-wider block">Log Outcome</span>
-          <h3 class="text-sm font-bold text-white" id="modalStudentName">Candidate Name</h3>
-          <p class="text-xs text-slate-400" id="modalCollegeName">College Name</p>
+          <span class="text-xs font-bold text-blue-400 uppercase tracking-wider block">Log Outcome &amp; Payment</span>
+          <h3 class="text-lg sm:text-xl font-black text-white" id="modalStudentName">Candidate Name</h3>
+          <p class="text-xs sm:text-sm text-slate-400 font-medium" id="modalCollegeName">College Name</p>
         </div>
-        <button onclick="closeOutcomeModal()" class="w-7 h-7 rounded-md bg-[#1b2438] hover:bg-[#222f47] text-slate-400 hover:text-white flex items-center justify-center transition border border-[#24334a]">
-          <span class="material-symbols-outlined text-base">close</span>
+        <button onclick="closeOutcomeModal()" class="w-8 h-8 rounded-lg bg-[#1b2438] hover:bg-[#222f47] text-slate-400 hover:text-white flex items-center justify-center transition border border-[#24334a]">
+          <span class="material-symbols-outlined text-lg">close</span>
         </button>
       </div>
 
       <input type="hidden" id="modalLeadId">
 
-      <div class="space-y-3.5 text-xs">
+      <div class="space-y-4 text-sm">
         <div>
-          <label class="block font-semibold text-slate-300 uppercase tracking-wider text-[11px] mb-1.5">CALL STATUS</label>
-          <div class="flex flex-wrap gap-1.5" id="callStatusChips"></div>
+          <label class="block font-bold text-slate-300 uppercase tracking-wider text-xs mb-2">CALL STATUS</label>
+          <div class="flex flex-wrap gap-2" id="callStatusChips"></div>
           <input type="hidden" id="modalCallStatusVal" value="Pending">
         </div>
 
         <div>
-          <label class="block font-semibold text-slate-300 uppercase tracking-wider text-[11px] mb-1.5">PAYMENT STATUS</label>
-          <div class="flex flex-wrap gap-1.5" id="payStatusChips"></div>
+          <label class="block font-bold text-slate-300 uppercase tracking-wider text-xs mb-2">PAYMENT STATUS</label>
+          <div class="flex flex-wrap gap-2" id="payStatusChips"></div>
           <input type="hidden" id="modalPayStatusVal" value="Pending">
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block font-semibold text-slate-300 uppercase tracking-wider text-[11px] mb-1">PAYMENT AMOUNT (₹)</label>
+            <label class="block font-bold text-slate-300 uppercase tracking-wider text-xs mb-1.5">PAYMENT AMOUNT (₹)</label>
             <div class="relative">
-              <span class="absolute left-3 top-2 text-slate-500 font-bold">₹</span>
-              <input type="number" id="modalAmount" placeholder="500" class="w-full bg-[#1b2438] border border-[#24334a] rounded-md pl-7 pr-3 py-2 text-white font-mono outline-none focus:border-blue-500">
+              <span class="absolute left-3.5 top-2.5 text-slate-400 font-bold text-base">₹</span>
+              <input type="number" id="modalAmount" placeholder="500" class="w-full bg-[#1b2438] border border-[#24334a] rounded-lg pl-8 pr-3 py-2.5 text-sm text-white font-mono outline-none focus:border-blue-500">
             </div>
           </div>
 
           <div>
-            <label class="block font-semibold text-purple-400 uppercase tracking-wider text-[11px] mb-1 flex items-center gap-1">
-              <span class="material-symbols-outlined text-xs">badge</span>
+            <label class="block font-bold text-purple-300 uppercase tracking-wider text-xs mb-1.5 flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">badge</span>
               <span>CR PHONE NUMBER</span>
             </label>
-            <input type="tel" id="modalCrNumber" placeholder="+91XXXXXXXXXX" class="w-full bg-[#1b2438] border border-purple-500/30 rounded-md px-3 py-2 text-white font-mono outline-none focus:border-purple-400">
+            <input type="tel" id="modalCrNumber" placeholder="+91XXXXXXXXXX" class="w-full bg-[#1b2438] border border-purple-500/30 rounded-lg px-3 py-2.5 text-sm text-white font-mono outline-none focus:border-purple-400">
           </div>
         </div>
 
         <div>
-          <label class="block font-semibold text-slate-300 uppercase tracking-wider text-[11px] mb-1">EXPECTED PAYMENT DATE</label>
-          <input type="date" id="modalExpDate" class="w-full bg-[#1b2438] border border-[#24334a] rounded-md px-3 py-2 text-white outline-none focus:border-blue-500">
+          <label class="block font-bold text-slate-300 uppercase tracking-wider text-xs mb-1.5">EXPECTED PAYMENT DATE</label>
+          <input type="date" id="modalExpDate" class="w-full bg-[#1b2438] border border-[#24334a] rounded-lg px-3 py-2.5 text-sm text-white outline-none focus:border-blue-500">
         </div>
 
         <div>
-          <label class="block font-semibold text-slate-300 uppercase tracking-wider text-[11px] mb-1">CALLER REMARKS</label>
-          <textarea id="modalRemarks" rows="2" placeholder="Participant interest, questions, team size, etc." class="w-full bg-[#1b2438] border border-[#24334a] rounded-md p-2.5 text-white outline-none focus:border-blue-500"></textarea>
+          <label class="block font-bold text-slate-300 uppercase tracking-wider text-xs mb-1.5">CALLER REMARKS / CONVERSATION NOTES</label>
+          <textarea id="modalRemarks" rows="2" placeholder="Participant feedback, queries, team size, etc." class="w-full bg-[#1b2438] border border-[#24334a] rounded-lg p-3 text-sm text-white outline-none focus:border-blue-500"></textarea>
         </div>
       </div>
 
-      <div class="pt-3 border-t border-[#24334a] flex gap-2">
-        <button onclick="closeOutcomeModal()" class="flex-1 py-2 rounded-md bg-[#1b2438] hover:bg-[#222f47] text-slate-300 font-semibold text-xs border border-[#24334a] transition">Cancel</button>
-        <button onclick="saveModalOutcome()" class="flex-1 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm flex items-center justify-center gap-1.5 transition">
-          <span class="material-symbols-outlined text-sm">check</span>
+      <div class="pt-3 border-t border-[#24334a] flex gap-2.5">
+        <button onclick="closeOutcomeModal()" class="flex-1 py-2.5 rounded-lg bg-[#1b2438] hover:bg-[#222f47] text-slate-300 font-bold text-xs sm:text-sm border border-[#24334a] transition">Cancel</button>
+        <button onclick="saveModalOutcome()" class="flex-1 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-1.5 transition state-layer">
+          <span class="material-symbols-outlined text-base">check</span>
           <span>Save Outcome</span>
         </button>
       </div>
@@ -703,12 +752,12 @@
       "mobile": "+917508438518",
       "email": "harminderkamboj2004@gmail.com",
       "events": "AI Chit-Chat, Aerostrike, Aqua Clean, Arduino Imagino, BGMI, Brand Blitz, Breadboard Battle, CAD Design Challenge, Case Crack, Case Ethical Crosstalk, Chemi Craft, Chemi-Mystery, Chemi-Thon, Chess, Circuit Craft, City Model Exhibition, Clue Craze, Cognitive Challenges, Debug & Deploy (Diploma Students Only), Designare, Digital Design Challenge, Fabriquer, Food Forensics, Food Forge, Foodprint, Free Fire, Ghost Code, Grid Masters-SLD Challenge, Hackathon, Hovermania, Hydraload, Innovation-X, Jam Session, Kritrim - Model Exhibition, Logic Flow, Machine Learning Model, Mechnovate, Micromouse Challenge, Pitchverse, Pixel Wizard, Poster Presentation, Poster and Paper Presentation, Quiz Nova, RC Boat, RC Car, Rapid Line, RoboSoccer, Robowar, SM-Agri, Seismic Challenge, Sky Maneuver, Soap Making, Soldering Speedrun, Splash Rocket, Tech4Earth, Technical Quiz Competition, Techno-Vation, The Big Bull, Truss Load, WPTC - Wireless Power Transfer, jugaad",
-      "callStatus": "Paid / Confirmed",
-      "payStatus": "Paid",
-      "amount": "500",
-      "crNumber": "+919765432109",
-      "expectedDate": "2026-09-25",
-      "remarks": "Participating in Hackathon & CAD. CR Vikram."
+      "callStatus": "Pending",
+      "payStatus": "Pending",
+      "amount": "",
+      "crNumber": "",
+      "expectedDate": "",
+      "remarks": ""
     },
     {
       "id": 9,
@@ -2223,12 +2272,12 @@
       "mobile": "+918019316491",
       "email": "sknazeer6549@gmail.com",
       "events": "AI Chit-Chat, Aerostrike, Aqua Clean, Arduino Imagino, BGMI, Brand Blitz, Breadboard Battle, CAD Design Challenge, Case Crack, Case Ethical Crosstalk, Chemi Craft, Chemi-Mystery, Chemi-Thon, Chess, Circuit Craft, City Model Exhibition, Clue Craze, Cognitive Challenges, Competitive Programming Marathon, Debug & Deploy (Diploma Students Only), Designare, Digital Design Challenge, Fabriquer, Food Forensics, Food Forge, Foodprint, Free Fire, Ghost Code, Grid Masters-SLD Challenge, Hackathon, Hovermania, Hydraload, Innovation-X, Jam Session, Kritrim - Model Exhibition, Machine Learning Model, Mechnovate, Micromouse Challenge, Pitchverse, Pixel Wizard, Poster Presentation, Poster and Paper Presentation, Quiz Nova, RC Boat, RC Car, Rapid Line, RoboSoccer, Robowar, SM-Agri, Seismic Challenge, Sky Maneuver, Soap Making, Soldering Speedrun, Splash Rocket, Tech4Earth, Technical Quiz Competition, Techno-Vation, The Big Bull, Truss Load, WPTC - Wireless Power Transfer, jugaad",
-      "callStatus": "Interested",
-      "payStatus": "Expected Soon",
-      "amount": "500",
-      "crNumber": "+919876543210",
-      "expectedDate": "2026-09-28",
-      "remarks": "Shaik will register with 4 teammates. CR Rahul phone shared."
+      "callStatus": "Pending",
+      "payStatus": "Pending",
+      "amount": "",
+      "crNumber": "",
+      "expectedDate": "",
+      "remarks": ""
     },
     {
       "id": 13,
@@ -2237,12 +2286,12 @@
       "mobile": "+919642897258",
       "email": "machav684@gmail.com",
       "events": "AI Chit-Chat, Aerostrike, Aqua Clean, Arduino Imagino, BGMI, Brand Blitz, Breadboard Battle, CAD Design Challenge, Case Crack, Case Ethical Crosstalk, Chemi Craft, Chemi-Mystery, Chemi-Thon, Chess, Circuit Craft, City Model Exhibition, Clue Craze, Cognitive Challenges, Competitive Programming Marathon, Debug & Deploy (Diploma Students Only), Designare, Digital Design Challenge, Fabriquer, Food Forensics, Food Forge, Foodprint, Free Fire, Ghost Code, Grid Masters-SLD Challenge, Hackathon, Hovermania, Hydraload, Innovation-X, Jam Session, Kritrim - Model Exhibition, Machine Learning Model, Mechnovate, Micromouse Challenge, Pitchverse, Pixel Wizard, Poster Presentation, Poster and Paper Presentation, Quiz Nova, RC Boat, RC Car, Rapid Line, RoboSoccer, Robowar, SM-Agri, Seismic Challenge, Sky Maneuver, Soap Making, Soldering Speedrun, Splash Rocket, Tech4Earth, Technical Quiz Competition, Techno-Vation, The Big Bull, Truss Load, WPTC - Wireless Power Transfer, jugaad",
-      "callStatus": "Paid / Confirmed",
-      "payStatus": "Paid",
-      "amount": "1000",
-      "crNumber": "+919812345678",
-      "expectedDate": "2026-09-25",
-      "remarks": "Fee paid via UPI. CR Amit Sharma."
+      "callStatus": "Pending",
+      "payStatus": "Pending",
+      "amount": "",
+      "crNumber": "",
+      "expectedDate": "",
+      "remarks": ""
     },
     {
       "id": 21,
@@ -4105,6 +4154,9 @@
     }
 
     function init() {
+      // Load and verify clean calling data
+      loadCallingData();
+      
       // Clear legacy unverified tokens
       localStorage.removeItem('TF26_SESSION_USER');
 
@@ -4171,6 +4223,7 @@
       }
 
       updateCallerHeader();
+      renderFilterButtons();
       renderLeadCards();
       renderCRDirectory();
       renderAdminDashboard();
@@ -4240,6 +4293,142 @@
       }
     }
 
+    // ========================================================
+    // 🎨 UI STATE: VIEW MODES, STEPPER & STORAGE
+    // ========================================================
+    const CALLING_DATA_STORAGE_KEY = 'TF26_CALLING_DATA_V5_CLEAN';
+    let currentCardIndex = 0;
+    // On phones default to single card focus mode, on desktop can toggle
+    let currentViewMode = localStorage.getItem('TF26_VIEW_MODE') || (window.innerWidth < 768 ? 'single' : 'list');
+
+    function loadCallingData() {
+      try {
+        // Clean legacy mock test keys
+        localStorage.removeItem('TF26_CALLING_DATA');
+        localStorage.removeItem('TF26_CALLING_DATA_V2');
+        localStorage.removeItem('TF26_CALLING_DATA_V3');
+        localStorage.removeItem('TF26_CALLING_DATA_V4');
+
+        const saved = localStorage.getItem(CALLING_DATA_STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          Object.keys(parsed).forEach(cname => {
+            if (CALLING_DATA[cname]) {
+              CALLING_DATA[cname] = parsed[cname];
+            }
+          });
+        }
+      } catch(e) {}
+    }
+
+    function saveCallingData() {
+      try {
+        localStorage.setItem(CALLING_DATA_STORAGE_KEY, JSON.stringify(CALLING_DATA));
+      } catch(e) {}
+    }
+
+    function resetCallingDataToClean() {
+      if (confirm("Reset all 212 candidates back to completely clean initial state? This removes any test entries and resets payment & calling statuses to 'Pending'.")) {
+        localStorage.removeItem(CALLING_DATA_STORAGE_KEY);
+        localStorage.removeItem('TF26_CALLING_DATA');
+        Object.keys(CALLING_DATA).forEach(cname => {
+          CALLING_DATA[cname].forEach(l => {
+            l.callStatus = 'Pending';
+            l.payStatus = 'Pending';
+            l.amount = '';
+            l.crNumber = '';
+            l.expectedDate = '';
+            l.remarks = '';
+          });
+        });
+        saveCallingData();
+        updateCallerHeader();
+        renderFilterButtons();
+        renderLeadCards();
+        renderCRDirectory();
+        renderAdminDashboard();
+        showToast("All leads reset to clean state!");
+      }
+    }
+
+    function setViewMode(mode) {
+      currentViewMode = mode;
+      localStorage.setItem('TF26_VIEW_MODE', mode);
+      updateViewModeButtons();
+      renderLeadCards();
+    }
+
+    function updateViewModeButtons() {
+      const singleBtn = document.getElementById('viewModeSingleBtn');
+      const listBtn = document.getElementById('viewModeListBtn');
+      if (!singleBtn || !listBtn) return;
+
+      if (currentViewMode === 'single') {
+        singleBtn.className = 'flex-1 sm:flex-none px-4 py-2 rounded-md text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition bg-blue-600 text-white shadow-sm';
+        listBtn.className = 'flex-1 sm:flex-none px-4 py-2 rounded-md text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition text-slate-400 hover:text-white hover:bg-[#1b2438]';
+      } else {
+        singleBtn.className = 'flex-1 sm:flex-none px-4 py-2 rounded-md text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition text-slate-400 hover:text-white hover:bg-[#1b2438]';
+        listBtn.className = 'flex-1 sm:flex-none px-4 py-2 rounded-md text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition bg-blue-600 text-white shadow-sm';
+      }
+    }
+
+    // ========================================================
+    // 🎨 PAYMENT STATUS CARD COLORS (RED / GREEN / BLUE)
+    // ========================================================
+    function getPaymentCardStyles(payStatus) {
+      const norm = (payStatus || 'Pending').trim();
+      if (norm === 'Paid') {
+        return {
+          border: 'border-2 border-emerald-500/80 shadow-emerald-950/40',
+          bg: 'bg-gradient-to-br from-[#0b2416] via-[#101e2e] to-[#131b2e]',
+          badge: '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs sm:text-sm font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-sm"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>🟢 Paid</span>',
+          tagColor: 'text-emerald-400',
+          indicator: 'bg-emerald-500'
+        };
+      } else if (norm === 'Expected Soon') {
+        return {
+          border: 'border-2 border-blue-500/80 shadow-blue-950/40',
+          bg: 'bg-gradient-to-br from-[#0c1c38] via-[#101b2f] to-[#131b2e]',
+          badge: '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs sm:text-sm font-bold bg-blue-500/20 text-blue-300 border border-blue-500/50 shadow-sm"><span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>🔵 Expected Soon</span>',
+          tagColor: 'text-blue-400',
+          indicator: 'bg-blue-500'
+        };
+      } else if (norm === 'Declined') {
+        return {
+          border: 'border border-slate-700',
+          bg: 'bg-[#131b2e]',
+          badge: '<span class="inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs sm:text-sm font-bold bg-slate-800 text-slate-400 border border-slate-700">⚪ Declined</span>',
+          tagColor: 'text-slate-400',
+          indicator: 'bg-slate-600'
+        };
+      } else { // 'Pending' or unpaid
+        return {
+          border: 'border-2 border-rose-500/70 shadow-rose-950/40',
+          bg: 'bg-gradient-to-br from-[#261019] via-[#151728] to-[#131b2e]',
+          badge: '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs sm:text-sm font-bold bg-rose-500/20 text-rose-300 border border-rose-500/50 shadow-sm"><span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>🔴 Payment Pending</span>',
+          tagColor: 'text-rose-400',
+          indicator: 'bg-rose-500'
+        };
+      }
+    }
+
+    function getCallStatusBadge(status) {
+      if (status === 'Interested') {
+        return '<span class="px-2.5 py-1 rounded-md text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">📞 Interested</span>';
+      } else if (status === 'Paid / Confirmed') {
+        return '<span class="px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">✓ Confirmed</span>';
+      } else if (status === 'Call Back') {
+        return '<span class="px-2.5 py-1 rounded-md text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">⏰ Call Back</span>';
+      } else if (status === 'Not Reachable') {
+        return '<span class="px-2.5 py-1 rounded-md text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">🚫 Not Reachable</span>';
+      } else if (status === 'Busy / Cut Call') {
+        return '<span class="px-2.5 py-1 rounded-md text-xs font-bold bg-orange-500/20 text-orange-300 border border-orange-500/30">📵 Busy</span>';
+      } else if (status === 'Not Interested') {
+        return '<span class="px-2.5 py-1 rounded-md text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700">❌ Not Interested</span>';
+      }
+      return '<span class="px-2.5 py-1 rounded-md text-xs font-bold bg-[#1b2438] text-slate-400 border border-[#24334a]">⏳ Pending Call</span>';
+    }
+
     function updateCallerHeader() {
       const activeName = (currentUser && currentUser.role === 'caller') ? currentUser.name : 'Ayansh Sahay';
       document.getElementById('activeCallerName').textContent = activeName;
@@ -4248,7 +4437,7 @@
       document.getElementById('callerInitials').textContent = initials;
 
       const leads = CALLING_DATA[activeName] || [];
-      const done = leads.filter(l => l.callStatus !== 'Pending').length;
+      const done = leads.filter(l => l.callStatus !== 'Pending' || l.payStatus !== 'Pending').length;
       const pending = leads.length - done;
       const paidAmt = leads.reduce((sum, l) => sum + (parseFloat(l.amount) || 0), 0);
       const pct = leads.length > 0 ? Math.round((done / leads.length) * 100) : 0;
@@ -4262,109 +4451,500 @@
       document.getElementById('queueProgressBar').style.width = `${pct}%`;
     }
 
+    // ========================================================
+    // 🔘 EASILY FILTER BUTTONS WITH LIVE COUNTS
+    // ========================================================
+    function renderFilterButtons() {
+      const container = document.getElementById('filterButtonsRow');
+      if (!container) return;
+
+      const activeCaller = (currentUser && currentUser.role === 'caller') ? currentUser.name : 'Ayansh Sahay';
+      const leads = CALLING_DATA[activeCaller] || [];
+
+      const counts = {
+        all: leads.length,
+        Pending: leads.filter(l => (l.payStatus === 'Pending' || l.callStatus === 'Pending') && l.payStatus !== 'Paid').length,
+        Paid: leads.filter(l => l.payStatus === 'Paid' || l.callStatus === 'Paid / Confirmed').length,
+        'Expected Soon': leads.filter(l => l.payStatus === 'Expected Soon').length,
+        Interested: leads.filter(l => l.callStatus === 'Interested').length,
+        'Call Back': leads.filter(l => l.callStatus === 'Call Back').length,
+        'Not Reachable': leads.filter(l => l.callStatus === 'Not Reachable' || l.callStatus === 'Busy / Cut Call').length,
+      };
+
+      const tabs = [
+        { id: 'all', label: 'All', badgeClass: 'bg-slate-700 text-slate-200' },
+        { id: 'Pending', label: '🔴 Pending', badgeClass: 'bg-rose-500/30 text-rose-300' },
+        { id: 'Paid', label: '🟢 Paid', badgeClass: 'bg-emerald-500/30 text-emerald-300' },
+        { id: 'Expected Soon', label: '🔵 Expected Soon', badgeClass: 'bg-blue-500/30 text-blue-300' },
+        { id: 'Interested', label: '📞 Interested', badgeClass: 'bg-amber-500/30 text-amber-300' },
+        { id: 'Call Back', label: '⏰ Call Back', badgeClass: 'bg-purple-500/30 text-purple-300' },
+        { id: 'Not Reachable', label: '🚫 Unreachable', badgeClass: 'bg-slate-700 text-slate-300' }
+      ];
+
+      container.innerHTML = tabs.map(t => {
+        const isAct = currentFilter === t.id;
+        const cnt = counts[t.id] || 0;
+        const activeClass = isAct 
+          ? 'bg-blue-600 text-white shadow-md border-blue-400 font-bold' 
+          : 'bg-[#131b2e] text-slate-300 hover:text-white hover:bg-[#1b2438] border-[#24334a] font-semibold';
+
+        return `
+          <button onclick="setFilter('${t.id}')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition flex items-center gap-2 border state-layer flex-shrink-0 ${activeClass}">
+            <span>${t.label}</span>
+            <span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold ${isAct ? 'bg-white/20 text-white' : t.badgeClass}">${cnt}</span>
+          </button>
+        `;
+      }).join('');
+
+      const labelEl = document.getElementById('filterActiveLabel');
+      if (labelEl) {
+        const cur = tabs.find(t => t.id === currentFilter);
+        labelEl.textContent = cur ? `Filter: ${cur.label}` : 'Showing All';
+      }
+    }
+
     function setFilter(filter) {
       currentFilter = filter;
-      ['all', 'Pending', 'Interested', 'Paid / Confirmed', 'Call Back'].forEach(f => {
-        const btn = document.getElementById('filterChip_' + f);
-        if (btn) {
-          if (f === filter) {
-            btn.className = 'px-3.5 py-1.5 rounded-md font-semibold whitespace-nowrap bg-blue-600 text-white shadow-sm transition';
-          } else {
-            btn.className = 'px-3.5 py-1.5 rounded-md font-semibold whitespace-nowrap bg-[#131b2e] text-slate-400 hover:text-white transition border border-[#24334a]';
-          }
-        }
-      });
+      currentCardIndex = 0;
+      renderFilterButtons();
       renderLeadCards();
     }
 
-    function renderLeadCards() {
-      const container = document.getElementById('leadsList');
+    function getFilteredLeads() {
       const activeCaller = (currentUser && currentUser.role === 'caller') ? currentUser.name : 'Ayansh Sahay';
       const leads = CALLING_DATA[activeCaller] || [];
-      const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+      const query = (document.getElementById('searchInput') ? document.getElementById('searchInput').value : '').toLowerCase().trim();
 
-      const filtered = leads.filter(lead => {
-        const matchesFilter = (currentFilter === 'all') || (lead.callStatus === currentFilter);
+      return leads.filter(lead => {
+        let matchesFilter = true;
+        if (currentFilter === 'Pending') {
+          matchesFilter = (lead.payStatus === 'Pending' || lead.callStatus === 'Pending') && (lead.payStatus !== 'Paid');
+        } else if (currentFilter === 'Paid') {
+          matchesFilter = (lead.payStatus === 'Paid' || lead.callStatus === 'Paid / Confirmed');
+        } else if (currentFilter === 'Expected Soon') {
+          matchesFilter = (lead.payStatus === 'Expected Soon');
+        } else if (currentFilter === 'Interested') {
+          matchesFilter = (lead.callStatus === 'Interested');
+        } else if (currentFilter === 'Call Back') {
+          matchesFilter = (lead.callStatus === 'Call Back');
+        } else if (currentFilter === 'Not Reachable') {
+          matchesFilter = (lead.callStatus === 'Not Reachable' || lead.callStatus === 'Busy / Cut Call');
+        }
+
         const matchesQuery = !query || 
           lead.name.toLowerCase().includes(query) || 
           lead.college.toLowerCase().includes(query) || 
-          lead.mobile.includes(query);
+          lead.mobile.includes(query) ||
+          (lead.email && lead.email.toLowerCase().includes(query));
+
         return matchesFilter && matchesQuery;
       });
+    }
+
+    function handleSearchInput() {
+      const input = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('searchClearBtn');
+      if (clearBtn) {
+        if (input && input.value.trim().length > 0) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+      }
+      currentCardIndex = 0;
+      renderLeadCards();
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('searchInput');
+      if (input) input.value = '';
+      const clearBtn = document.getElementById('searchClearBtn');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      currentCardIndex = 0;
+      renderLeadCards();
+    }
+
+    // ========================================================
+    // 🎴 STEPPER NAVIGATION (FOR 1 CARD / PAGE PHONE MODE)
+    // ========================================================
+    function navCard(dir) {
+      const filtered = getFilteredLeads();
+      if (filtered.length === 0) return;
+      currentCardIndex += dir;
+      if (currentCardIndex < 0) currentCardIndex = 0;
+      if (currentCardIndex >= filtered.length) currentCardIndex = filtered.length - 1;
+      renderLeadCards();
+      
+      const leadsContainer = document.getElementById('leadsList');
+      if (leadsContainer) {
+        leadsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function focusCardInSingleMode(leadId) {
+      const filtered = getFilteredLeads();
+      const idx = filtered.findIndex(l => l.id === leadId);
+      if (idx !== -1) {
+        currentCardIndex = idx;
+      }
+      setViewMode('single');
+    }
+
+    // ========================================================
+    // ⚡ 1-TAP QUICK LEAD OUTCOME UPDATER
+    // ========================================================
+    function quickUpdateLead(leadId, payStatus, callStatus) {
+      const activeCaller = (currentUser && currentUser.role === 'caller') ? currentUser.name : 'Ayansh Sahay';
+      const leads = CALLING_DATA[activeCaller] || [];
+      const lead = leads.find(l => l.id === leadId);
+      if (!lead) return;
+
+      lead.payStatus = payStatus;
+      lead.callStatus = callStatus;
+      if (payStatus === 'Paid' && (!lead.amount || lead.amount === '0')) {
+        lead.amount = '500';
+      }
+
+      saveCallingData();
+      updateCallerHeader();
+      renderFilterButtons();
+      renderLeadCards();
+      renderCRDirectory();
+      renderAdminDashboard();
+
+      showToast(`Updated: ${lead.name} -> ${payStatus} (${callStatus})`);
+    }
+
+    function copyToClipboard(text, msg) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(msg || 'Copied to clipboard!');
+        }).catch(() => fallbackCopy(text, msg));
+      } else {
+        fallbackCopy(text, msg);
+      }
+    }
+
+    function fallbackCopy(text, msg) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast(msg || 'Copied to clipboard!');
+    }
+
+    function showToast(msg) {
+      let toast = document.getElementById('floatingToast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'floatingToast';
+        toast.className = 'fixed bottom-6 right-6 z-50 bg-[#131b2e] border border-blue-500/50 text-white font-bold text-xs sm:text-sm px-4 py-3 rounded-lg shadow-2xl flex items-center gap-2 transform transition-all duration-300 pointer-events-none opacity-0 translate-y-3';
+        document.body.appendChild(toast);
+      }
+      toast.innerHTML = `<span class="material-symbols-outlined text-emerald-400 text-base">check_circle</span><span>${msg}</span>`;
+      toast.classList.remove('opacity-0', 'translate-y-3');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-3');
+      }, 2400);
+    }
+
+    // ========================================================
+    // 📋 MAIN RENDER FUNCTION: 1 CARD / PAGE OR FULL LIST
+    // ========================================================
+    function renderLeadCards() {
+      const container = document.getElementById('leadsList');
+      if (!container) return;
+
+      updateViewModeButtons();
+      const filtered = getFilteredLeads();
 
       if (filtered.length === 0) {
         container.innerHTML = `
-          <div class="bg-[#131b2e] rounded-lg p-8 text-center text-slate-400 border border-[#24334a]">
-            <span class="material-symbols-outlined text-3xl mb-1 text-slate-500">inbox</span>
-            <p class="text-xs font-medium">No candidates match your current filter.</p>
+          <div class="bg-[#131b2e] rounded-xl p-8 sm:p-12 text-center text-slate-400 border border-[#24334a] space-y-3">
+            <span class="material-symbols-outlined text-4xl text-slate-500">search_off</span>
+            <div>
+              <h3 class="text-base font-bold text-white">No candidates match your current filter</h3>
+              <p class="text-xs sm:text-sm text-slate-400 mt-1">Try switching to "All" or clearing your search keywords.</p>
+            </div>
+            <button onclick="setFilter('all'); clearSearch();" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-md transition">
+              Show All Candidates
+            </button>
           </div>
         `;
         return;
       }
 
-      container.innerHTML = filtered.map(lead => {
-        let statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#1b2438] text-slate-400 border border-[#24334a]">Pending</span>';
-        if (lead.callStatus === 'Interested') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">Interested</span>';
-        else if (lead.callStatus === 'Paid / Confirmed') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Paid</span>';
-        else if (lead.callStatus === 'Call Back') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">Call Back</span>';
-        else if (lead.callStatus === 'Not Reachable') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">Not Reachable</span>';
+      // Clamp card index
+      if (currentCardIndex >= filtered.length) currentCardIndex = filtered.length - 1;
+      if (currentCardIndex < 0) currentCardIndex = 0;
 
-        return `
-          <div class="bg-[#131b2e] rounded-lg p-4 border border-[#24334a] hover:border-slate-600 shadow-sm space-y-3 transition">
-            <div class="flex items-start justify-between gap-2">
-              <div class="flex-1 min-w-0">
+      // ----------------------------------------------------
+      // MODE 1: ONE CARD A PAGE (SIMPLIFIED PHONE FOCUS MODE)
+      // ----------------------------------------------------
+      if (currentViewMode === 'single') {
+        const lead = filtered[currentCardIndex];
+        const cardTheme = getPaymentCardStyles(lead.payStatus);
+        const statusBadge = getCallStatusBadge(lead.callStatus);
+        const progressPct = Math.round(((currentCardIndex + 1) / filtered.length) * 100);
+
+        container.innerHTML = `
+          <div class="max-w-xl mx-auto space-y-3" id="singleCardWrapper">
+            
+            <!-- Top Stepper Navigation Header -->
+            <div class="flex items-center justify-between bg-[#131b2e] p-2.5 sm:p-3 rounded-xl border border-[#24334a] shadow-sm">
+              <button onclick="navCard(-1)" ${currentCardIndex === 0 ? 'disabled class="opacity-30 cursor-not-allowed"' : 'class="hover:bg-[#1b2438] active:scale-95"'} class="px-3 sm:px-4 py-2 rounded-lg text-white font-bold text-xs sm:text-sm flex items-center gap-1 border border-[#24334a] bg-[#1b2438] transition state-layer">
+                <span class="material-symbols-outlined text-base">chevron_left</span>
+                <span class="hidden sm:inline">Prev</span>
+              </button>
+
+              <div class="text-center px-2 flex-1">
+                <div class="text-xs sm:text-sm font-bold text-white tracking-wide">
+                  Candidate <span class="text-blue-400 font-mono text-base font-black">${currentCardIndex + 1}</span> of <span class="font-mono text-slate-300">${filtered.length}</span>
+                </div>
+                <div class="w-full bg-[#1b2438] rounded-full h-1.5 mt-1.5 overflow-hidden border border-[#24334a]">
+                  <div class="bg-gradient-to-r from-blue-500 to-emerald-400 h-full rounded-full transition-all duration-200" style="width: ${progressPct}%"></div>
+                </div>
+              </div>
+
+              <button onclick="navCard(1)" ${currentCardIndex === filtered.length - 1 ? 'disabled class="opacity-30 cursor-not-allowed"' : 'class="hover:bg-[#1b2438] active:scale-95"'} class="px-3 sm:px-4 py-2 rounded-lg text-white font-bold text-xs sm:text-sm flex items-center gap-1 border border-[#24334a] bg-[#1b2438] transition state-layer">
+                <span class="hidden sm:inline">Next</span>
+                <span class="material-symbols-outlined text-base">chevron_right</span>
+              </button>
+            </div>
+
+            <!-- Giant Single Calling Card (Color-coded Red / Green / Blue based on Payment Status) -->
+            <div class="rounded-2xl p-5 sm:p-7 shadow-2xl transition duration-150 space-y-5 ${cardTheme.border} ${cardTheme.bg}">
+              
+              <!-- Card Top: Payment Status & Call Status Badges -->
+              <div class="flex items-center justify-between flex-wrap gap-2 border-b border-white/10 pb-3">
                 <div class="flex items-center gap-2">
-                  <h3 class="text-xs font-bold text-white truncate">${lead.name}</h3>
+                  ${cardTheme.badge}
                   ${statusBadge}
                 </div>
-                <p class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1 truncate">
-                  <span class="material-symbols-outlined text-[13px] text-slate-500">school</span>
+                <span class="text-xs font-mono font-bold text-slate-400">ID #${lead.id}</span>
+              </div>
+
+              <!-- Candidate Info (Bigger Fonts) -->
+              <div>
+                <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight leading-snug">${lead.name}</h2>
+                <p class="text-sm sm:text-base text-slate-200 font-semibold mt-1.5 flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-base text-blue-400">school</span>
                   <span>${lead.college}</span>
                 </p>
-                <p class="text-[10px] text-slate-500 mt-0.5 line-clamp-1 flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[13px] text-amber-400/80">emoji_events</span>
+                ${lead.email ? `
+                  <p class="text-xs sm:text-sm text-slate-400 font-mono mt-1 flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm text-slate-500">mail</span>
+                    <span class="truncate">${lead.email}</span>
+                  </p>
+                ` : ''}
+              </div>
+
+              <!-- Registered Events -->
+              <div class="bg-black/35 p-3.5 rounded-xl border border-white/5 space-y-1">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm text-amber-400">emoji_events</span>
+                  <span>Registered Events</span>
+                </span>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-medium">
+                  ${lead.events}
+                </p>
+              </div>
+
+              <!-- Prominent Candidate Mobile Box with Copy Button -->
+              <div class="bg-[#0b0f19]/90 rounded-xl p-4 border border-white/10 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-2xl">phone_iphone</span>
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Candidate Mobile</span>
+                    <span class="text-xl sm:text-2xl font-mono font-black text-white tracking-wider">${lead.mobile}</span>
+                  </div>
+                </div>
+                <button onclick="copyToClipboard('${lead.mobile}', 'Candidate phone number copied!')" title="Copy Number" class="p-2.5 rounded-lg bg-[#1b2438] hover:bg-[#25334d] text-slate-300 hover:text-white border border-[#24334a] transition">
+                  <span class="material-symbols-outlined text-lg">content_copy</span>
+                </button>
+              </div>
+
+              <!-- Giant Call & WhatsApp Action Buttons -->
+              <div class="grid grid-cols-2 gap-3 pt-1">
+                <a href="tel:${lead.mobile}" class="py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-black text-base flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/30 transition state-layer">
+                  <span class="material-symbols-outlined text-2xl">call</span>
+                  <span>Call Now</span>
+                </a>
+
+                <a href="https://wa.me/${lead.mobile.replace(/[^0-9]/g, '')}" target="_blank" class="py-3.5 px-4 rounded-xl bg-[#128c7e] hover:bg-[#075e54] text-white font-black text-base flex items-center justify-center gap-2 shadow-lg shadow-teal-900/30 transition state-layer">
+                  <span class="material-symbols-outlined text-2xl">chat</span>
+                  <span>WhatsApp</span>
+                </a>
+              </div>
+
+              <!-- Quick 1-Tap Status Logging Strip -->
+              <div class="bg-black/35 p-3.5 rounded-xl border border-white/10 space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm text-blue-400">bolt</span>
+                    <span>1-Tap Quick Outcome:</span>
+                  </span>
+                  <span class="text-xs text-slate-400">Saves immediately</span>
+                </div>
+
+                <div class="grid grid-cols-3 sm:grid-cols-5 gap-1.5 text-xs font-bold">
+                  <button onclick="quickUpdateLead(${lead.id}, 'Paid', 'Paid / Confirmed')" class="py-2.5 px-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 transition flex items-center justify-center gap-1 text-center">
+                    <span>🟢 Paid</span>
+                  </button>
+                  <button onclick="quickUpdateLead(${lead.id}, 'Expected Soon', 'Interested')" class="py-2.5 px-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 transition flex items-center justify-center gap-1 text-center">
+                    <span>🔵 Expected</span>
+                  </button>
+                  <button onclick="quickUpdateLead(${lead.id}, 'Pending', 'Interested')" class="py-2.5 px-1.5 rounded-lg bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white border border-amber-500/40 transition flex items-center justify-center gap-1 text-center">
+                    <span>📞 Interested</span>
+                  </button>
+                  <button onclick="quickUpdateLead(${lead.id}, 'Pending', 'Call Back')" class="py-2.5 px-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/40 transition flex items-center justify-center gap-1 text-center">
+                    <span>⏰ Callback</span>
+                  </button>
+                  <button onclick="quickUpdateLead(${lead.id}, 'Pending', 'Not Reachable')" class="py-2.5 px-1.5 rounded-lg bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 transition flex items-center justify-center gap-1 text-center">
+                    <span>🚫 Unreach.</span>
+                  </button>
+                </div>
+
+                <button onclick="openOutcomeModal(${lead.id})" class="w-full py-2.5 px-3 rounded-lg bg-[#1b2438] hover:bg-[#25324d] text-slate-200 text-xs sm:text-sm font-bold border border-[#24334a] flex items-center justify-center gap-1.5 transition state-layer">
+                  <span class="material-symbols-outlined text-base text-blue-400">edit_note</span>
+                  <span>Detailed Log (Payment Amount, CR Phone, Remarks)</span>
+                </button>
+              </div>
+
+              <!-- Active Logged Details (CR phone, amount, remarks) -->
+              ${lead.crNumber ? `
+                <div class="px-4 py-2.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-200 text-sm flex items-center justify-between font-semibold">
+                  <span class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">badge</span>
+                    <span>CR Contact: <b class="font-mono text-white text-base">${lead.crNumber}</b></span>
+                  </span>
+                  <a href="tel:${lead.crNumber}" class="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition">Call CR</a>
+                </div>
+              ` : ''}
+
+              ${lead.amount ? `
+                <div class="px-4 py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-200 text-sm font-semibold flex items-center justify-between">
+                  <span>Payment Amount Logged:</span>
+                  <span class="text-lg font-mono font-black text-emerald-300">₹${lead.amount}</span>
+                </div>
+              ` : ''}
+
+              ${lead.remarks ? `
+                <div class="bg-[#1b2438] p-3.5 rounded-xl border border-[#24334a] text-sm text-slate-200 italic space-y-1">
+                  <span class="not-italic text-xs font-bold text-slate-400 uppercase tracking-wider block">Notes / Remarks:</span>
+                  "${lead.remarks}"
+                </div>
+              ` : ''}
+
+              <!-- Bottom Thumb Stepper -->
+              <div class="pt-2 flex items-center gap-2.5">
+                <button onclick="navCard(-1)" ${currentCardIndex === 0 ? 'disabled class="opacity-30 cursor-not-allowed"' : 'class="hover:bg-[#1b2438] active:scale-95"'} class="flex-1 py-3.5 rounded-xl bg-[#1b2438] border border-[#24334a] text-white font-bold text-sm flex items-center justify-center gap-1.5 transition state-layer">
+                  <span class="material-symbols-outlined text-lg">arrow_back</span>
+                  <span>Previous Lead</span>
+                </button>
+
+                <button onclick="navCard(1)" ${currentCardIndex === filtered.length - 1 ? 'disabled class="opacity-30 cursor-not-allowed"' : 'class="hover:bg-blue-600 active:scale-95"'} class="flex-1 py-3.5 rounded-xl bg-blue-600 border border-blue-500 text-white font-bold text-sm flex items-center justify-center gap-1.5 transition shadow-md state-layer">
+                  <span>Next Lead</span>
+                  <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // ----------------------------------------------------
+      // MODE 2: FULL LIST VIEW (WITH COLOR-CODED CARDS & BIGGER FONTS)
+      // ----------------------------------------------------
+      container.innerHTML = filtered.map((lead, idx) => {
+        const cardTheme = getPaymentCardStyles(lead.payStatus);
+        const statusBadge = getCallStatusBadge(lead.callStatus);
+
+        return `
+          <div class="rounded-xl p-4 sm:p-5 border shadow-md space-y-3.5 transition duration-150 ${cardTheme.border} ${cardTheme.bg}">
+            
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center flex-wrap gap-2 mb-1">
+                  <h3 class="text-base sm:text-lg font-black text-white truncate">${lead.name}</h3>
+                  ${cardTheme.badge}
+                  ${statusBadge}
+                </div>
+                
+                <p class="text-xs sm:text-sm text-slate-300 font-semibold flex items-center gap-1.5 truncate">
+                  <span class="material-symbols-outlined text-base text-blue-400">school</span>
+                  <span>${lead.college}</span>
+                </p>
+
+                <p class="text-xs text-slate-400 mt-1 line-clamp-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm text-amber-400/90">emoji_events</span>
                   <span>${lead.events}</span>
                 </p>
               </div>
+
+              <!-- 1-Click Focus in Single Mode -->
+              <button onclick="focusCardInSingleMode(${lead.id})" title="Open in 1-Card Focus Mode" class="px-2.5 py-1.5 rounded-lg bg-[#1b2438] hover:bg-[#25324d] text-slate-300 hover:text-white border border-[#24334a] text-xs font-bold flex items-center gap-1 transition">
+                <span class="material-symbols-outlined text-sm">style</span>
+                <span class="hidden sm:inline">Focus</span>
+              </button>
             </div>
 
-            ${lead.crNumber ? `
-              <div class="px-3 py-1.5 rounded-md bg-purple-500/10 border border-purple-500/20 text-purple-300 text-[11px] flex items-center justify-between font-medium">
-                <span class="flex items-center gap-1">
-                  <span class="material-symbols-outlined text-xs">badge</span>
-                  <b>CR Phone:</b> ${lead.crNumber}
-                </span>
-                ${lead.expectedDate ? `<span class="text-slate-400 text-[10px]">Due: ${lead.expectedDate}</span>` : ''}
+            <!-- Phone & Logged info snippet -->
+            <div class="flex flex-wrap items-center justify-between gap-2 bg-[#0b0f19]/70 p-2.5 rounded-lg border border-white/5">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-blue-400 text-base">phone</span>
+                <span class="text-sm sm:text-base font-mono font-bold text-white">${lead.mobile}</span>
               </div>
-            ` : ''}
+              ${lead.amount ? `<span class="text-xs sm:text-sm font-mono font-bold text-emerald-300">Paid: ₹${lead.amount}</span>` : ''}
+              ${lead.crNumber ? `<span class="text-xs font-mono font-semibold text-purple-300">CR: ${lead.crNumber}</span>` : ''}
+            </div>
 
             ${lead.remarks ? `
-              <p class="text-[11px] text-slate-300 italic bg-[#1b2438] p-2.5 rounded-md border border-[#24334a]">
+              <p class="text-xs sm:text-sm text-slate-300 italic bg-[#1b2438] p-2.5 rounded-lg border border-[#24334a]">
                 "${lead.remarks}"
               </p>
             ` : ''}
 
-            <div class="pt-2 border-t border-[#24334a] flex items-center justify-between gap-2">
-              <div class="flex items-center gap-1.5">
-                <a href="tel:${lead.mobile}" class="px-3 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1 shadow-sm state-layer">
-                  <span class="material-symbols-outlined text-sm">call</span>
+            <!-- Bottom Actions -->
+            <div class="pt-2 border-t border-white/10 flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <a href="tel:${lead.mobile}" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm state-layer">
+                  <span class="material-symbols-outlined text-base">call</span>
                   <span>Call</span>
                 </a>
-                <a href="https://wa.me/${lead.mobile.replace(/[^0-9]/g, '')}" target="_blank" class="w-8 h-8 rounded-md bg-[#1b2438] hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-[#24334a] transition state-layer">
-                  <span class="material-symbols-outlined text-sm">chat</span>
+                <a href="https://wa.me/${lead.mobile.replace(/[^0-9]/g, '')}" target="_blank" class="px-3.5 py-2 rounded-lg bg-[#128c7e] hover:bg-[#075e54] text-white flex items-center justify-center gap-1 text-xs sm:text-sm font-bold transition state-layer">
+                  <span class="material-symbols-outlined text-base">chat</span>
+                  <span class="hidden sm:inline">WhatsApp</span>
                 </a>
               </div>
 
-              <button onclick="openOutcomeModal(${lead.id})" class="px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs flex items-center gap-1 transition shadow-sm state-layer">
-                <span class="material-symbols-outlined text-sm">edit_note</span>
-                <span>Update</span>
-              </button>
+              <div class="flex items-center gap-1.5">
+                <button onclick="quickUpdateLead(${lead.id}, 'Paid', 'Paid / Confirmed')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 text-xs font-bold transition">
+                  🟢 Paid
+                </button>
+                <button onclick="openOutcomeModal(${lead.id})" class="px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm flex items-center gap-1 transition shadow-sm state-layer">
+                  <span class="material-symbols-outlined text-base">edit_note</span>
+                  <span>Update</span>
+                </button>
+              </div>
             </div>
+
           </div>
         `;
       }).join('');
     }
 
+    // ========================================================
+    // 📝 OUTCOME MODAL CHIP SELECTION & SAVE
+    // ========================================================
     function openOutcomeModal(leadId) {
       const activeCaller = (currentUser && currentUser.role === 'caller') ? currentUser.name : 'Ayansh Sahay';
       const leads = CALLING_DATA[activeCaller] || [];
@@ -4385,7 +4965,7 @@
         const isSelected = (lead.callStatus || 'Pending') === opt;
         return `
           <button type="button" onclick="selectCallStatusChip('${opt}')" id="csChip_${opt}"
-            class="px-2.5 py-1 rounded-md text-xs font-semibold transition ${isSelected ? 'bg-blue-600 text-white shadow-sm' : 'bg-[#1b2438] text-slate-300 hover:text-white border border-[#24334a]'}">
+            class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition ${isSelected ? 'bg-blue-600 text-white shadow-md border-blue-400' : 'bg-[#1b2438] text-slate-300 hover:text-white border border-[#24334a]'}">
             ${opt}
           </button>
         `;
@@ -4395,9 +4975,14 @@
       const payChipsContainer = document.getElementById('payStatusChips');
       payChipsContainer.innerHTML = PAY_STATUS_OPTIONS.map(opt => {
         const isSelected = (lead.payStatus || 'Pending') === opt;
+        let activeBg = 'bg-blue-600';
+        if (opt === 'Paid') activeBg = 'bg-emerald-600';
+        if (opt === 'Expected Soon') activeBg = 'bg-blue-600';
+        if (opt === 'Declined') activeBg = 'bg-slate-700';
+
         return `
           <button type="button" onclick="selectPayStatusChip('${opt}')" id="psChip_${opt}"
-            class="px-2.5 py-1 rounded-md text-xs font-semibold transition ${isSelected ? 'bg-purple-600 text-white shadow-sm' : 'bg-[#1b2438] text-slate-300 hover:text-white border border-[#24334a]'}">
+            class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition ${isSelected ? activeBg + ' text-white shadow-md' : 'bg-[#1b2438] text-slate-300 hover:text-white border border-[#24334a]'}">
             ${opt}
           </button>
         `;
@@ -4412,9 +4997,9 @@
         const btn = document.getElementById('csChip_' + o);
         if (btn) {
           if (o === opt) {
-            btn.className = 'px-2.5 py-1 rounded-md text-xs font-semibold transition bg-blue-600 text-white shadow-sm';
+            btn.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition bg-blue-600 text-white shadow-md border-blue-400';
           } else {
-            btn.className = 'px-2.5 py-1 rounded-md text-xs font-semibold transition bg-[#1b2438] text-slate-300 hover:text-white border border-[#24334a]';
+            btn.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition bg-[#1b2438] text-slate-300 hover:text-white border border-[#24334a]';
           }
         }
       });
@@ -4425,10 +5010,15 @@
       PAY_STATUS_OPTIONS.forEach(o => {
         const btn = document.getElementById('psChip_' + o);
         if (btn) {
+          let activeBg = 'bg-blue-600';
+          if (o === 'Paid') activeBg = 'bg-emerald-600';
+          if (o === 'Expected Soon') activeBg = 'bg-blue-600';
+          if (o === 'Declined') activeBg = 'bg-slate-700';
+
           if (o === opt) {
-            btn.className = 'px-2.5 py-1 rounded-md text-xs font-semibold transition bg-purple-600 text-white shadow-sm';
+            btn.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition ' + activeBg + ' text-white shadow-md';
           } else {
-            btn.className = 'px-2.5 py-1 rounded-md text-xs font-semibold transition bg-[#1b2438] text-slate-300 hover:text-white border border-[#24334a]';
+            btn.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition bg-[#1b2438] text-slate-300 hover:text-white border border-[#24334a]';
           }
         }
       });
@@ -4452,13 +5042,15 @@
       lead.expectedDate = document.getElementById('modalExpDate').value;
       lead.remarks = document.getElementById('modalRemarks').value.trim();
 
-      localStorage.setItem('TF26_CALLING_DATA', JSON.stringify(CALLING_DATA));
+      saveCallingData();
 
       closeOutcomeModal();
       updateCallerHeader();
+      renderFilterButtons();
       renderLeadCards();
       renderCRDirectory();
       renderAdminDashboard();
+      showToast("Candidate outcome saved successfully!");
     }
 
     function renderCRDirectory() {
@@ -4893,6 +5485,31 @@
         renderAuthLogsTable();
       }
     }
+
+    
+    // Keyboard navigation (Arrow keys in single card mode)
+    window.addEventListener('keydown', (e) => {
+      if (currentViewMode !== 'single') return;
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+      if (e.key === 'ArrowRight') navCard(1);
+      if (e.key === 'ArrowLeft') navCard(-1);
+    });
+
+    // Touch swipe gestures
+    let touchStartX = 0;
+    let touchEndX = 0;
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches[0]) touchStartX = e.touches[0].screenX;
+    }, { passive: true });
+    window.addEventListener('touchend', (e) => {
+      if (e.changedTouches && e.changedTouches[0]) {
+        touchEndX = e.changedTouches[0].screenX;
+        if (currentViewMode === 'single' && Math.abs(touchEndX - touchStartX) > 60) {
+          if (touchEndX < touchStartX) navCard(1); // Swiped left -> Next
+          else navCard(-1); // Swiped right -> Prev
+        }
+      }
+    }, { passive: true });
 
     window.onload = init;
   </script>
